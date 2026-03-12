@@ -1,0 +1,1941 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TaskFlow — My Tasks</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="../styles/home.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/heroicons@2.0.18/24/solid/index.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+
+    <!-- ══════════════════════════════════
+     NAV
+══════════════════════════════════ -->
+    <nav>
+        <div class="nav-logo">
+            <div class="logo-mark">⚡</div>
+            <div class="logo-text">Task<span>Flow</span></div>
+        </div>
+        <div class="nav-search">
+            <input type="text" placeholder="Search tasks..." />
+            <span class="search-icon"><i data-lucide="search"></i></span>
+        </div>
+        <div class="nav-actions">
+            <button class="nav-btn" onclick="openModal('notifications')" title="Notifications">
+                <span class="badge"><i data-lucide="bell"></i></span>
+            </button>
+            <button class="nav-btn" onclick="openModal('calendar')" title="Calendar"><i
+                    data-lucide="calendar"></i></button>
+            <button class="nav-btn" onclick="openModal('messages')" title="Messages"><i
+                    data-lucide="message-circle"></i></button>
+            <div class="nav-divider"></div>
+            <div class="avatar" onclick="openModal('profile')">
+                <div class="avatar-placeholder">JD</div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ══════════════════════════════════
+     LAYOUT
+══════════════════════════════════ -->
+    <div class="layout">
+
+        <!-- SIDEBAR -->
+        <sidebar>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Menu</div>
+                <div class="menu-item" onclick="setActive(this);openModal('dashboard')">
+                    <span class="menu-icon"><i data-lucide="layout-dashboard"></i></span> Dashboard
+                    <span class="menu-badge">3</span>
+                </div>
+                <div class="menu-item active" onclick="setActive(this)">
+                    <span class="menu-icon"><i data-lucide="circle-check"></i></span> My Tasks
+                    <span class="menu-badge">12</span>
+                </div>
+                <div class="menu-item" onclick="setActive(this);openModal('projects')">
+                    <span class="menu-icon"><i data-lucide="folder"></i></span> Projects
+                </div>
+                <div class="menu-item" onclick="setActive(this);openModal('calendar')">
+                    <span class="menu-icon"><i data-lucide="calendar"></i></span> Calendar
+                </div>
+                <div class="menu-item" onclick="setActive(this);openModal('reports')">
+                    <span class="menu-icon"><i data-lucide="bar-chart-2"></i></span> Reports
+                </div>
+                <div class="menu-item" onclick="setActive(this);openModal('settings')">
+                    <span class="menu-icon"><i data-lucide="settings"></i></span> Settings
+                </div>
+            </div>
+            <div class="sidebar-section">
+                <div class="sidebar-label">Projects</div>
+                <div class="sidebar-projects">
+                    <div class="proj-item" onclick="openModal('projects')">
+                        <div class="proj-dot" style="background:var(--coral)"></div>Website Redesign
+                    </div>
+                    <div class="proj-item" onclick="openModal('projects')">
+                        <div class="proj-dot" style="background:var(--mint)"></div>Mobile App v2
+                    </div>
+                    <div class="proj-item" onclick="openModal('projects')">
+                        <div class="proj-dot" style="background:var(--amber)"></div>Brand Guidelines
+                    </div>
+                    <div class="proj-item" onclick="openModal('projects')">
+                        <div class="proj-dot" style="background:var(--sky)"></div>API Integration
+                    </div>
+                    <div class="proj-item" onclick="openModal('projects')">
+                        <div class="proj-dot" style="background:var(--violet)"></div>Q3 Campaign
+                    </div>
+                </div>
+                <button class="add-card" style="width:100%;margin-top:8px;border-radius:8px;font-size:12.5px;"
+                    onclick="openModal('new-project')">＋ New Project</button>
+            </div>
+            <div class="sidebar-bottom">
+                <div class="user-card" onclick="openModal('profile')">
+                    <div class="avatar-sm">JD</div>
+                    <div>
+                        <div class="user-name">Jamie Davis</div>
+                        <div class="user-role">Product Designer</div>
+                    </div>
+                </div>
+            </div>
+        </sidebar>
+
+        <!-- MAIN -->
+        <main>
+            <div class="page-header">
+                <div>
+                    <div class="page-title">My Tasks 🎯</div>
+                    <div class="page-sub">Wednesday, 11 March 2026 · Website Redesign</div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-ghost" onclick="openModal('import')"><i data-lucide="upload"></i></button>
+                    <button class="btn btn-ghost" onclick="openModal('invite')"><i data-lucide="users"></i></button>
+                    <button class="btn btn-primary" onclick="openModal('new-task')">＋ New Task</button>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-chip">
+                    <div class="stat-icon" style="background:rgba(255,107,107,.1)"><i data-lucide="folder"></i></div>
+                    <div>
+                        <div class="stat-num">24</div>
+                        <div class="stat-lbl">Total Tasks</div>
+                    </div>
+                </div>
+                <div class="stat-chip">
+                    <div class="stat-icon" style="background:rgba(78,181,247,.1)"><i data-lucide="hourglass"></i></div>
+                    <div>
+                        <div class="stat-num">8</div>
+                        <div class="stat-lbl">In Progress</div>
+                    </div>
+                </div>
+                <div class="stat-chip">
+                    <div class="stat-icon" style="background:rgba(62,207,142,.1)"><i data-lucide="circle-check"></i>
+                    </div>
+                    <div>
+                        <div class="stat-num">11</div>
+                        <div class="stat-lbl">Completed</div>
+                    </div>
+                </div>
+                <div class="stat-chip">
+                    <div class="stat-icon" style="background:rgba(255,197,66,.12)"><i
+                            data-lucide="message-circle-warning"></i></div>
+                    <div>
+                        <div class="stat-num">3</div>
+                        <div class="stat-lbl">Overdue</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-bar">
+                <button class="filter-pill active" onclick="toggleFilter(this)">All</button>
+                <button class="filter-pill" onclick="toggleFilter(this)">Mine</button>
+                <button class="filter-pill" onclick="toggleFilter(this)">Due Today</button>
+                <button class="filter-pill" onclick="toggleFilter(this)">High Priority</button>
+                <button class="filter-pill" onclick="toggleFilter(this)">No Assignee</button>
+                <div class="filter-sep"></div>
+                <div class="view-toggle">
+                    <button class="view-btn active" title="Kanban">⊞</button>
+                    <button class="view-btn" title="List">☰</button>
+                    <button class="view-btn" title="Timeline"><i data-lucide="bar-chart-2"></i></button>
+                </div>
+            </div>
+
+            <!-- KANBAN -->
+            <div class="kanban-wrap">
+
+                <!-- TO DO -->
+                <div class="kanban-col">
+                    <div class="col-header">
+                        <div class="col-dot" style="background:#94a3b8"></div>
+                        <div class="col-title">To Do</div>
+                        <div class="col-count" style="background:#f1f5f9;color:#64748b">5</div>
+                    </div>
+                    <div class="col-body">
+                        <div class="card"
+                            onclick="openCardDetail('Redesign landing page hero section','Design & UX · High Priority','Update layout and copy to reflect new brand direction and improve conversion.')">
+                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Redesign landing page hero section</div>
+                            <div class="card-desc">Update layout and copy to reflect new brand direction.</div>
+                            <div class="card-tags"><span class="tag">Design</span><span class="tag">UX</span></div>
+                            <div class="card-footer">
+                                <div class="due-date overdue"><i data-lucide="calendar"></i> Mar 12</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 3</button><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">📎 2</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
+                                        JD</div>
+                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
+                                        AM</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card"
+                            onclick="openCardDetail('Write content for About Us page','Content · Medium Priority','Team bios, company story and mission statement copy.')">
+                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Write content for About Us page</div>
+                            <div class="card-desc">Team bios, company story and mission statement copy.</div>
+                            <div class="card-tags"><span class="tag">Content</span></div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 16</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 1</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card"
+                            onclick="openCardDetail('Set up analytics dashboard','Engineering · Low Priority','Configure Google Analytics 4 with custom events.')">
+                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
+                                    onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Set up analytics dashboard</div>
+                            <div class="card-tags"><span class="tag">Engineering</span><span
+                                    class="tag">Analytics</span></div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i> Mar 20</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="avatars">
+                                    <div class="av"
+                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card"
+                            onclick="openCardDetail('Define user personas for mobile app','Research · Medium Priority','Research-based personas to guide feature prioritisation in Q2.')">
+                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Define user personas for mobile app</div>
+                            <div class="card-desc">Research-based personas to guide feature prioritisation in Q2.</div>
+                            <div class="card-tags"><span class="tag">Research</span><span class="tag">Strategy</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 18</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 5</button><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">📎 1</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
+                                    </div>
+                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
+                                        JD</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card"
+                            onclick="openCardDetail('Fix broken checkout flow on Safari','Bug · High Priority','Users report payment fails after address entry on iOS Safari 17.')">
+                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Fix broken checkout flow on Safari</div>
+                            <div class="card-desc">Users report payment fails after address entry on iOS Safari 17.
+                            </div>
+                            <div class="card-tags"><span class="tag">Bug</span><span class="tag">Engineering</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date overdue"><i data-lucide="calendar"></i>Mar 10</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 8</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
+                                        AM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
+                </div>
+
+                <!-- IN PROGRESS -->
+                <div class="kanban-col">
+                    <div class="col-header">
+                        <div class="col-dot" style="background:var(--sky)"></div>
+                        <div class="col-title">In Progress</div>
+                        <div class="col-count" style="background:rgba(78,181,247,.12);color:var(--sky)">4</div>
+                    </div>
+                    <div class="col-body">
+                        <div class="card" style="border-top:3px solid var(--sky)"
+                            onclick="openCardDetail('Build component library in Figma','Design System · High Priority','Create a shared component system with tokens, auto-layout and docs.')">
+                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Build component library in Figma</div>
+                            <div class="card-desc">Create a shared component system with tokens, auto-layout and docs.
+                            </div>
+                            <div class="card-tags"><span class="tag">Design System</span><span class="tag">Figma</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:68%;background:linear-gradient(90deg,var(--sky),var(--violet))"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 15</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 12</button><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">📎 4</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
+                                        JD</div>
+                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
+                                    </div>
+                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="border-top:3px solid var(--sky)"
+                            onclick="openCardDetail('Integrate Stripe payment gateway','Engineering · Medium Priority','Replace legacy PayPal with Stripe Checkout + webhooks.')">
+                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Integrate Stripe payment gateway</div>
+                            <div class="card-desc">Replace legacy PayPal with Stripe Checkout + webhooks for
+                                subscription events.</div>
+                            <div class="card-tags"><span class="tag">Engineering</span><span class="tag">Payments</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:40%;background:linear-gradient(90deg,var(--amber),var(--coral))"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 19</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 6</button></div>
+                                <div class="avatars">
+                                    <div class="av"
+                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="border-top:3px solid var(--sky)"
+                            onclick="openCardDetail('Write onboarding email sequence','Marketing · Low Priority','5-email drip campaign for new signups covering core features.')">
+                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
+                                    onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Write onboarding email sequence</div>
+                            <div class="card-desc">5-email drip campaign for new signups covering core features.</div>
+                            <div class="card-tags"><span class="tag">Marketing</span><span class="tag">Copy</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:80%;background:linear-gradient(90deg,var(--mint),var(--sky))"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 14</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 3</button><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">📎 2</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
+                                    </div>
+                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="border-top:3px solid var(--sky)"
+                            onclick="openCardDetail('Conduct usability testing sessions','Research · High Priority','5 moderated sessions with target users on prototype v2.')">
+                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Conduct usability testing sessions</div>
+                            <div class="card-desc">5 moderated sessions with target users on prototype v2.</div>
+                            <div class="card-tags"><span class="tag">Research</span><span class="tag">UX</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:55%;background:linear-gradient(90deg,var(--coral),var(--violet))">
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 13</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 9</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
+                                        JD</div>
+                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
+                                        AM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
+                </div>
+
+                <!-- IN REVIEW -->
+                <div class="kanban-col">
+                    <div class="col-header">
+                        <div class="col-dot" style="background:var(--amber)"></div>
+                        <div class="col-title">In Review</div>
+                        <div class="col-count" style="background:rgba(255,197,66,.15);color:#d97706">3</div>
+                    </div>
+                    <div class="col-body">
+                        <div class="card" style="border-top:3px solid var(--amber)"
+                            onclick="openCardDetail('Homepage SEO audit & optimisation','SEO · Medium Priority','Keyword research, meta tags, structured data and page speed improvements.')">
+                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Homepage SEO audit & optimisation</div>
+                            <div class="card-desc">Keyword research, meta tags, structured data and page speed
+                                improvements.</div>
+                            <div class="card-tags"><span class="tag">SEO</span><span class="tag">Marketing</span></div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 17</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 4</button><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">📎 3</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="border-top:3px solid var(--amber)"
+                            onclick="openCardDetail('Dark mode implementation','Engineering · High Priority','Full dark theme with CSS variables and system preference detection.')">
+                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Dark mode implementation</div>
+                            <div class="card-desc">Full dark theme with CSS variables and system preference detection.
+                            </div>
+                            <div class="card-tags"><span class="tag">Engineering</span><span class="tag">Design</span>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 13</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="card-actions"><button class="card-action-btn"
+                                        onclick="event.stopPropagation()">💬 7</button></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
+                                        AM</div>
+                                    <div class="av"
+                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="border-top:3px solid var(--amber)"
+                            onclick="openCardDetail('Update privacy policy for GDPR v2','Legal · Low Priority','Review and update all data processing clauses for compliance.')">
+                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
+                                    onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title">Update privacy policy for GDPR v2</div>
+                            <div class="card-tags"><span class="tag">Legal</span></div>
+                            <div class="card-footer">
+                                <div class="due-date"><i data-lucide="calendar"></i>Mar 22</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
+                </div>
+
+                <!-- DONE -->
+                <div class="kanban-col">
+                    <div class="col-header">
+                        <div class="col-dot" style="background:var(--mint)"></div>
+                        <div class="col-title">Done</div>
+                        <div class="col-count" style="background:rgba(62,207,142,.12);color:#059669">5</div>
+                    </div>
+                    <div class="col-body">
+                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
+                            onclick="openCardDetail('Set up CI/CD pipeline with GitHub Actions','DevOps · Completed','Automated builds, tests and deployment on every push to main.')">
+                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">Set
+                                up CI/CD pipeline with GitHub Actions</div>
+                            <div class="card-tags"><span class="tag">DevOps</span><span class="tag">Engineering</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date" style="color:var(--mint)">✅ Mar 8</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
+                                        AM</div>
+                                    <div class="av"
+                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
+                            onclick="openCardDetail('Stakeholder presentation — Q1 roadmap','Strategy · Completed','Presented product roadmap and OKRs to senior leadership.')">
+                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
+                                Stakeholder presentation — Q1 roadmap</div>
+                            <div class="card-tags"><span class="tag">Strategy</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date" style="color:var(--mint)">✅ Mar 5</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
+                                        JD</div>
+                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
+                            onclick="openCardDetail('Create brand color token system','Design System · Completed','Defined all color tokens and exported to Figma and CSS variables.')">
+                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
+                                    onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
+                                Create brand color token system</div>
+                            <div class="card-tags"><span class="tag">Design System</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date" style="color:var(--mint)">✅ Mar 6</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
+                                        JD</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
+                            onclick="openCardDetail('User interview synthesis report','Research · Completed','Analysed 12 user interviews and documented key insights and pain points.')">
+                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
+                                User interview synthesis report</div>
+                            <div class="card-tags"><span class="tag">Research</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date" style="color:var(--mint)">✅ Mar 7</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
+                            onclick="openCardDetail('Migrate database to Postgres 16','Engineering · Completed','Zero-downtime migration with full rollback plan and performance benchmarks.')">
+                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
+                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
+                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
+                                Migrate database to Postgres 16</div>
+                            <div class="card-tags"><span class="tag">Engineering</span><span class="tag">DevOps</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill"
+                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
+                            </div>
+                            <div class="card-footer">
+                                <div class="due-date" style="color:var(--mint)">✅ Mar 4</div>
+                                <div class="card-footer-sep"></div>
+                                <div class="avatars">
+                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
+                                        AM</div>
+                                    <div class="av"
+                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
+                </div>
+
+            </div><!-- /kanban -->
+        </main>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════ -->
+
+    <!-- ① NEW TASK -->
+    <div class="overlay" id="ov-new-task">
+        <div class="modal modal-md">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(78,181,247,.12)">✅</div>
+                <div>
+                    <div class="mhd-title">Create New Task</div>
+                    <div class="mhd-sub">Add to Website Redesign project</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('new-task')">✕</button>
+            </div>
+            <div class="mbody">
+                <div class="frow"><label class="flabel">Task title *</label><input class="finput" type="text"
+                        placeholder="e.g. Redesign pricing page…" /></div>
+                <div class="frow"><label class="flabel">Description</label><textarea class="ftextarea"
+                        placeholder="Describe what needs to be done…"></textarea></div>
+                <div class="fgrid2">
+                    <div class="frow"><label class="flabel">Project</label><select class="fselect">
+                            <option>Website Redesign</option>
+                            <option>Mobile App v2</option>
+                            <option>Brand Guidelines</option>
+                            <option>API Integration</option>
+                        </select></div>
+                    <div class="frow"><label class="flabel">Status</label><select class="fselect">
+                            <option>To Do</option>
+                            <option>In Progress</option>
+                            <option>In Review</option>
+                            <option>Done</option>
+                        </select></div>
+                </div>
+                <div class="fgrid2">
+                    <div class="frow"><label class="flabel">Due Date</label><input class="finput" type="date" /></div>
+                    <div class="frow"><label class="flabel">Estimate (hrs)</label><input class="finput" type="number"
+                            placeholder="e.g. 4" /></div>
+                </div>
+                <div class="frow">
+                    <label class="flabel">Priority</label>
+                    <div class="prio-row">
+                        <button class="prio-btn sel-high" onclick="selPrio(this,'high')">🔴 High</button>
+                        <button class="prio-btn" onclick="selPrio(this,'med')">🟡 Medium</button>
+                        <button class="prio-btn" onclick="selPrio(this,'low')">🟢 Low</button>
+                    </div>
+                </div>
+                <div class="frow">
+                    <label class="flabel">Tags</label>
+                    <div class="tag-chips">
+                        <button class="tag-chip-item" onclick="this.classList.toggle('sel')">Design</button>
+                        <button class="tag-chip-item" onclick="this.classList.toggle('sel')">Engineering</button>
+                        <button class="tag-chip-item" onclick="this.classList.toggle('sel')">Research</button>
+                        <button class="tag-chip-item" onclick="this.classList.toggle('sel')">Marketing</button>
+                        <button class="tag-chip-item" onclick="this.classList.toggle('sel')">UX</button>
+                        <button class="tag-chip-item" onclick="this.classList.toggle('sel')">Content</button>
+                        <button class="tag-chip-item" onclick="this.classList.toggle('sel')">Bug</button>
+                    </div>
+                </div>
+                <div class="frow">
+                    <label class="flabel">Assign To</label>
+                    <div class="assignee-grid">
+                        <div class="assignee-item sel" onclick="this.classList.toggle('sel')">
+                            <div class="assignee-av"
+                                style="background:linear-gradient(135deg,var(--coral),var(--rose))">JD</div>
+                            <span class="assignee-name">Jamie D.</span>
+                            <div class="assignee-check checked">✓</div>
+                        </div>
+                        <div class="assignee-item"
+                            onclick="this.classList.toggle('sel');this.querySelector('.assignee-check').classList.toggle('checked');this.querySelector('.assignee-check').textContent=this.classList.contains('sel')?'✓':''">
+                            <div class="assignee-av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">
+                                SK</div>
+                            <span class="assignee-name">Sara K.</span>
+                            <div class="assignee-check"></div>
+                        </div>
+                        <div class="assignee-item"
+                            onclick="this.classList.toggle('sel');this.querySelector('.assignee-check').classList.toggle('checked');this.querySelector('.assignee-check').textContent=this.classList.contains('sel')?'✓':''">
+                            <div class="assignee-av"
+                                style="background:linear-gradient(135deg,var(--sky),var(--violet))">AM</div>
+                            <span class="assignee-name">Alex M.</span>
+                            <div class="assignee-check"></div>
+                        </div>
+                        <div class="assignee-item"
+                            onclick="this.classList.toggle('sel');this.querySelector('.assignee-check').classList.toggle('checked');this.querySelector('.assignee-check').textContent=this.classList.contains('sel')?'✓':''">
+                            <div class="assignee-av"
+                                style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                            <span class="assignee-name">Paul K.</span>
+                            <div class="assignee-check"></div>
+                        </div>
+                        <div class="assignee-item"
+                            onclick="this.classList.toggle('sel');this.querySelector('.assignee-check').classList.toggle('checked');this.querySelector('.assignee-check').textContent=this.classList.contains('sel')?'✓':''">
+                            <div class="assignee-av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
+                            </div>
+                            <span class="assignee-name">Lisa M.</span>
+                            <div class="assignee-check"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('new-task')">Cancel</button>
+                <button class="mbtn mbtn-primary" onclick="toast('✅ Task created!');closeModal('new-task')">＋ Create
+                    Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ② INVITE -->
+    <div class="overlay" id="ov-invite">
+        <div class="modal modal-md">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(62,207,142,.1)">👥</div>
+                <div>
+                    <div class="mhd-title">Invite People</div>
+                    <div class="mhd-sub">Share this project with your team</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('invite')">✕</button>
+            </div>
+            <div class="mbody">
+                <div class="frow">
+                    <label class="flabel">Invite by email</label>
+                    <div style="display:flex;gap:8px">
+                        <input class="finput" type="email" placeholder="colleague@company.com" style="flex:1" />
+                        <select class="fselect" style="width:120px">
+                            <option>Editor</option>
+                            <option>Viewer</option>
+                            <option>Admin</option>
+                        </select>
+                        <button class="mbtn mbtn-primary" style="flex-shrink:0"
+                            onclick="toast('📨 Invite sent!')">Send</button>
+                    </div>
+                </div>
+                <div class="fdivider"></div>
+                <div class="fsection">Current Members (5)</div>
+                <div class="member-row">
+                    <div class="member-av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">JD</div>
+                    <div class="member-info">
+                        <div class="member-name">Jamie Davis <span
+                                style="font-size:11px;background:rgba(78,181,247,.12);color:var(--sky);padding:1px 7px;border-radius:4px;font-weight:700;margin-left:4px">Admin</span>
+                        </div>
+                        <div class="member-email">jamie@company.io</div>
+                    </div>
+                    <select class="fselect" style="width:110px">
+                        <option selected>Admin</option>
+                        <option>Editor</option>
+                        <option>Viewer</option>
+                    </select>
+                </div>
+                <div class="member-row">
+                    <div class="member-av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK</div>
+                    <div class="member-info">
+                        <div class="member-name">Sara Kim</div>
+                        <div class="member-email">sara@company.io</div>
+                    </div>
+                    <select class="fselect" style="width:110px">
+                        <option>Admin</option>
+                        <option selected>Editor</option>
+                        <option>Viewer</option>
+                    </select>
+                </div>
+                <div class="member-row">
+                    <div class="member-av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">AM</div>
+                    <div class="member-info">
+                        <div class="member-name">Alex Morgan</div>
+                        <div class="member-email">alex@company.io</div>
+                    </div>
+                    <select class="fselect" style="width:110px">
+                        <option>Admin</option>
+                        <option selected>Editor</option>
+                        <option>Viewer</option>
+                    </select>
+                </div>
+                <div class="member-row">
+                    <div class="member-av" style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                    <div class="member-info">
+                        <div class="member-name">Paul Knox</div>
+                        <div class="member-email">paul@company.io</div>
+                    </div>
+                    <select class="fselect" style="width:110px">
+                        <option>Admin</option>
+                        <option>Editor</option>
+                        <option selected>Viewer</option>
+                    </select>
+                </div>
+                <div class="member-row">
+                    <div class="member-av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM</div>
+                    <div class="member-info">
+                        <div class="member-name">Lisa Mao</div>
+                        <div class="member-email">lisa@company.io</div>
+                    </div>
+                    <select class="fselect" style="width:110px">
+                        <option>Admin</option>
+                        <option selected>Editor</option>
+                        <option>Viewer</option>
+                    </select>
+                </div>
+                <div class="fdivider"></div>
+                <div class="fsection">Shareable Link</div>
+                <div class="copy-badge" onclick="toast('🔗 Link copied!')">🔗
+                    &nbsp;https://taskflow.app/project/website-redesign &nbsp;<span
+                        style="margin-left:auto;font-size:11px;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:2px 8px;font-family:inherit;color:var(--text-secondary)">Copy</span>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('invite')">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ③ IMPORT -->
+    <div class="overlay" id="ov-import">
+        <div class="modal modal-md">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(167,139,250,.12)">⬆</div>
+                <div>
+                    <div class="mhd-title">Import Tasks</div>
+                    <div class="mhd-sub">Bring in tasks from another tool</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('import')">✕</button>
+            </div>
+            <div class="mbody">
+                <div class="fsection">Choose Source</div>
+                <div class="import-src sel" onclick="selImport(this)">
+                    <div class="import-ico" style="background:#eff6ff">📊</div>
+                    <div class="import-info">
+                        <div class="im">CSV / Spreadsheet</div>
+                        <div class="is">Upload a .csv or .xlsx file</div>
+                    </div>
+                    <div
+                        style="margin-left:auto;width:20px;height:20px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700">
+                        ✓</div>
+                </div>
+                <div class="import-src" onclick="selImport(this)">
+                    <div class="import-ico" style="background:#eff8f0">🔷</div>
+                    <div class="import-info">
+                        <div class="im">Jira</div>
+                        <div class="is">Import from a Jira board or project</div>
+                    </div>
+                </div>
+                <div class="import-src" onclick="selImport(this)">
+                    <div class="import-ico" style="background:#fef3c7">🅰</div>
+                    <div class="import-info">
+                        <div class="im">Asana</div>
+                        <div class="is">Import tasks and subtasks</div>
+                    </div>
+                </div>
+                <div class="import-src" onclick="selImport(this)">
+                    <div class="import-ico" style="background:#f5f3ff">🟦</div>
+                    <div class="import-info">
+                        <div class="im">Trello</div>
+                        <div class="is">Import boards, lists and cards</div>
+                    </div>
+                </div>
+                <div class="drop-zone" onclick="toast('📂 File picker opened')">
+                    <div class="drop-icon">☁️</div>
+                    <div class="drop-text">Drop your file here or click to browse</div>
+                    <div class="drop-sub">Supports .csv, .xlsx, .json — max 10 MB</div>
+                </div>
+                <div class="frow" style="margin-top:14px"><label class="flabel">Import to project</label><select
+                        class="fselect">
+                        <option>Website Redesign</option>
+                        <option>Mobile App v2</option>
+                    </select></div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('import')">Cancel</button>
+                <button class="mbtn mbtn-primary" onclick="toast('⬆ Import started!');closeModal('import')">⬆
+                    Import</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ④ CARD DETAIL -->
+    <div class="overlay" id="ov-card-detail">
+        <div class="modal modal-xl">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(78,181,247,.1)">📋</div>
+                <div>
+                    <div class="mhd-title" id="cd-title">Task Detail</div>
+                    <div class="mhd-sub" id="cd-sub">Website Redesign · In Progress</div>
+                </div>
+                <div style="display:flex;gap:6px;margin-left:auto;margin-right:10px">
+                    <button class="mbtn mbtn-ghost" style="height:32px;font-size:12px"
+                        onclick="toast('🔗 Link copied!')">🔗 Share</button>
+                    <button class="mbtn mbtn-ghost" style="height:32px;font-size:12px" onclick="toast('✏️ Editing…')">✏️
+                        Edit</button>
+                </div>
+                <button class="mhd-close" onclick="closeModal('card-detail')">✕</button>
+            </div>
+            <div class="mbody">
+                <div class="detail-grid">
+                    <div class="detail-main">
+                        <div class="frow"><label class="flabel">Description</label><textarea class="ftextarea"
+                                id="cd-desc"
+                                style="min-height:100px">Update layout and copy to reflect new brand direction and improve conversion rate.</textarea>
+                        </div>
+                        <div class="fdivider"></div>
+                        <div class="fsection">Checklist <span
+                                style="color:var(--text-tertiary);font-weight:400;font-size:11px;text-transform:none;letter-spacing:0">3/5
+                                done</span></div>
+                        <div style="background:var(--bg);border-radius:10px;padding:4px 8px;margin-bottom:14px">
+                            <div
+                                style="height:4px;background:var(--border);border-radius:2px;margin:8px 0 4px;overflow:hidden">
+                                <div
+                                    style="width:60%;height:100%;background:linear-gradient(90deg,var(--mint),var(--sky));border-radius:2px">
+                                </div>
+                            </div>
+                            <div class="checklist-item" onclick="toggleCheck(this)">
+                                <div class="check-box checked">✓</div><span class="check-label done">Research competitor
+                                    hero sections</span>
+                            </div>
+                            <div class="checklist-item" onclick="toggleCheck(this)">
+                                <div class="check-box checked">✓</div><span class="check-label done">Create wireframe in
+                                    Figma</span>
+                            </div>
+                            <div class="checklist-item" onclick="toggleCheck(this)">
+                                <div class="check-box checked">✓</div><span class="check-label done">Write headline copy
+                                    variations</span>
+                            </div>
+                            <div class="checklist-item" onclick="toggleCheck(this)">
+                                <div class="check-box"></div><span class="check-label">Get design approval from
+                                    stakeholders</span>
+                            </div>
+                            <div class="checklist-item" onclick="toggleCheck(this)">
+                                <div class="check-box"></div><span class="check-label">Hand off to developer</span>
+                            </div>
+                        </div>
+                        <div class="fdivider"></div>
+                        <div class="fsection">Comments (3)</div>
+                        <div style="display:flex;flex-direction:column;gap:0">
+                            <div class="act-item">
+                                <div class="act-av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
+                                    JD</div>
+                                <div>
+                                    <div class="act-text"><b>Jamie Davis</b> — I've updated the wireframe based on
+                                        feedback. Check Figma for the latest version.</div>
+                                    <div class="act-time">2 hours ago</div>
+                                </div>
+                            </div>
+                            <div class="act-item">
+                                <div class="act-av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
+                                </div>
+                                <div>
+                                    <div class="act-text"><b>Sara Kim</b> — Copy looks great! I'd suggest A/B testing
+                                        headline option 3 vs 5.</div>
+                                    <div class="act-time">Yesterday at 3:44pm</div>
+                                </div>
+                            </div>
+                            <div class="act-item">
+                                <div class="act-av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
+                                    AM</div>
+                                <div>
+                                    <div class="act-text"><b>Alex Morgan</b> — I can start implementation once the
+                                        design is signed off.</div>
+                                    <div class="act-time">Mar 10 at 9:20am</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:10px;margin-top:12px">
+                            <div class="act-av"
+                                style="background:linear-gradient(135deg,var(--coral),var(--rose));flex-shrink:0">JD
+                            </div>
+                            <input class="finput" type="text" placeholder="Write a comment…" style="flex:1" />
+                            <button class="mbtn mbtn-primary" style="flex-shrink:0"
+                                onclick="toast('💬 Comment posted!')">Post</button>
+                        </div>
+                    </div>
+                    <div class="detail-side">
+                        <div style="background:var(--bg);border-radius:14px;padding:14px">
+                            <div class="detail-meta-row"><span class="detail-meta-label">Status</span><span
+                                    style="background:rgba(78,181,247,.12);color:var(--sky);font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px">In
+                                    Progress</span></div>
+                            <div class="detail-meta-row"><span class="detail-meta-label">Priority</span><span
+                                    style="background:rgba(255,107,107,.1);color:var(--coral);font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px">🔴
+                                    High</span></div>
+                            <div class="detail-meta-row"><span class="detail-meta-label">Due date</span><span
+                                    class="detail-meta-val" style="color:var(--coral)"><i data-lucide="calendar"></i>Mar
+                                    12, 2026</span></div>
+                            <div class="detail-meta-row"><span class="detail-meta-label">Project</span><span
+                                    class="detail-meta-val">Website Redesign</span></div>
+                            <div class="detail-meta-row" style="border-bottom:none"><span
+                                    class="detail-meta-label">Estimate</span><span class="detail-meta-val">8 hrs</span>
+                            </div>
+                        </div>
+                        <div style="margin-top:14px">
+                            <div class="fsection">Assignees</div>
+                            <div style="display:flex;flex-direction:column;gap:6px">
+                                <div
+                                    style="display:flex;align-items:center;gap:9px;padding:7px;background:var(--bg);border-radius:9px">
+                                    <div class="act-av"
+                                        style="background:linear-gradient(135deg,var(--coral),var(--rose));width:28px;height:28px;font-size:10px">
+                                        JD</div>
+                                    <div>
+                                        <div style="font-size:13px;font-weight:600">Jamie Davis</div>
+                                        <div style="font-size:11px;color:var(--text-tertiary)">Product Designer</div>
+                                    </div>
+                                </div>
+                                <div
+                                    style="display:flex;align-items:center;gap:9px;padding:7px;background:var(--bg);border-radius:9px">
+                                    <div class="act-av"
+                                        style="background:linear-gradient(135deg,var(--sky),var(--violet));width:28px;height:28px;font-size:10px">
+                                        AM</div>
+                                    <div>
+                                        <div style="font-size:13px;font-weight:600">Alex Morgan</div>
+                                        <div style="font-size:11px;color:var(--text-tertiary)">Frontend Dev</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:14px">
+                            <div class="fsection">Progress</div>
+                            <div style="background:var(--bg);border-radius:10px;padding:10px">
+                                <div
+                                    style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-tertiary);margin-bottom:6px">
+                                    <span>Overall</span><span id="cd-pct"
+                                        style="font-weight:700;color:var(--text-primary)">68%</span>
+                                </div>
+                                <div style="height:8px;background:#e2e8f0;border-radius:4px;overflow:hidden">
+                                    <div
+                                        style="height:100%;width:68%;background:linear-gradient(90deg,var(--sky),var(--violet));border-radius:4px">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="margin-top:14px">
+                            <div class="fsection">Attachments (2)</div>
+                            <div style="display:flex;flex-direction:column;gap:6px">
+                                <div style="display:flex;align-items:center;gap:9px;padding:9px;background:var(--bg);border-radius:9px;cursor:pointer"
+                                    onclick="toast('📄 Opening hero-wireframe-v3.fig')"><span
+                                        style="font-size:18px">🎨</span>
+                                    <div>
+                                        <div style="font-size:12.5px;font-weight:600">hero-wireframe-v3.fig</div>
+                                        <div style="font-size:11px;color:var(--text-tertiary)">Figma · 1.2 MB</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:9px;padding:9px;background:var(--bg);border-radius:9px;cursor:pointer"
+                                    onclick="toast('📄 Opening copy-variations.docx')"><span
+                                        style="font-size:18px">📝</span>
+                                    <div>
+                                        <div style="font-size:12.5px;font-weight:600">copy-variations.docx</div>
+                                        <div style="font-size:11px;color:var(--text-tertiary)">Word · 48 KB</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="add-card" style="margin-top:6px;font-size:12px"
+                                onclick="toast('📎 File picker opened')">＋ Attach file</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" style="color:#ef4444;border-color:#fecaca"
+                    onclick="toast('🗑 Task deleted!');closeModal('card-detail')">🗑 Delete</button>
+                <div style="flex:1"></div>
+                <button class="mbtn mbtn-ghost" onclick="closeModal('card-detail')">Close</button>
+                <button class="mbtn mbtn-mint" onclick="toast('✅ Task marked done!');closeModal('card-detail')">✅ Mark
+                    Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑤ SETTINGS -->
+    <div class="overlay" id="ov-settings">
+        <div class="modal modal-lg">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:var(--bg)">⚙️</div>
+                <div>
+                    <div class="mhd-title">Settings</div>
+                    <div class="mhd-sub">Manage your account and preferences</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('settings')">✕</button>
+            </div>
+            <div class="stab-wrap">
+                <div class="stab-nav">
+                    <div class="stab-item active" onclick="switchTab(this,'profile')"><span
+                            class="stab-item-icon">👤</span> Profile</div>
+                    <div class="stab-item" onclick="switchTab(this,'notifs')"><span class="stab-item-icon">🔔</span>
+                        Notifications</div>
+                    <div class="stab-item" onclick="switchTab(this,'appearance')"><span class="stab-item-icon">🎨</span>
+                        Appearance</div>
+                    <div class="stab-item" onclick="switchTab(this,'security')"><span class="stab-item-icon">🔒</span>
+                        Security</div>
+                    <div class="stab-item" onclick="switchTab(this,'billing')"><span class="stab-item-icon">💳</span>
+                        Billing</div>
+                    <div class="stab-item" onclick="switchTab(this,'integrations')"><span
+                            class="stab-item-icon">🔌</span> Integrations</div>
+                </div>
+                <div class="stab-pane">
+                    <!-- PROFILE -->
+                    <div class="stab-pane-inner active" id="sp-profile">
+                        <div
+                            style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:16px;background:var(--bg);border-radius:14px">
+                            <div
+                                style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--rose));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0">
+                                JD</div>
+                            <div>
+                                <div style="font-size:16px;font-weight:700">Jamie Davis</div>
+                                <div style="font-size:13px;color:var(--text-tertiary)">Product Designer</div>
+                            </div>
+                            <button class="mbtn mbtn-ghost" style="margin-left:auto;height:32px;font-size:12.5px"
+                                onclick="toast('📸 Photo updated!')">Change Photo</button>
+                        </div>
+                        <div class="fgrid2">
+                            <div class="frow"><label class="flabel">First Name</label><input class="finput"
+                                    value="Jamie" /></div>
+                            <div class="frow"><label class="flabel">Last Name</label><input class="finput"
+                                    value="Davis" /></div>
+                        </div>
+                        <div class="frow"><label class="flabel">Email</label><input class="finput" type="email"
+                                value="jamie@company.io" /></div>
+                        <div class="frow"><label class="flabel">Role / Title</label><input class="finput"
+                                value="Product Designer" /></div>
+                        <div class="frow"><label class="flabel">Bio</label><textarea class="ftextarea"
+                                style="min-height:70px">Designing digital products with empathy and purpose. 5+ years in SaaS.</textarea>
+                        </div>
+                    </div>
+                    <!-- NOTIFICATIONS -->
+                    <div class="stab-pane-inner" id="sp-notifs">
+                        <div class="fsection">Email Notifications</div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="ti">Task assigned to me</div>
+                                <div class="ts">Get notified when a task is assigned to you</div>
+                            </div><label class="toggle"><input type="checkbox" checked><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="ti">Comment on my tasks</div>
+                                <div class="ts">When someone comments on a task you own</div>
+                            </div><label class="toggle"><input type="checkbox" checked><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="ti">Task due soon (24hr)</div>
+                                <div class="ts">Reminder when a task is due in 24 hours</div>
+                            </div><label class="toggle"><input type="checkbox" checked><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="ti">Project updates</div>
+                                <div class="ts">When a project milestone is reached</div>
+                            </div><label class="toggle"><input type="checkbox"><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="ti">Weekly digest</div>
+                                <div class="ts">A summary of your activity every Monday</div>
+                            </div><label class="toggle"><input type="checkbox" checked><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                    </div>
+                    <!-- APPEARANCE -->
+                    <div class="stab-pane-inner" id="sp-appearance">
+                        <div class="fsection">Theme</div>
+                        <div style="display:flex;gap:10px;margin-bottom:18px">
+                            <div
+                                style="flex:1;border:2px solid var(--sky);border-radius:12px;padding:12px;cursor:pointer;text-align:center;background:rgba(78,181,247,.05)">
+                                <div style="font-size:24px;margin-bottom:5px">☀️</div>
+                                <div style="font-size:13px;font-weight:700;color:var(--sky)">Light</div>
+                            </div>
+                            <div style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center"
+                                onclick="toast('🌙 Dark mode coming soon!')">
+                                <div style="font-size:24px;margin-bottom:5px">🌙</div>
+                                <div style="font-size:13px;font-weight:700">Dark</div>
+                            </div>
+                            <div style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center"
+                                onclick="toast('💻 Auto theme')">
+                                <div style="font-size:24px;margin-bottom:5px">💻</div>
+                                <div style="font-size:13px;font-weight:700">Auto</div>
+                            </div>
+                        </div>
+                        <div class="fsection">Accent Color</div>
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+                            <div style="width:34px;height:34px;border-radius:50%;background:var(--sky);cursor:pointer;border:3px solid var(--sky);box-shadow:0 0 0 3px rgba(78,181,247,.2)"
+                                onclick="toast('🎨 Sky blue selected')"></div>
+                            <div style="width:34px;height:34px;border-radius:50%;background:var(--coral);cursor:pointer"
+                                onclick="toast('🎨 Coral selected')"></div>
+                            <div style="width:34px;height:34px;border-radius:50%;background:var(--mint);cursor:pointer"
+                                onclick="toast('🎨 Mint selected')"></div>
+                            <div style="width:34px;height:34px;border-radius:50%;background:var(--violet);cursor:pointer"
+                                onclick="toast('🎨 Violet selected')"></div>
+                            <div style="width:34px;height:34px;border-radius:50%;background:var(--amber);cursor:pointer"
+                                onclick="toast('🎨 Amber selected')"></div>
+                        </div>
+                        <div class="fsection">Density</div>
+                        <div style="display:flex;gap:8px">
+                            <button class="mbtn mbtn-ghost" style="flex:1;height:36px"
+                                onclick="toast('📐 Comfortable layout')">Comfortable</button>
+                            <button class="mbtn mbtn-primary" style="flex:1;height:36px">Compact</button>
+                        </div>
+                    </div>
+                    <!-- SECURITY -->
+                    <div class="stab-pane-inner" id="sp-security">
+                        <div class="fsection">Change Password</div>
+                        <div class="frow"><label class="flabel">Current Password</label><input class="finput"
+                                type="password" placeholder="••••••••" /></div>
+                        <div class="frow"><label class="flabel">New Password</label><input class="finput"
+                                type="password" placeholder="At least 12 characters" /></div>
+                        <div class="frow"><label class="flabel">Confirm New Password</label><input class="finput"
+                                type="password" placeholder="Repeat new password" /></div>
+                        <div class="fdivider"></div>
+                        <div class="fsection">Two-Factor Auth</div>
+                        <div class="toggle-row">
+                            <div class="toggle-info">
+                                <div class="ti">Enable 2FA</div>
+                                <div class="ts">Add an extra layer of security to your account</div>
+                            </div><label class="toggle"><input type="checkbox"><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="fdivider"></div>
+                        <div class="fsection">Active Sessions</div>
+                        <div
+                            style="padding:12px;background:var(--bg);border-radius:10px;display:flex;align-items:center;gap:12px">
+                            <span style="font-size:22px">💻</span>
+                            <div>
+                                <div style="font-size:13px;font-weight:600">MacBook Pro · Chrome 122</div>
+                                <div style="font-size:12px;color:var(--text-tertiary)">Ho Chi Minh City · Active now
+                                </div>
+                            </div>
+                            <span
+                                style="margin-left:auto;font-size:12px;background:rgba(62,207,142,.1);color:var(--mint);font-weight:700;padding:3px 9px;border-radius:5px">Current</span>
+                        </div>
+                    </div>
+                    <!-- BILLING -->
+                    <div class="stab-pane-inner" id="sp-billing">
+                        <div
+                            style="background:linear-gradient(135deg,var(--dark),#1e293b);border-radius:16px;padding:20px;color:#fff;margin-bottom:18px">
+                            <div
+                                style="font-size:11px;letter-spacing:1px;opacity:.6;text-transform:uppercase;margin-bottom:6px">
+                                Current Plan</div>
+                            <div style="font-size:26px;font-weight:700;margin-bottom:4px">Pro ⚡</div>
+                            <div style="font-size:13px;opacity:.75">$12 / month per user · Renews Apr 11, 2026</div>
+                        </div>
+                        <div class="prog-row"><span class="prog-lbl">Team seats</span>
+                            <div class="prog-track">
+                                <div class="prog-fill"
+                                    style="width:50%;background:linear-gradient(90deg,var(--sky),var(--violet))"></div>
+                            </div><span class="prog-val" style="font-size:12px">5/10</span>
+                        </div>
+                        <div class="prog-row"><span class="prog-lbl">Storage</span>
+                            <div class="prog-track">
+                                <div class="prog-fill"
+                                    style="width:22%;background:linear-gradient(90deg,var(--mint),var(--sky))"></div>
+                            </div><span class="prog-val" style="font-size:12px">2.2 GB</span>
+                        </div>
+                        <div class="prog-row"><span class="prog-lbl">Projects</span>
+                            <div class="prog-track">
+                                <div class="prog-fill"
+                                    style="width:63%;background:linear-gradient(90deg,var(--amber),var(--coral))"></div>
+                            </div><span class="prog-val" style="font-size:12px">19/30</span>
+                        </div>
+                    </div>
+                    <!-- INTEGRATIONS -->
+                    <div class="stab-pane-inner" id="sp-integrations">
+                        <div class="toggle-row">
+                            <div class="toggle-info" style="display:flex;align-items:center;gap:10px"><span
+                                    style="font-size:20px">🔷</span>
+                                <div>
+                                    <div class="ti">Jira</div>
+                                    <div class="ts">Sync issues and stories bidirectionally</div>
+                                </div>
+                            </div><label class="toggle"><input type="checkbox" checked><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info" style="display:flex;align-items:center;gap:10px"><span
+                                    style="font-size:20px">💬</span>
+                                <div>
+                                    <div class="ti">Slack</div>
+                                    <div class="ts">Send task notifications to Slack channels</div>
+                                </div>
+                            </div><label class="toggle"><input type="checkbox" checked><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info" style="display:flex;align-items:center;gap:10px"><span
+                                    style="font-size:20px">📂</span>
+                                <div>
+                                    <div class="ti">Google Drive</div>
+                                    <div class="ts">Attach files directly from Drive</div>
+                                </div>
+                            </div><label class="toggle"><input type="checkbox"><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info" style="display:flex;align-items:center;gap:10px"><span
+                                    style="font-size:20px">🐙</span>
+                                <div>
+                                    <div class="ti">GitHub</div>
+                                    <div class="ts">Link PRs and commits to tasks</div>
+                                </div>
+                            </div><label class="toggle"><input type="checkbox" checked><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                        <div class="toggle-row">
+                            <div class="toggle-info" style="display:flex;align-items:center;gap:10px"><span
+                                    style="font-size:20px">📅</span>
+                                <div>
+                                    <div class="ti">Google Calendar</div>
+                                    <div class="ts">Show due dates in your calendar</div>
+                                </div>
+                            </div><label class="toggle"><input type="checkbox"><span
+                                    class="toggle-slider"></span></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('settings')">Cancel</button>
+                <button class="mbtn mbtn-primary" onclick="toast('✅ Settings saved!');closeModal('settings')">Save
+                    Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑥ CALENDAR -->
+    <div class="overlay" id="ov-calendar">
+        <div class="modal modal-md">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(255,197,66,.12)">📅</div>
+                <div>
+                    <div class="mhd-title">Calendar</div>
+                    <div class="mhd-sub">March 2026</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('calendar')">✕</button>
+            </div>
+            <div class="mbody">
+                <div class="cal-wrap">
+                    <div class="cal-nav">
+                        <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+                        <div class="cal-month" id="cal-month-label">March 2026</div>
+                        <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+                    </div>
+                    <div class="cal-grid" id="cal-grid">
+                        <div class="cal-head">Su</div>
+                        <div class="cal-head">Mo</div>
+                        <div class="cal-head">Tu</div>
+                        <div class="cal-head">We</div>
+                        <div class="cal-head">Th</div>
+                        <div class="cal-head">Fr</div>
+                        <div class="cal-head">Sa</div>
+                    </div>
+                </div>
+                <div class="fdivider"></div>
+                <div class="fsection">Upcoming Tasks</div>
+                <div style="display:flex;flex-direction:column;gap:6px">
+                    <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;background:rgba(255,107,107,.06);border-radius:10px;border-left:3px solid var(--coral);cursor:pointer"
+                        onclick="toast('📋 Opening task…')">
+                        <div style="font-size:12.5px;font-weight:700;color:var(--coral);min-width:40px">Mar 12</div>
+                        <div style="flex:1">
+                            <div style="font-size:13px;font-weight:600">Redesign hero section</div>
+                            <div style="font-size:11.5px;color:var(--text-tertiary)">🔴 High · JD AM</div>
+                        </div>
+                        <span
+                            style="font-size:11px;background:rgba(255,107,107,.1);color:var(--coral);font-weight:700;padding:2px 7px;border-radius:5px">Overdue</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;background:rgba(78,181,247,.06);border-radius:10px;border-left:3px solid var(--sky);cursor:pointer"
+                        onclick="toast('📋 Opening task…')">
+                        <div style="font-size:12.5px;font-weight:700;color:var(--sky);min-width:40px">Mar 13</div>
+                        <div style="flex:1">
+                            <div style="font-size:13px;font-weight:600">Usability testing sessions</div>
+                            <div style="font-size:11.5px;color:var(--text-tertiary)">🔴 High · JD AM</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;background:rgba(78,181,247,.06);border-radius:10px;border-left:3px solid var(--sky);cursor:pointer"
+                        onclick="toast('📋 Opening task…')">
+                        <div style="font-size:12.5px;font-weight:700;color:var(--sky);min-width:40px">Mar 14</div>
+                        <div style="flex:1">
+                            <div style="font-size:13px;font-weight:600">Onboarding email sequence</div>
+                            <div style="font-size:11.5px;color:var(--text-tertiary)">🟢 Low · SK LM</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;background:rgba(78,181,247,.06);border-radius:10px;border-left:3px solid var(--sky);cursor:pointer"
+                        onclick="toast('📋 Opening task…')">
+                        <div style="font-size:12.5px;font-weight:700;color:var(--sky);min-width:40px">Mar 15</div>
+                        <div style="flex:1">
+                            <div style="font-size:13px;font-weight:600">Component library in Figma</div>
+                            <div style="font-size:11.5px;color:var(--text-tertiary)">🔴 High · JD SK LM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('calendar')">Close</button>
+                <button class="mbtn mbtn-primary" onclick="openModal('new-task');closeModal('calendar')">＋ New
+                    Task</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑦ NOTIFICATIONS -->
+    <div class="overlay" id="ov-notifications">
+        <div class="modal modal-sm">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(255,107,107,.1)">🔔</div>
+                <div>
+                    <div class="mhd-title">Notifications</div>
+                    <div class="mhd-sub">4 unread</div>
+                </div>
+                <button class="mbtn mbtn-ghost" style="height:28px;font-size:12px;margin-left:auto;margin-right:8px"
+                    onclick="toast('✅ All marked read')">Mark all read</button>
+                <button class="mhd-close" onclick="closeModal('notifications')">✕</button>
+            </div>
+            <div class="mbody" style="padding:10px 16px">
+                <div class="notif-item unread">
+                    <div class="act-av"
+                        style="background:linear-gradient(135deg,var(--mint),var(--sky));width:32px;height:32px;font-size:11px;flex-shrink:0">
+                        SK</div>
+                    <div>
+                        <div class="notif-text"><b>Sara Kim</b> commented on <b>Redesign hero section</b></div>
+                        <div class="notif-time">2 minutes ago</div>
+                    </div>
+                    <div class="notif-dot"></div>
+                </div>
+                <div class="notif-item unread">
+                    <div class="act-ico"
+                        style="background:rgba(255,107,107,.1);font-size:16px;width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+                        ⚠️</div>
+                    <div>
+                        <div class="notif-text"><b>3 tasks</b> are overdue in Website Redesign</div>
+                        <div class="notif-time">1 hour ago</div>
+                    </div>
+                    <div class="notif-dot" style="background:var(--coral)"></div>
+                </div>
+                <div class="notif-item unread">
+                    <div class="act-av"
+                        style="background:linear-gradient(135deg,var(--sky),var(--violet));width:32px;height:32px;font-size:11px;flex-shrink:0">
+                        AM</div>
+                    <div>
+                        <div class="notif-text"><b>Alex Morgan</b> assigned you to <b>Fix Safari checkout bug</b></div>
+                        <div class="notif-time">3 hours ago</div>
+                    </div>
+                    <div class="notif-dot"></div>
+                </div>
+                <div class="notif-item unread">
+                    <div class="act-ico"
+                        style="background:rgba(62,207,142,.1);font-size:16px;width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+                        ✅</div>
+                    <div>
+                        <div class="notif-text"><b>Paul Knox</b> completed <b>Set up CI/CD pipeline</b></div>
+                        <div class="notif-time">Yesterday</div>
+                    </div>
+                    <div class="notif-dot" style="background:var(--mint)"></div>
+                </div>
+                <div class="notif-item">
+                    <div class="act-av"
+                        style="background:linear-gradient(135deg,var(--violet),#ec4899);width:32px;height:32px;font-size:11px;flex-shrink:0">
+                        LM</div>
+                    <div>
+                        <div class="notif-text"><b>Lisa Mao</b> mentioned you in <b>Brand Guidelines</b> project</div>
+                        <div class="notif-time">Mar 10</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot"><button class="mbtn mbtn-ghost" onclick="closeModal('notifications')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑧ MESSAGES -->
+    <div class="overlay" id="ov-messages">
+        <div class="modal modal-md">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(78,181,247,.1)">💬</div>
+                <div>
+                    <div class="mhd-title">Messages</div>
+                    <div class="mhd-sub">Team chat</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('messages')">✕</button>
+            </div>
+            <div class="mbody">
+                <div style="position:relative;margin-bottom:14px">
+                    <span
+                        style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px">🔍</span>
+                    <input class="finput" type="text" placeholder="Search messages…" style="padding-left:36px" />
+                </div>
+                <div class="act-item" style="cursor:pointer;padding:12px;border-radius:10px;margin-bottom:2px"
+                    onclick="toast('💬 Opening chat with Sara Kim…')">
+                    <div class="act-av"
+                        style="background:linear-gradient(135deg,var(--mint),var(--sky));width:38px;height:38px;font-size:13px;flex-shrink:0">
+                        SK</div>
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;justify-content:space-between"><span
+                                style="font-size:13.5px;font-weight:700">Sara Kim</span><span
+                                style="font-size:11.5px;color:var(--text-tertiary)">2m</span></div>
+                        <div
+                            style="font-size:13px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600">
+                            Can you check the Figma file I updated?</div>
+                    </div>
+                    <div
+                        style="width:8px;height:8px;border-radius:50%;background:var(--sky);margin-left:8px;flex-shrink:0;margin-top:4px">
+                    </div>
+                </div>
+                <div class="act-item" style="cursor:pointer;padding:12px;border-radius:10px;margin-bottom:2px"
+                    onclick="toast('💬 Opening chat with Alex Morgan…')">
+                    <div class="act-av"
+                        style="background:linear-gradient(135deg,var(--sky),var(--violet));width:38px;height:38px;font-size:13px;flex-shrink:0">
+                        AM</div>
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;justify-content:space-between"><span
+                                style="font-size:13.5px;font-weight:700">Alex Morgan</span><span
+                                style="font-size:11.5px;color:var(--text-tertiary)">1h</span></div>
+                        <div
+                            style="font-size:13px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                            The Stripe integration is ready for review!</div>
+                    </div>
+                </div>
+                <div class="act-item" style="cursor:pointer;padding:12px;border-radius:10px;margin-bottom:2px"
+                    onclick="toast('💬 Opening chat with Paul Knox…')">
+                    <div class="act-av"
+                        style="background:linear-gradient(135deg,var(--amber),var(--coral));width:38px;height:38px;font-size:13px;flex-shrink:0">
+                        PK</div>
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;justify-content:space-between"><span
+                                style="font-size:13.5px;font-weight:700">Paul Knox</span><span
+                                style="font-size:11.5px;color:var(--text-tertiary)">3h</span></div>
+                        <div
+                            style="font-size:13px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                            CI pipeline deployed successfully 🚀</div>
+                    </div>
+                </div>
+                <div class="act-item" style="cursor:pointer;padding:12px;border-radius:10px"
+                    onclick="toast('💬 Opening chat with Lisa Mao…')">
+                    <div class="act-av"
+                        style="background:linear-gradient(135deg,var(--violet),#ec4899);width:38px;height:38px;font-size:13px;flex-shrink:0">
+                        LM</div>
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;justify-content:space-between"><span
+                                style="font-size:13.5px;font-weight:700">Lisa Mao</span><span
+                                style="font-size:11.5px;color:var(--text-tertiary)">Yesterday</span></div>
+                        <div
+                            style="font-size:13px;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+                            Privacy policy draft is uploaded!</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('messages')">Close</button>
+                <button class="mbtn mbtn-primary" onclick="toast('✉️ New message')">＋ New Message</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑨ PROFILE -->
+    <div class="overlay" id="ov-profile">
+        <div class="modal modal-sm">
+            <div style="background:linear-gradient(135deg,var(--dark),#1e293b);padding:28px 24px;text-align:center">
+                <div
+                    style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--rose));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 12px;border:3px solid rgba(255,255,255,.15)">
+                    JD</div>
+                <div style="font-size:18px;font-weight:700;color:#fff">Jamie Davis</div>
+                <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px">Product Designer</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.4);margin-top:2px">jamie@company.io</div>
+            </div>
+            <div class="mbody" style="padding:8px 0">
+                <div style="display:flex;flex-direction:column">
+                    <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;transition:background .12s;font-size:13.5px;color:var(--text-primary)"
+                        onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"
+                        onclick="openModal('settings');closeModal('profile')"><span
+                            style="font-size:17px;width:24px;text-align:center">⚙️</span>Settings & Preferences</div>
+                    <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;transition:background .12s;font-size:13.5px;color:var(--text-primary)"
+                        onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"
+                        onclick="toast('👤 Opening profile…')"><span
+                            style="font-size:17px;width:24px;text-align:center">👤</span>View Public Profile</div>
+                    <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;transition:background .12s;font-size:13.5px;color:var(--text-primary)"
+                        onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background=''"
+                        onclick="toast('📊 Opening analytics…')"><span
+                            style="font-size:17px;width:24px;text-align:center">📊</span>My Activity</div>
+                    <div style="height:1px;background:var(--border);margin:6px 0"></div>
+                    <div style="display:flex;align-items:center;gap:11px;padding:11px 18px;cursor:pointer;transition:background .12s;font-size:13.5px;color:#ef4444"
+                        onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"
+                        onclick="toast('👋 Signing out…');closeModal('profile')"><span
+                            style="font-size:17px;width:24px;text-align:center">🚪</span>Sign Out</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑩ DASHBOARD -->
+    <div class="overlay" id="ov-dashboard">
+        <div class="modal modal-lg">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(78,181,247,.1)">🏠</div>
+                <div>
+                    <div class="mhd-title">Dashboard</div>
+                    <div class="mhd-sub">Overall project health · March 2026</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('dashboard')">✕</button>
+            </div>
+            <div class="mbody">
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+                    <div style="background:var(--bg);border-radius:12px;padding:14px;text-align:center">
+                        <div style="font-size:28px;font-weight:700;color:var(--sky)">79%</div>
+                        <div style="font-size:12px;color:var(--text-tertiary);margin-top:3px">On-time Rate</div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:12px;padding:14px;text-align:center">
+                        <div style="font-size:28px;font-weight:700;color:var(--mint)">11</div>
+                        <div style="font-size:12px;color:var(--text-tertiary);margin-top:3px">Tasks Completed</div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:12px;padding:14px;text-align:center">
+                        <div style="font-size:28px;font-weight:700;color:var(--coral)">3</div>
+                        <div style="font-size:12px;color:var(--text-tertiary);margin-top:3px">Overdue</div>
+                    </div>
+                </div>
+                <div class="fsection">Priority Breakdown</div>
+                <div style="margin-bottom:16px">
+                    <div class="prog-row"><span class="prog-lbl">🔴 High</span>
+                        <div class="prog-track">
+                            <div class="prog-fill"
+                                style="width:50%;background:linear-gradient(90deg,var(--coral),var(--rose))"></div>
+                        </div><span class="prog-val">12</span>
+                    </div>
+                    <div class="prog-row"><span class="prog-lbl">🟡 Medium</span>
+                        <div class="prog-track">
+                            <div class="prog-fill"
+                                style="width:33%;background:linear-gradient(90deg,var(--amber),var(--coral))"></div>
+                        </div><span class="prog-val">8</span>
+                    </div>
+                    <div class="prog-row"><span class="prog-lbl">🟢 Low</span>
+                        <div class="prog-track">
+                            <div class="prog-fill"
+                                style="width:17%;background:linear-gradient(90deg,var(--mint),var(--sky))"></div>
+                        </div><span class="prog-val">4</span>
+                    </div>
+                </div>
+                <div class="fsection">Recent Activity</div>
+                <div class="act-item">
+                    <div class="act-av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">JD</div>
+                    <div>
+                        <div class="act-text"><b>Jamie Davis</b> updated <b>Redesign hero section</b></div>
+                        <div class="act-time">5 min ago</div>
+                    </div>
+                </div>
+                <div class="act-item">
+                    <div class="act-av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK</div>
+                    <div>
+                        <div class="act-text"><b>Sara Kim</b> completed <b>User interview report</b></div>
+                        <div class="act-time">1 hr ago</div>
+                    </div>
+                </div>
+                <div class="act-item">
+                    <div class="act-av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">AM</div>
+                    <div>
+                        <div class="act-text"><b>Alex Morgan</b> moved <b>Dark mode</b> to In Review</div>
+                        <div class="act-time">2 hr ago</div>
+                    </div>
+                </div>
+                <div class="act-item" style="border-bottom:none">
+                    <div class="act-av" style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
+                    <div>
+                        <div class="act-text"><b>Paul Knox</b> pushed to <b>stripe-integration</b> branch</div>
+                        <div class="act-time">3 hr ago</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot"><button class="mbtn mbtn-ghost" onclick="closeModal('dashboard')">Close</button></div>
+        </div>
+    </div>
+
+    <!-- ⑪ PROJECTS -->
+    <div class="overlay" id="ov-projects">
+        <div class="modal modal-lg">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(255,197,66,.1)">📁</div>
+                <div>
+                    <div class="mhd-title">Projects</div>
+                    <div class="mhd-sub">5 active projects</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('projects')">✕</button>
+            </div>
+            <div class="mbody">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div style="border:1.5px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s"
+                        onmouseover="this.style.borderColor='var(--coral)';this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'"
+                        onclick="toast('🌐 Opening Website Redesign…')">
+                        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+                            <div style="width:10px;height:10px;border-radius:50%;background:var(--coral);flex-shrink:0">
+                            </div>
+                            <div style="font-size:14px;font-weight:700">Website Redesign</div>
+                        </div>
+                        <div style="display:flex;gap:14px;margin-bottom:10px">
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--text-primary)">12</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Tasks</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--mint)">5</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Done</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--coral)">2</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Overdue</div>
+                            </div>
+                        </div>
+                        <div style="height:5px;background:var(--bg);border-radius:3px;overflow:hidden">
+                            <div
+                                style="height:100%;width:42%;background:linear-gradient(90deg,var(--coral),var(--rose));border-radius:3px">
+                            </div>
+                        </div>
+                        <div style="font-size:11.5px;color:var(--text-tertiary);margin-top:5px">42% complete</div>
+                    </div>
+                    <div style="border:1.5px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s"
+                        onmouseover="this.style.borderColor='var(--mint)';this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'"
+                        onclick="toast('📱 Opening Mobile App v2…')">
+                        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+                            <div style="width:10px;height:10px;border-radius:50%;background:var(--mint);flex-shrink:0">
+                            </div>
+                            <div style="font-size:14px;font-weight:700">Mobile App v2</div>
+                        </div>
+                        <div style="display:flex;gap:14px;margin-bottom:10px">
+                            <div>
+                                <div style="font-size:20px;font-weight:700">8</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Tasks</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--mint)">2</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Done</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--coral)">0</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Overdue</div>
+                            </div>
+                        </div>
+                        <div style="height:5px;background:var(--bg);border-radius:3px;overflow:hidden">
+                            <div
+                                style="height:100%;width:25%;background:linear-gradient(90deg,var(--mint),var(--sky));border-radius:3px">
+                            </div>
+                        </div>
+                        <div style="font-size:11.5px;color:var(--text-tertiary);margin-top:5px">25% complete</div>
+                    </div>
+                    <div style="border:1.5px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s"
+                        onmouseover="this.style.borderColor='var(--amber)';this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'"
+                        onclick="toast('🎨 Opening Brand Guidelines…')">
+                        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+                            <div style="width:10px;height:10px;border-radius:50%;background:var(--amber);flex-shrink:0">
+                            </div>
+                            <div style="font-size:14px;font-weight:700">Brand Guidelines</div>
+                        </div>
+                        <div style="display:flex;gap:14px;margin-bottom:10px">
+                            <div>
+                                <div style="font-size:20px;font-weight:700">6</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Tasks</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--mint)">4</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Done</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--coral)">0</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Overdue</div>
+                            </div>
+                        </div>
+                        <div style="height:5px;background:var(--bg);border-radius:3px;overflow:hidden">
+                            <div
+                                style="height:100%;width:67%;background:linear-gradient(90deg,var(--amber),var(--coral));border-radius:3px">
+                            </div>
+                        </div>
+                        <div style="font-size:11.5px;color:var(--text-tertiary);margin-top:5px">67% complete</div>
+                    </div>
+                    <div style="border:1.5px solid var(--border);border-radius:14px;padding:16px;cursor:pointer;transition:all .2s"
+                        onmouseover="this.style.borderColor='var(--sky)';this.style.transform='translateY(-2px)'"
+                        onmouseout="this.style.borderColor='var(--border)';this.style.transform='none'"
+                        onclick="toast('🔌 Opening API Integration…')">
+                        <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+                            <div style="width:10px;height:10px;border-radius:50%;background:var(--sky);flex-shrink:0">
+                            </div>
+                            <div style="font-size:14px;font-weight:700">API Integration</div>
+                        </div>
+                        <div style="display:flex;gap:14px;margin-bottom:10px">
+                            <div>
+                                <div style="font-size:20px;font-weight:700">9</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Tasks</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--mint)">3</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Done</div>
+                            </div>
+                            <div>
+                                <div style="font-size:20px;font-weight:700;color:var(--coral)">1</div>
+                                <div style="font-size:11px;color:var(--text-tertiary)">Overdue</div>
+                            </div>
+                        </div>
+                        <div style="height:5px;background:var(--bg);border-radius:3px;overflow:hidden">
+                            <div
+                                style="height:100%;width:33%;background:linear-gradient(90deg,var(--sky),var(--violet));border-radius:3px">
+                            </div>
+                        </div>
+                        <div style="font-size:11.5px;color:var(--text-tertiary);margin-top:5px">33% complete</div>
+                    </div>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('projects')">Close</button>
+                <button class="mbtn mbtn-primary" onclick="openModal('new-project');closeModal('projects')">＋ New
+                    Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑫ NEW PROJECT -->
+    <div class="overlay" id="ov-new-project">
+        <div class="modal modal-sm">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(255,197,66,.1)">📁</div>
+                <div>
+                    <div class="mhd-title">New Project</div>
+                    <div class="mhd-sub">Start something great</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('new-project')">✕</button>
+            </div>
+            <div class="mbody">
+                <div class="frow"><label class="flabel">Project Name *</label><input class="finput" type="text"
+                        placeholder="e.g. Q3 Marketing Campaign…" /></div>
+                <div class="frow"><label class="flabel">Description</label><textarea class="ftextarea"
+                        placeholder="What is this project about?"></textarea></div>
+                <div class="frow">
+                    <label class="flabel">Color</label>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap">
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--coral);cursor:pointer;border:3px solid var(--coral);box-shadow:0 0 0 2px rgba(255,107,107,.3)"
+                            onclick="toast('🎨 Coral selected')"></div>
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--mint);cursor:pointer"
+                            onclick="toast('🎨 Mint selected')"></div>
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--sky);cursor:pointer"
+                            onclick="toast('🎨 Sky selected')"></div>
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--amber);cursor:pointer"
+                            onclick="toast('🎨 Amber selected')"></div>
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--violet);cursor:pointer"
+                            onclick="toast('🎨 Violet selected')"></div>
+                        <div style="width:32px;height:32px;border-radius:50%;background:var(--rose);cursor:pointer"
+                            onclick="toast('🎨 Rose selected')"></div>
+                    </div>
+                </div>
+                <div class="frow"><label class="flabel">Due Date</label><input class="finput" type="date" /></div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('new-project')">Cancel</button>
+                <button class="mbtn mbtn-primary" onclick="toast('📁 Project created!');closeModal('new-project')">＋
+                    Create Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ⑬ REPORTS -->
+    <div class="overlay" id="ov-reports">
+        <div class="modal modal-md">
+            <div class="mhd">
+                <div class="mhd-icon" style="background:rgba(62,207,142,.1)">📊</div>
+                <div>
+                    <div class="mhd-title">Reports</div>
+                    <div class="mhd-sub">Website Redesign · March 2026</div>
+                </div>
+                <button class="mhd-close" onclick="closeModal('reports')">✕</button>
+            </div>
+            <div class="mbody">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
+                    <div style="background:var(--bg);border-radius:12px;padding:14px">
+                        <div style="font-size:24px;font-weight:700;color:var(--mint)">46%</div>
+                        <div style="font-size:12px;color:var(--text-tertiary);margin-top:2px">Completion Rate</div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:12px;padding:14px">
+                        <div style="font-size:24px;font-weight:700;color:var(--sky)">32h</div>
+                        <div style="font-size:12px;color:var(--text-tertiary);margin-top:2px">Hours Logged</div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:12px;padding:14px">
+                        <div style="font-size:24px;font-weight:700;color:var(--amber)">8d</div>
+                        <div style="font-size:12px;color:var(--text-tertiary);margin-top:2px">Avg Task Duration</div>
+                    </div>
+                    <div style="background:var(--bg);border-radius:12px;padding:14px">
+                        <div style="font-size:24px;font-weight:700;color:var(--coral)">3</div>
+                        <div style="font-size:12px;color:var(--text-tertiary);margin-top:2px">Blocked Tasks</div>
+                    </div>
+                </div>
+                <div class="fsection">Velocity by Week</div>
+                <div style="display:flex;align-items:flex-end;gap:8px;height:90px;margin-bottom:14px">
+                    <div style="flex:1;display:flex;flex-direction:column;gap:5px;align-items:center">
+                        <div
+                            style="width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--sky),var(--violet));height:55%">
+                        </div><span style="font-size:10.5px;color:var(--text-tertiary)">W1</span>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:5px;align-items:center">
+                        <div
+                            style="width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--sky),var(--violet));height:75%">
+                        </div><span style="font-size:10.5px;color:var(--text-tertiary)">W2</span>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:5px;align-items:center">
+                        <div
+                            style="width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--sky),var(--violet));height:60%">
+                        </div><span style="font-size:10.5px;color:var(--text-tertiary)">W3</span>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:5px;align-items:center">
+                        <div
+                            style="width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--sky),var(--violet));height:90%">
+                        </div><span style="font-size:10.5px;color:var(--text-tertiary)">W4</span>
+                    </div>
+                    <div style="flex:1;display:flex;flex-direction:column;gap:5px;align-items:center">
+                        <div
+                            style="width:100%;border-radius:5px 5px 0 0;background:linear-gradient(180deg,var(--sky),var(--violet));height:100%">
+                        </div><span style="font-size:10.5px;color:var(--text-tertiary)">W5</span>
+                    </div>
+                </div>
+                <div class="fsection">By Assignee</div>
+                <div class="prog-row"><span style="display:flex;align-items:center;gap:7px;width:90px;font-size:12.5px">
+                        <div
+                            style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--rose));font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            JD</div>Jamie
+                    </span>
+                    <div class="prog-track">
+                        <div class="prog-fill"
+                            style="width:71%;background:linear-gradient(90deg,var(--coral),var(--rose))"></div>
+                    </div><span class="prog-val">5t</span>
+                </div>
+                <div class="prog-row"><span style="display:flex;align-items:center;gap:7px;width:90px;font-size:12.5px">
+                        <div
+                            style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--mint),var(--sky));font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            SK</div>Sara
+                    </span>
+                    <div class="prog-track">
+                        <div class="prog-fill"
+                            style="width:57%;background:linear-gradient(90deg,var(--mint),var(--sky))"></div>
+                    </div><span class="prog-val">4t</span>
+                </div>
+                <div class="prog-row"><span style="display:flex;align-items:center;gap:7px;width:90px;font-size:12.5px">
+                        <div
+                            style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--sky),var(--violet));font-size:9px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                            AM</div>Alex
+                    </span>
+                    <div class="prog-track">
+                        <div class="prog-fill"
+                            style="width:43%;background:linear-gradient(90deg,var(--sky),var(--violet))"></div>
+                    </div><span class="prog-val">3t</span>
+                </div>
+            </div>
+            <div class="mfoot">
+                <button class="mbtn mbtn-ghost" onclick="closeModal('reports')">Close</button>
+                <button class="mbtn mbtn-primary" onclick="toast('📥 Report exported!')">⬇ Export PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"><span id="toast-icon">✅</span><span id="toast-msg">Done</span></div>
+    <script>lucide.createIcons()</script>
+    <script src="../scripts/home.js"></script>
+</body>
+
+</html>
