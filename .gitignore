@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+bin/
+lib/
+include/
+.env
+.docker-compose.yml.swp
+node_modules/
+.DS_Store
