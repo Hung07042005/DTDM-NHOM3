@@ -1,193 +1,155 @@
-/* ── PAGE ROUTING ── */
-function showPage(id) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById('page-' + id).classList.add('active');
+/* ── MODAL ── */
+function openModal(id) {
+    document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
+    const el = document.getElementById('ov-' + id);
+    if (el) el.classList.add('show');
 }
-function goToRegister() {
-    showPage('register');
-    setRegStep(1);
+function closeModal(id) {
+    const el = document.getElementById('ov-' + id);
+    if (el) el.classList.remove('show');
 }
-function goToLogin() { showPage('login'); }
+document.querySelectorAll('.overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('show') });
+});
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.overlay.show').forEach(o => o.classList.remove('show'));
+});
 
-/* ── LOGIN TAB ── */
-function showTab(t) {
-    document.querySelectorAll('.auth-tab').forEach((b, i) => {
-        b.classList.toggle('active', (i === 0 && t === 'login') || (i === 1 && t !== 'login'));
+/* ── CARD DETAIL ── */
+function openCardDetail(title, sub, desc) {
+    document.getElementById('cd-title').textContent = title;
+    document.getElementById('cd-sub').textContent = sub;
+    document.getElementById('cd-desc').value = desc;
+    openModal('card-detail');
+}
+
+/* ── SIDEBAR ACTIVE ── */
+function setActive(el) {
+    document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+}
+
+/* ── FILTER PILL ── */
+function toggleFilter(el) {
+    document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+}
+
+/* ── PRIORITY ── */
+function selPrio(btn, type) {
+    const wrap = btn.closest('.prio-row');
+    wrap.querySelectorAll('.prio-btn').forEach(b => b.classList.remove('sel-high', 'sel-med', 'sel-low'));
+    btn.classList.add('sel-' + type);
+}
+
+/* ── IMPORT SOURCE ── */
+function selImport(el) {
+    document.querySelectorAll('.import-src').forEach(s => {
+        s.classList.remove('sel');
+        Array.from(s.children).forEach(child => {
+            if (child.textContent === '✓') child.remove();
+        });
     });
-    if (t !== 'login') goToRegister();
-}
-
-/* ── SOCIAL LOGIN ── */
-function socialLogin(provider) {
-    showToast('🔗 Connecting to ' + provider + '...');
-    setTimeout(() => {
-        showToast('✅ Signed in with ' + provider + '!');
-        setTimeout(() => goToApp(), 900);
-    }, 1200);
-}
-
-/* ── LOGIN ── */
-function doLogin() {
-    const btn = document.getElementById('login-btn');
-    const email = document.getElementById('login-email').value.trim();
-    const pw = document.getElementById('login-pw').value;
-    if (!email || !pw) { showToast('⚠️ Please fill in all fields'); return; }
-    btn.classList.add('loading');
-    setTimeout(() => {
-        btn.classList.remove('loading');
-        showToast('✅ Welcome back, Jamie!');
-        setTimeout(() => goToApp(), 800);
-    }, 1600);
-}
-
-/* ── REGISTER STEPS ── */
-let currentStep = 1;
-function setRegStep(n) {
-    currentStep = n;
-    for (let i = 1; i <= 3; i++) {
-        const step = document.getElementById('step-' + i);
-        const panel = document.getElementById('reg-step-' + i);
-        step.classList.remove('active', 'done');
-        if (i < n) { step.classList.add('done'); step.querySelector('.step-num').textContent = '✓'; }
-        if (i === n) { step.classList.add('active'); step.querySelector('.step-num').textContent = i; }
-        if (i > n) { step.querySelector('.step-num').textContent = i; }
-        panel.classList.toggle('active', i === n);
-        if (i < 3) {
-            const line = document.getElementById('line-' + i);
-            if (line) line.classList.toggle('done', i < n);
-        }
-    }
-    const titles = ['Create your account', 'Set up your profile', 'Almost there! 🎉'];
-    const subs = [
-        'Already have an account? <a onclick="goToLogin()">Sign in</a>',
-        'Tell us a bit about yourself',
-        'Choose how you want to work'
-    ];
-    document.getElementById('reg-title').textContent = titles[n - 1];
-    document.getElementById('reg-sub').innerHTML = subs[n - 1];
-}
-
-function nextStep(n) {
-    if (n === 2) {
-        const email = document.getElementById('reg-email').value.trim();
-        const pw = document.getElementById('reg-pw').value;
-        const fname = document.getElementById('reg-fname').value.trim();
-        if (!fname || !email || !pw) { showToast('⚠️ Please complete all fields'); return; }
-        if (!document.getElementById('agree').checked) { showToast('⚠️ Please accept the terms'); return; }
-    }
-    setRegStep(n);
-    document.querySelector('.auth-right').scrollTop = 0;
-}
-
-function doRegister() {
-    const btn = document.getElementById('reg-submit-btn');
-    btn.classList.add('loading');
-    setTimeout(() => {
-        btn.classList.remove('loading');
-        showToast('🎉 Account created! Welcome to TaskFlow!');
-        setTimeout(() => goToApp(), 1000);
-    }, 2000);
-}
-
-/* ── GO TO APP ── */
-function goToApp() {
-    // Redirect to the main app (taskflow.html)
-    window.location.href = 'taskflow.html';
-}
-
-/* ── VALIDATE EMAIL ── */
-function validateEmail(input) {
-    const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
-    const iconId = input.id === 'login-email' ? 'login-email-icon' : 'reg-email-icon';
-    const icon = document.getElementById(iconId);
-    if (input.value.length === 0) {
-        input.className = 'form-input'; icon.textContent = '📧'; return;
-    }
-    input.className = 'form-input ' + (valid ? 'success' : 'error');
-    icon.textContent = valid ? '✅' : '❌';
-}
-
-/* ── PASSWORD STRENGTH ── */
-function checkStrength(val) {
-    const bars = ['pb1', 'pb2', 'pb3', 'pb4'];
-    bars.forEach(id => { document.getElementById(id).className = 'pw-bar'; });
-    const lbl = document.getElementById('pw-label');
-    if (!val) { lbl.className = 'pw-label'; lbl.textContent = 'Enter a password'; return; }
-    let score = 0;
-    if (val.length >= 8) score++;
-    if (/[A-Z]/.test(val)) score++;
-    if (/[0-9]/.test(val)) score++;
-    if (/[^A-Za-z0-9]/.test(val)) score++;
-    const levels = [
-        { bars: 1, cls: 'weak', text: '⚠️ Too weak' },
-        { bars: 2, cls: 'fair', text: '🔶 Fair' },
-        { bars: 3, cls: 'strong', text: '✅ Good' },
-        { bars: 4, cls: 'strong', text: '💪 Strong' },
-    ];
-    const lvl = levels[Math.max(0, score - 1)];
-    for (let i = 0; i < lvl.bars; i++) document.getElementById(bars[i]).classList.add(lvl.cls);
-    lbl.className = 'pw-label ' + lvl.cls;
-    lbl.textContent = lvl.text;
-}
-
-/* ── TOGGLE PASSWORD VISIBILITY ── */
-function togglePw(inputId, iconId) {
-    const input = document.getElementById(inputId);
-    const icon = document.getElementById(iconId);
-    const shown = input.type === 'text';
-    input.type = shown ? 'password' : 'text';
-    icon.textContent = shown ? '👁' : '🙈';
-}
-
-/* ── AVATAR SELECTOR ── */
-function selectAv(el) {
-    el.closest('.avatar-grid').querySelectorAll('.av-option').forEach(a => a.classList.remove('sel'));
     el.classList.add('sel');
+    const tick = document.createElement('div');
+    tick.style.cssText = 'margin-left:auto;width:20px;height:20px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700';
+    tick.textContent = '✓';
+    el.appendChild(tick);
 }
 
-/* ── PLAN SELECTOR ── */
-function selectPlan(el) {
-    el.closest('.plan-grid').querySelectorAll('.plan-card').forEach(p => p.classList.remove('sel'));
-    el.classList.add('sel');
+/* ── CHECKLIST ── */
+function toggleCheck(el) {
+    const box = el.querySelector('.check-box');
+    const lbl = el.querySelector('.check-label');
+    box.classList.toggle('checked');
+    box.textContent = box.classList.contains('checked') ? '✓' : '';
+    lbl.classList.toggle('done');
 }
 
-/* ── FORGOT PASSWORD ── */
-function showForgot() {
-    document.getElementById('forgot-overlay').classList.add('show');
-    document.getElementById('forgot-success').style.display = 'none';
+/* ── SETTINGS TABS ── */
+function switchTab(el, id) {
+    document.querySelectorAll('.stab-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.stab-pane-inner').forEach(p => p.classList.remove('active'));
+    const pane = document.getElementById('sp-' + id);
+    if (pane) pane.classList.add('active');
 }
-function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
-function sendReset() {
-    const email = document.getElementById('forgot-email').value.trim();
-    if (!email) { showToast('⚠️ Enter your email first'); return; }
-    const btn = document.querySelector('.forgot-card .btn-submit');
-    btn.classList.add('loading');
-    setTimeout(() => {
-        btn.classList.remove('loading');
-        const el = document.getElementById('forgot-success');
-        el.style.display = 'flex';
-        showToast('📧 Reset link sent to ' + email);
-        setTimeout(hideForgot, 2000);
-    }, 1500);
+
+/* ── CALENDAR ── */
+let calYear = 2026, calMonth = 2;
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const taskDays = { 12: true, 13: true, 14: true, 15: true, 17: true, 18: true, 19: true, 20: true, 22: true };
+function renderCal() {
+    const grid = document.getElementById('cal-grid');
+    document.getElementById('cal-month-label').textContent = `${months[calMonth]} ${calYear}`;
+    const heads = grid.querySelectorAll('.cal-head');
+    grid.innerHTML = '';
+    heads.forEach(h => grid.appendChild(h.cloneNode(true)));
+    const first = new Date(calYear, calMonth, 1).getDay();
+    const days = new Date(calYear, calMonth + 1, 0).getDate();
+    const prevDays = new Date(calYear, calMonth, 0).getDate();
+    for (let i = 0; i < first; i++) {
+        const d = document.createElement('div'); d.className = 'cal-day other-month'; d.textContent = prevDays - first + i + 1; grid.appendChild(d);
+    }
+    const today = new Date();
+    for (let i = 1; i <= days; i++) {
+        const d = document.createElement('div'); d.className = 'cal-day'; d.textContent = i;
+        if (calYear === today.getFullYear() && calMonth === today.getMonth() && i === today.getDate()) d.classList.add('today');
+        if (calMonth === 2 && taskDays[i]) d.classList.add('has-task');
+        d.onclick = () => toast(`calendar ${months[calMonth]} ${i}, ${calYear}`);
+        grid.appendChild(d);
+    }
+    const rem = (first + days) % 7;
+    if (rem > 0) for (let i = 1; i <= 7 - rem; i++) { const d = document.createElement('div'); d.className = 'cal-day other-month'; d.textContent = i; grid.appendChild(d); }
 }
+function changeMonth(dir) { calMonth += dir; if (calMonth > 11) { calMonth = 0; calYear++; } else if (calMonth < 0) { calMonth = 11; calYear--; } renderCal(); }
+renderCal();
 
 /* ── TOAST ── */
-let _tt;
-function showToast(msg) {
-    const toast = document.getElementById('toast');
-    const emoji = msg.match(/^([\u{1F000}-\u{1FFFF}][\uFE0F\u20E3]?|[\u2600-\u27BF][\uFE0F]?|\S+\s)/u);
-    document.getElementById('toast-icon').textContent = emoji ? emoji[0] : 'ℹ️';
-    document.getElementById('toast-msg').textContent = msg.replace(/^([\u{1F000}-\u{1FFFF}][\uFE0F\u20E3]?|[\u2600-\u27BF][\uFE0F]?|\S+\s)/u, '').trim();
-    toast.classList.add('show');
-    clearTimeout(_tt);
-    _tt = setTimeout(() => toast.classList.remove('show'), 2800);
+let _t;
+function toast(msg) {
+    const t = document.getElementById('toast');
+    const icons = {
+        'circle-check': true,
+        'x': true,
+        'triangle-alert': true,
+        'clipboard-minus': true,
+        'link': true,
+        'message-circle': true,
+        'mail': true,
+        'folder': true,
+        'mail-open': true,      // 📨
+        'bar-chart': true,      // 📊
+        'inbox': true,          // 📥
+        'hand': true,           // 👋
+        'camera': true,         // 📸
+        'folder-open': true,    // 📂
+        'paperclip': true,      // 📎
+        'globe': true,          // 🌐
+        'smartphone': true,     // 📱
+        'palette': true,        // 🎨
+        'plug': true,           // 🔌
+        'calendar': true,
+        'arrow-up': true,       // ⬆
+        'user': true,           // 👤
+        'trash': true,           // 🗑
+        'file-text': true,        // 📄
+        'moon': true,
+        'sun': true,
+        'pencil': true,          // ✏️
+    };
+    const m = msg.match(/^([\u{1F300}-\u{1FFFF}][\uFE0F]?|[\u2600-\u27BF][\uFE0F]?|[⬆⬇])/u);
+    document.getElementById('toast-icon').textContent = m ? m[0] : 'ℹ️';
+    document.getElementById('toast-msg').textContent = m ? msg.slice(m[0].length).trim() : msg;
+    t.classList.add('show');
+    clearTimeout(_t); _t = setTimeout(() => t.classList.remove('show'), 2500);
 }
-
-/* ── KEYBOARD ── */
-document.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-        const page = document.querySelector('.page.active');
-        if (page.id === 'page-login') doLogin();
-    }
-    if (e.key === 'Escape') hideForgot();
+const svgString = lucide.icons['bell'].toSvg({
+    width: 24,
+    height: 24,
+    color: '#4eb5f7',
+    'stroke-width': 1.5
 });
+
+
+document.getElementById('my-div').innerHTML = svgString;
