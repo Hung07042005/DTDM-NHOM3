@@ -137,6 +137,7 @@ function toast(msg) {
         'moon': true,
         'sun': true,
         'pencil': true,          // ✏️
+
     };
     const m = msg.match(/^([\u{1F300}-\u{1FFFF}][\uFE0F]?|[\u2600-\u27BF][\uFE0F]?|[⬆⬇])/u);
     document.getElementById('toast-icon').textContent = m ? m[0] : 'ℹ️';
