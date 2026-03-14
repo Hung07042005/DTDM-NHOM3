@@ -2,7 +2,7 @@
 function openModal(id) {
     document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show'));
     const el = document.getElementById('ov-' + id);
-    if (el) el.classList.add('show');
+    if (el) { el.classList.add('show'); lucide.createIcons(); }
 }
 function closeModal(id) {
     const el = document.getElementById('ov-' + id);
@@ -37,24 +37,14 @@ function toggleFilter(el) {
 
 /* ── PRIORITY ── */
 function selPrio(btn, type) {
-    const wrap = btn.closest('.prio-row');
-    wrap.querySelectorAll('.prio-btn').forEach(b => b.classList.remove('sel-high', 'sel-med', 'sel-low'));
+    btn.closest('.prio-row').querySelectorAll('.prio-btn').forEach(b => b.classList.remove('sel-high', 'sel-med', 'sel-low'));
     btn.classList.add('sel-' + type);
 }
 
-/* ── IMPORT SOURCE ── */
+/* ── IMPORT ── */
 function selImport(el) {
-    document.querySelectorAll('.import-src').forEach(s => {
-        s.classList.remove('sel');
-        Array.from(s.children).forEach(child => {
-            if (child.textContent === '✓') child.remove();
-        });
-    });
+    document.querySelectorAll('.import-src').forEach(s => s.classList.remove('sel'));
     el.classList.add('sel');
-    const tick = document.createElement('div');
-    tick.style.cssText = 'margin-left:auto;width:20px;height:20px;border-radius:50%;background:var(--sky);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700';
-    tick.textContent = '✓';
-    el.appendChild(tick);
 }
 
 /* ── CHECKLIST ── */
@@ -75,28 +65,33 @@ function switchTab(el, id) {
     if (pane) pane.classList.add('active');
 }
 
+/* ── ACTIVITY FILTER ── */
+function actFilter(el) {
+    document.querySelectorAll('.act-fpill').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    toast('Filtering: ' + el.textContent.trim());
+}
+
 /* ── CALENDAR ── */
 let calYear = 2026, calMonth = 2;
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const taskDays = { 12: true, 13: true, 14: true, 15: true, 17: true, 18: true, 19: true, 20: true, 22: true };
+const taskDays = { 12: 1, 13: 1, 14: 1, 15: 1, 17: 1, 18: 1, 19: 1, 20: 1, 22: 1 };
 function renderCal() {
     const grid = document.getElementById('cal-grid');
     document.getElementById('cal-month-label').textContent = `${months[calMonth]} ${calYear}`;
-    const heads = grid.querySelectorAll('.cal-head');
+    const heads = Array.from(grid.querySelectorAll('.cal-head'));
     grid.innerHTML = '';
-    heads.forEach(h => grid.appendChild(h.cloneNode(true)));
+    heads.forEach(h => grid.appendChild(h));
     const first = new Date(calYear, calMonth, 1).getDay();
     const days = new Date(calYear, calMonth + 1, 0).getDate();
     const prevDays = new Date(calYear, calMonth, 0).getDate();
-    for (let i = 0; i < first; i++) {
-        const d = document.createElement('div'); d.className = 'cal-day other-month'; d.textContent = prevDays - first + i + 1; grid.appendChild(d);
-    }
+    for (let i = 0; i < first; i++) { const d = document.createElement('div'); d.className = 'cal-day other-month'; d.textContent = prevDays - first + i + 1; grid.appendChild(d); }
     const today = new Date();
     for (let i = 1; i <= days; i++) {
         const d = document.createElement('div'); d.className = 'cal-day'; d.textContent = i;
         if (calYear === today.getFullYear() && calMonth === today.getMonth() && i === today.getDate()) d.classList.add('today');
         if (calMonth === 2 && taskDays[i]) d.classList.add('has-task');
-        d.onclick = () => toast(`calendar ${months[calMonth]} ${i}, ${calYear}`);
+        d.onclick = () => toast(`${months[calMonth]} ${i}, ${calYear}`);
         grid.appendChild(d);
     }
     const rem = (first + days) % 7;
@@ -105,52 +100,37 @@ function renderCal() {
 function changeMonth(dir) { calMonth += dir; if (calMonth > 11) { calMonth = 0; calYear++; } else if (calMonth < 0) { calMonth = 11; calYear--; } renderCal(); }
 renderCal();
 
+/* ── HEATMAP (My Activity) ── */
+(function buildHeatmap() {
+    const grid = document.getElementById('act-heatmap');
+    if (!grid) return;
+    const levels = ['', 'h1', 'h2', 'h3', 'h4'];
+    for (let w = 0; w < 12; w++) {
+        const col = document.createElement('div'); col.className = 'heatmap-col';
+        for (let d = 0; d < 7; d++) {
+            const cell = document.createElement('div');
+            const r = Math.random();
+            let lv = 0;
+            if (r < .35) lv = 0; else if (r < .55) lv = 1; else if (r < .72) lv = 2; else if (r < .88) lv = 3; else lv = 4;
+            if (w < 4 && lv > 2) lv = Math.floor(lv * .6);
+            cell.className = 'hm-cell ' + (levels[lv] || '');
+            cell.title = `${lv} contribution${lv !== 1 ? 's' : ''}`;
+            cell.onclick = () => toast(`${lv} contribution${lv !== 1 ? 's' : ''} this day`);
+            col.appendChild(cell);
+        }
+        grid.appendChild(col);
+    }
+})();
+
 /* ── TOAST ── */
 let _t;
 function toast(msg) {
     const t = document.getElementById('toast');
-    const icons = {
-        'circle-check': true,
-        'x': true,
-        'triangle-alert': true,
-        'clipboard-minus': true,
-        'link': true,
-        'message-circle': true,
-        'mail': true,
-        'folder': true,
-        'mail-open': true,      // 📨
-        'bar-chart': true,      // 📊
-        'inbox': true,          // 📥
-        'hand': true,           // 👋
-        'camera': true,         // 📸
-        'folder-open': true,    // 📂
-        'paperclip': true,      // 📎
-        'globe': true,          // 🌐
-        'smartphone': true,     // 📱
-        'palette': true,        // 🎨
-        'plug': true,           // 🔌
-        'calendar': true,
-        'arrow-up': true,       // ⬆
-        'user': true,           // 👤
-        'trash': true,           // 🗑
-        'file-text': true,        // 📄
-        'moon': true,
-        'sun': true,
-        'pencil': true,          // ✏️
-
-    };
-    const m = msg.match(/^([\u{1F300}-\u{1FFFF}][\uFE0F]?|[\u2600-\u27BF][\uFE0F]?|[⬆⬇])/u);
-    document.getElementById('toast-icon').textContent = m ? m[0] : 'ℹ️';
-    document.getElementById('toast-msg').textContent = m ? msg.slice(m[0].length).trim() : msg;
+    document.getElementById('toast-icon').textContent = 'ℹ️';
+    document.getElementById('toast-msg').textContent = msg;
     t.classList.add('show');
     clearTimeout(_t); _t = setTimeout(() => t.classList.remove('show'), 2500);
 }
-const svgString = lucide.icons['bell'].toSvg({
-    width: 24,
-    height: 24,
-    color: '#4eb5f7',
-    'stroke-width': 1.5
-});
 
-
-document.getElementById('my-div').innerHTML = svgString;
+/* ── INIT ── */
+lucide.createIcons();
