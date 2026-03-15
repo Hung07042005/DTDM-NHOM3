@@ -29,6 +29,10 @@
             <button class="nav-btn" onclick="openModal('notifications')" title="Notifications">
                 <span class="badge"><i data-lucide="bell"></i></span>
             </button>
+            <button class="theme-toggle nav-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark Mode">
+                <span class="icon-sun"><i data-lucide="sun"></i></span>
+                <span class="icon-moon"><i data-lucide="moon"></i></span>
+            </button>
             <div class="nav-divider"></div>
             <div class="avatar" onclick="openModal('profile')">
                 <div class="avatar-placeholder">JD</div>
@@ -1110,26 +1114,25 @@
                     </div>
                     <div class="stab-pane-inner" id="sp-appearance">
                         <div class="fsection">Theme</div>
-                        <div style="display:flex;gap:10px;margin-bottom:18px">
-                            <div
-                                style="flex:1;border:2px solid var(--sky);border-radius:12px;padding:12px;cursor:pointer;text-align:center;background:rgba(78,181,247,.05)">
-                                <div style="margin-bottom:5px;display:flex;justify-content:center"><i
-                                        data-lucide="sun"></i></div>
-                                <div style="font-size:13px;font-weight:700;color:var(--sky)">Light</div>
+                        <div style="display:flex;gap:10px;margin-bottom:20px">
+
+                            <div class="appearance-card active" data-theme="light" onclick="selectAppearance('light')">
+                                <div class="ac-icon"><i data-lucide="sun"></i></div>
+                                <div class="ac-label">Light</div>
                             </div>
-                            <div style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center"
-                                onclick="toast('Dark mode coming soon!')">
-                                <div style="margin-bottom:5px;display:flex;justify-content:center"><i
-                                        data-lucide="moon"></i></div>
-                                <div style="font-size:13px;font-weight:700">Dark</div>
+
+                            <div class="appearance-card" data-theme="dark" onclick="selectAppearance('dark')">
+                                <div class="ac-icon"><i data-lucide="moon"></i></div>
+                                <div class="ac-label">Dark</div>
                             </div>
-                            <div style="flex:1;border:1.5px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;text-align:center"
-                                onclick="toast('Auto theme')">
-                                <div style="margin-bottom:5px;display:flex;justify-content:center"><i
-                                        data-lucide="laptop"></i></div>
-                                <div style="font-size:13px;font-weight:700">Auto</div>
+
+                            <div class="appearance-card" data-theme="auto" onclick="selectAppearance('auto')">
+                                <div class="ac-icon"><i data-lucide="laptop"></i></div>
+                                <div class="ac-label">Auto</div>
                             </div>
+
                         </div>
+
                         <div class="fsection">Accent Color</div>
                         <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
                             <div style="width:34px;height:34px;border-radius:50%;background:var(--sky);cursor:pointer;border:3px solid var(--sky);box-shadow:0 0 0 3px rgba(78,181,247,.2)"
