@@ -54,6 +54,7 @@ body {
   height: 100%;
   display: grid;
   grid-template-columns: 1fr 480px;
+
 }
 
 /* ── LEFT PANEL ── */
@@ -419,7 +420,7 @@ body {
 }
 
 .form-input {
-  width: 100%;
+  width: 85%;
   height: 44px;
   border: 1.5px solid var(--border);
   border-radius: var(--r-md);
@@ -454,7 +455,7 @@ body {
 
 .input-icon {
   position: absolute;
-  right: 13px;
+  right: 1px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 17px;

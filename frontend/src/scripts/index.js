@@ -121,12 +121,21 @@ renderCal();
         grid.appendChild(col);
     }
 })();
+/* LOGOUT*/
+function logout() {
+    toast('Signing out...');
+    setTimeout(() => {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = '../display/Login.html';
+    }, 1000);
 
+}
 /* ── TOAST ── */
 let _t;
 function toast(msg) {
     const t = document.getElementById('toast');
-    document.getElementById('toast-icon').textContent = 'ℹ️';
+    document.getElementById('toast-icon').textContent = 'ℹ';
     document.getElementById('toast-msg').textContent = msg;
     t.classList.add('show');
     clearTimeout(_t); _t = setTimeout(() => t.classList.remove('show'), 2500);

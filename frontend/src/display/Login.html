@@ -147,7 +147,7 @@
           <div class="form-row">
             <label class="form-label">Email Address</label>
             <div class="input-wrap">
-              <input class="form-input" id="login-email" type="email" placeholder="you@company.com"
+              <input class="form-input" id="login-email" type="email" placeholder="you@email.com"
                 oninput="validateEmail(this)" />
               <span class="input-icon" id="login-email-icon"><i data-lucide="mail"></i></span>
             </div>
@@ -159,7 +159,8 @@
             </div>
             <div class="input-wrap">
               <input class="form-input" id="login-pw" type="password" placeholder="Enter your password" />
-              <span class="input-icon" id="pw-toggle" onclick="togglePw('login-pw','pw-toggle')">👁</span>
+              <span class="input-icon" id="pw-toggle" onclick="togglePw('login-pw','pw-toggle')"><i
+                  data-lucide="eye"></i></span>
             </div>
           </div>
           <div class="checkbox-row" style="margin-bottom:20px">
@@ -169,7 +170,7 @@
 
           <button class="btn-submit" id="login-btn" onclick="doLogin()">
             <div class="spinner"></div>
-            <span class="btn-label">Sign In →</span>
+            <span class="btn-label">Sign In</span>
           </button>
 
           <div style="margin-top:22px;text-align:center">
@@ -224,14 +225,14 @@
 
         <div class="deco-cards">
           <div class="deco-card">
-            <div class="dc-label">🎉 Just joined</div>
+            <div class="dc-label">Just joined</div>
             <div class="dc-row">
               <div class="dc-av" style="background:linear-gradient(135deg,#a78bfa,#ec4899)">NW</div>
               <div class="dc-text">Nina W. created account</div>
             </div>
           </div>
           <div class="deco-card">
-            <div class="dc-label">🚀 First task</div>
+            <div class="dc-label">First task</div>
             <div class="dc-row">
               <div class="dc-av" style="background:linear-gradient(135deg,#ffc542,#ff6b6b)">TK</div>
               <div class="dc-text">Design homepage mockup</div>
@@ -239,7 +240,7 @@
             </div>
           </div>
           <div class="deco-card">
-            <div class="dc-label">👋 Team invite</div>
+            <div class="dc-label">Team invite</div>
             <div class="dc-row">
               <div class="dc-av" style="background:linear-gradient(135deg,#3ecf8e,#4eb5f7)">MJ</div>
               <div class="dc-text">Invited 3 teammates</div>
@@ -345,7 +346,7 @@
             </div>
             <div class="divider-text">or with email</div>
 
-            <div class="form-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="form-grid" style="display:grid;grid-template-rows:auto; gap:10px">
               <div class="form-row" style="margin-bottom:0">
                 <label class="form-label">First Name</label>
                 <div class="input-wrap"><input class="form-input" id="reg-fname" type="text" placeholder="Jamie" />
@@ -360,9 +361,9 @@
             <div class="form-row" style="margin-top:12px">
               <label class="form-label">Work Email</label>
               <div class="input-wrap">
-                <input class="form-input" id="reg-email" type="email" placeholder="you@company.com"
+                <input class="form-input" id="reg-email" type="email" placeholder="your@email.com"
                   oninput="validateEmail(this)" />
-                <span class="input-icon" id="reg-email-icon">📧</span>
+                <span class="input-icon" id="reg-email-icon"><i data-lucide="mail"></i></span>
               </div>
             </div>
             <div class="form-row">
@@ -370,7 +371,8 @@
               <div class="input-wrap">
                 <input class="form-input" id="reg-pw" type="password" placeholder="Create a strong password"
                   oninput="checkStrength(this.value)" />
-                <span class="input-icon" id="reg-pw-eye" onclick="togglePw('reg-pw','reg-pw-eye')">👁</span>
+                <span class="input-icon" id="reg-pw-eye" onclick="togglePw('reg-pw','reg-pw-eye')"><i
+                    data-lucide="eye"></i></span>
               </div>
               <div class="pw-strength">
                 <div class="pw-bars">
@@ -452,19 +454,16 @@
               <label class="form-label">Choose Your Plan</label>
               <div class="plan-grid">
                 <div class="plan-card sel" onclick="selectPlan(this)">
-                  <div class="plan-emoji">🆓</div>
                   <div class="plan-name">Free</div>
                   <div class="plan-price">$0 / month</div>
                   <div class="plan-badge">5 projects</div>
                 </div>
                 <div class="plan-card" onclick="selectPlan(this)">
-                  <div class="plan-emoji">⚡</div>
                   <div class="plan-name">Pro</div>
                   <div class="plan-price">$12 / month</div>
                   <div class="plan-badge">Unlimited</div>
                 </div>
                 <div class="plan-card" onclick="selectPlan(this)">
-                  <div class="plan-emoji">🏢</div>
                   <div class="plan-name">Team</div>
                   <div class="plan-price">$8 / seat</div>
                   <div class="plan-badge">SSO + Admin</div>
@@ -485,7 +484,7 @@
             </div>
             <div
               style="background:rgba(62,207,142,.07);border:1.5px solid rgba(62,207,142,.25);border-radius:var(--r-md);padding:14px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start">
-              <span style="font-size:18px;flex-shrink:0">🎁</span>
+              <span style="font-size:18px;flex-shrink:0"><i data-lucide="gift"></i></span>
               <div>
                 <div style="font-size:13.5px;font-weight:700;color:#059669">14-day Pro trial included
                 </div>
@@ -499,7 +498,7 @@
                 onclick="nextStep(2)">← Back</button>
               <button class="btn-submit" style="flex:2" id="reg-submit-btn" onclick="doRegister()">
                 <div class="spinner"></div>
-                <span class="btn-label">Create Account 🎉</span>
+                <span class="btn-label">Create Account</span>
               </button>
             </div>
           </div>
@@ -517,7 +516,7 @@
   <div class="forgot-overlay" id="forgot-overlay" onclick="if(event.target===this)hideForgot()">
     <div class="forgot-card">
       <div style="text-align:center;margin-bottom:20px">
-        <div style="font-size:40px;margin-bottom:10px">🔑</div>
+        <div style="font-size:40px;margin-bottom:10px"><i data-lucide="key"></i></div>
         <div style="font-size:20px;font-weight:700;margin-bottom:6px">Reset your password</div>
         <div style="font-size:13.5px;color:var(--text-s)">Enter your email and we'll send you a link to reset
           your password.</div>

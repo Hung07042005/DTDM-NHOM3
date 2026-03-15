@@ -9,7 +9,7 @@
         href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap"
         rel="stylesheet" />
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link rel="stylesheet" href="./src/styles/index.css" />
+    <link rel="stylesheet" href="../styles/index.css" />
 
 </head>
 
@@ -1332,18 +1332,18 @@
                         <span class="profile-menu-icon"><i data-lucide="settings"></i></span>
                         Settings &amp; Preferences
                     </div>
-                    <!-- ✅ View Public Profile — mở modal public-profile -->
+                    <!-- View Public Profile — mở modal public-profile -->
                     <div class="profile-menu-item" onclick="openModal('public-profile');closeModal('profile')">
                         <span class="profile-menu-icon"><i data-lucide="user-round"></i></span>
                         View Public Profile
                     </div>
-                    <!-- ✅ My Activity — mở modal my-activity -->
+                    <!-- My Activity — mở modal my-activity -->
                     <div class="profile-menu-item" onclick="openModal('my-activity');closeModal('profile')">
                         <span class="profile-menu-icon"><i data-lucide="bar-chart-2"></i></span>
                         My Activity
                     </div>
                     <div style="height:1px;background:var(--border);margin:6px 0"></div>
-                    <div class="profile-menu-item danger" onclick="toast('Signing out…');closeModal('profile')">
+                    <div class="profile-menu-item danger" onclick="logout()">
                         <span class="profile-menu-icon"><i data-lucide="door-open"></i></span>
                         Sign Out
                     </div>
@@ -1952,11 +1952,12 @@
     </div>
 
     <!-- TOAST -->
-    <div class="toast" id="toast"><span id="toast-icon">✅</span><span id="toast-msg">Done</span></div>
+    <div class="toast" id="toast"><span id="toast-icon"><i data-lucide="circle-check"></i></span><span
+            id="toast-msg">Done</span></div>
 
 
 
-    <script src="./src/scripts/index.js"></script>
+    <script src="../scripts/index.js"></script>
 </body>
 
 </html>

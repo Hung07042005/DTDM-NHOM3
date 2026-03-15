@@ -19,9 +19,9 @@ function showTab(t) {
 
 /* ── SOCIAL LOGIN ── */
 function socialLogin(provider) {
-    showToast('🔗 Connecting to ' + provider + '...');
+    showToast('Connecting to ' + provider + '...');
     setTimeout(() => {
-        showToast('✅ Signed in with ' + provider + '!');
+        showToast('Signed in with ' + provider + '!');
         setTimeout(() => goToApp(), 900);
     }, 1200);
 }
@@ -31,11 +31,11 @@ function doLogin() {
     const btn = document.getElementById('login-btn');
     const email = document.getElementById('login-email').value.trim();
     const pw = document.getElementById('login-pw').value;
-    if (!email || !pw) { showToast('⚠️ Please fill in all fields'); return; }
+    if (!email || !pw) { showToast('Please fill in all fields'); return; }
     btn.classList.add('loading');
     setTimeout(() => {
         btn.classList.remove('loading');
-        showToast('✅ Welcome back, Jamie!');
+        showToast('Welcome back, Jamie!');
         setTimeout(() => goToApp(), 800);
     }, 1600);
 }
@@ -72,8 +72,8 @@ function nextStep(n) {
         const email = document.getElementById('reg-email').value.trim();
         const pw = document.getElementById('reg-pw').value;
         const fname = document.getElementById('reg-fname').value.trim();
-        if (!fname || !email || !pw) { showToast('⚠️ Please complete all fields'); return; }
-        if (!document.getElementById('agree').checked) { showToast('⚠️ Please accept the terms'); return; }
+        if (!fname || !email || !pw) { showToast('Please complete all fields'); return; }
+        if (!document.getElementById('agree').checked) { showToast('Please accept the terms'); return; }
     }
     setRegStep(n);
     document.querySelector('.auth-right').scrollTop = 0;
@@ -84,7 +84,7 @@ function doRegister() {
     btn.classList.add('loading');
     setTimeout(() => {
         btn.classList.remove('loading');
-        showToast('🎉 Account created! Welcome to TaskFlow!');
+        showToast('Account created! Welcome to TaskFlow!');
         setTimeout(() => goToApp(), 1000);
     }, 2000);
 }
@@ -92,7 +92,7 @@ function doRegister() {
 /* ── GO TO APP ── */
 function goToApp() {
     // Redirect to the main app (taskflow.html)
-    window.location.href = 'taskflow.html';
+    window.location.href = 'index.html';
 }
 
 /* ── VALIDATE EMAIL ── */
@@ -101,10 +101,10 @@ function validateEmail(input) {
     const iconId = input.id === 'login-email' ? 'login-email-icon' : 'reg-email-icon';
     const icon = document.getElementById(iconId);
     if (input.value.length === 0) {
-        input.className = 'form-input'; icon.textContent = '📧'; return;
+        input.className = 'form-input'; icon.textContent = 'email'; return;
     }
     input.className = 'form-input ' + (valid ? 'success' : 'error');
-    icon.textContent = valid ? '' : '❌';
+    icon.textContent = valid ? '' : 'x';
 }
 
 /* ── PASSWORD STRENGTH ── */
@@ -133,10 +133,11 @@ function checkStrength(val) {
 /* ── TOGGLE PASSWORD VISIBILITY ── */
 function togglePw(inputId, iconId) {
     const input = document.getElementById(inputId);
-    const icon = document.getElementById(iconId);
+    const iconSpan = document.getElementById(iconId);
+    const icon = iconSpan.querySelector('i');
     const shown = input.type === 'text';
     input.type = shown ? 'password' : 'text';
-    icon.textContent = shown ? '👁' : '🙈';
+    icon.setAttribute('data-lucide', shown ? 'eye' : 'eye-off');
 }
 
 /* ── AVATAR SELECTOR ── */
@@ -159,14 +160,14 @@ function showForgot() {
 function hideForgot() { document.getElementById('forgot-overlay').classList.remove('show'); }
 function sendReset() {
     const email = document.getElementById('forgot-email').value.trim();
-    if (!email) { showToast('⚠️ Enter your email first'); return; }
+    if (!email) { showToast('Enter your email first'); return; }
     const btn = document.querySelector('.forgot-card .btn-submit');
     btn.classList.add('loading');
     setTimeout(() => {
         btn.classList.remove('loading');
         const el = document.getElementById('forgot-success');
         el.style.display = 'flex';
-        showToast('📧 Reset link sent to ' + email);
+        showToast('Reset link sent to ' + email);
         setTimeout(hideForgot, 2000);
     }, 1500);
 }
@@ -176,7 +177,7 @@ let _tt;
 function showToast(msg) {
     const toast = document.getElementById('toast');
     const emoji = msg.match(/^([\u{1F000}-\u{1FFFF}][\uFE0F\u20E3]?|[\u2600-\u27BF][\uFE0F]?|\S+\s)/u);
-    document.getElementById('toast-icon').textContent = emoji ? emoji[0] : 'ℹ️';
+    document.getElementById('toast-icon').textContent = emoji ? emoji[0] : 'ℹ';
     document.getElementById('toast-msg').textContent = msg.replace(/^([\u{1F000}-\u{1FFFF}][\uFE0F\u20E3]?|[\u2600-\u27BF][\uFE0F]?|\S+\s)/u, '').trim();
     toast.classList.add('show');
     clearTimeout(_tt);
