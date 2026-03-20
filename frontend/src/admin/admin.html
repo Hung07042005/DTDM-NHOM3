@@ -1,905 +1,361 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TaskFlow — Admin Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-<script src="https://unpkg.com/lucide@latest"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #0d0f12;
-  --surface: #13161b;
-  --surface2: #1a1e25;
-  --surface3: #21262f;
-  --border: rgba(255,255,255,.07);
-  --border2: rgba(255,255,255,.12);
-  --text: #f0f2f5;
-  --text2: #8a9ab5;
-  --text3: #4e5f77;
-
-  --coral: #ff6b6b;
-  --rose: #ff4f8b;
-  --mint: #3ecf8e;
-  --sky: #4eb5f7;
-  --amber: #ffc542;
-  --violet: #a78bfa;
-  --red: #ef4444;
-
-  --font-display: 'Syne', sans-serif;
-  --font-body: 'Instrument Sans', sans-serif;
-  --font-mono: 'Geist Mono', monospace;
-
-  --nav-h: 56px;
-  --sidebar-w: 200px;
-}
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
-
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 10px; }
-
-/* ── NAV ── */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: var(--nav-h);
-  background: rgba(13,15,18,.9);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border);
-  display: flex; align-items: center; gap: 0; padding: 0;
-}
-.nav-brand {
-  width: var(--sidebar-w);
-  display: flex; align-items: center; gap: 9px; padding: 0 18px;
-  border-right: 1px solid var(--border); height: 100%; flex-shrink: 0;
-  font-family: var(--font-display); font-size: 16px; font-weight: 700;
-}
-.brand-mark {
-  width: 28px; height: 28px; border-radius: 8px;
-  background: linear-gradient(135deg, var(--coral), var(--rose));
-  display: flex; align-items: center; justify-content: center; font-size: 13px;
-}
-.brand-text span { color: var(--coral); }
-
-.nav-center {
-  flex: 1; display: flex; align-items: center; padding: 0 20px;
-}
-.nav-search {
-  position: relative; max-width: 340px; width: 100%;
-}
-.nav-search input {
-  width: 100%; height: 34px; border-radius: 9px;
-  border: 1px solid var(--border2); background: var(--surface2);
-  color: var(--text); font-family: var(--font-body); font-size: 13px;
-  padding: 0 12px 0 36px; outline: none; transition: border-color .2s;
-}
-.nav-search input:focus { border-color: var(--sky); }
-.nav-search input::placeholder { color: var(--text3); }
-.ns-icon {
-  position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
-  color: var(--text3); display: flex;
-}
-.ns-icon svg { width: 13px; height: 13px; }
-
-.nav-right {
-  display: flex; align-items: center; gap: 4px; padding: 0 16px; margin-left: auto;
-}
-.n-btn {
-  width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border);
-  background: var(--surface2); color: var(--text2); cursor: pointer;
-  display: flex; align-items: center; justify-content: center; transition: all .15s;
-  position: relative;
-}
-.n-btn:hover { background: var(--surface3); color: var(--text); }
-.n-btn svg { width: 15px; height: 15px; }
-.n-badge::after {
-  content: ''; position: absolute; top: 5px; right: 5px;
-  width: 6px; height: 6px; border-radius: 50%; background: var(--coral);
-  border: 1.5px solid var(--bg);
-}
-.nav-avatar {
-  width: 32px; height: 32px; border-radius: 50%; margin-left: 6px;
-  background: linear-gradient(135deg, var(--coral), var(--rose));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 700; color: #fff; cursor: pointer;
-  border: 2px solid var(--border2); transition: transform .15s;
-}
-.nav-avatar:hover { transform: scale(1.06); }
-
-/* ── LAYOUT ── */
-.layout {
-  display: flex; padding-top: var(--nav-h); min-height: 100vh;
-}
-
-/* ── SIDEBAR ── */
-aside {
-  width: var(--sidebar-w); flex-shrink: 0; position: fixed;
-  top: var(--nav-h); bottom: 0; left: 0;
-  background: var(--surface); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; padding: 16px 10px;
-  overflow-y: auto;
-}
-.s-label {
-  font-size: 9.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--text3); padding: 0 10px; margin-bottom: 6px; margin-top: 4px;
-}
-.s-item {
-  display: flex; align-items: center; gap: 9px; padding: 8px 10px;
-  border-radius: 9px; cursor: pointer; font-size: 13px; font-weight: 500;
-  color: var(--text2); transition: all .15s; margin-bottom: 2px;
-}
-.s-item:hover { background: var(--surface2); color: var(--text); }
-.s-item.active {
-  background: linear-gradient(135deg, rgba(255,107,107,.15), rgba(255,79,139,.08));
-  color: var(--coral); font-weight: 600;
-  border: 1px solid rgba(255,107,107,.2);
-}
-.s-item svg { width: 15px; height: 15px; flex-shrink: 0; }
-.s-badge {
-  margin-left: auto; font-size: 10px; font-weight: 700;
-  padding: 1px 7px; border-radius: 20px;
-  background: var(--surface3); color: var(--text2);
-}
-.s-item.active .s-badge {
-  background: rgba(255,107,107,.18); color: var(--coral);
-}
-
-.sidebar-bottom {
-  margin-top: auto; border-top: 1px solid var(--border); padding-top: 12px;
-}
-.user-tile {
-  display: flex; align-items: center; gap: 9px; padding: 9px 10px;
-  border-radius: 10px; cursor: pointer; transition: background .15s;
-}
-.user-tile:hover { background: var(--surface2); }
-.ut-av {
-  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
-  background: linear-gradient(135deg, var(--coral), var(--rose));
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 700; color: #fff;
-}
-.ut-name { font-size: 12.5px; font-weight: 600; }
-.ut-role { font-size: 10.5px; color: var(--text3); }
-
-/* ── MAIN ── */
-main {
-  flex: 1; margin-left: var(--sidebar-w);
-  padding: 24px 24px 40px; overflow: hidden;
-}
-
-/* page header */
-.page-hdr {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
-}
-.page-hdr h1 {
-  font-family: var(--font-display); font-size: 22px; font-weight: 800; letter-spacing: -.4px;
-}
-.hdr-actions { display: flex; gap: 8px; }
-.btn {
-  height: 34px; padding: 0 14px; border-radius: 9px; font-size: 12.5px;
-  font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center;
-  gap: 6px; font-family: var(--font-body); transition: all .15s;
-}
-.btn svg { width: 14px; height: 14px; }
-.btn-ghost {
-  background: var(--surface); border: 1px solid var(--border);
-  color: var(--text2);
-}
-.btn-ghost:hover { background: var(--surface2); color: var(--text); }
-.btn-primary {
-  background: linear-gradient(135deg, var(--coral), var(--rose)); color: #fff;
-}
-.btn-primary:hover { opacity: .9; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(255,107,107,.3); }
-
-/* ── STAT CARDS ── */
-.stat-grid {
-  display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px;
-}
-.stat-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 14px; padding: 16px; display: flex; align-items: center;
-  gap: 12px; cursor: pointer; transition: all .2s;
-}
-.stat-card:hover { border-color: var(--border2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.3); }
-.stat-card.last { flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; }
-.stat-icon {
-  width: 42px; height: 42px; border-radius: 12px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-.stat-icon svg { width: 20px; height: 20px; }
-.stat-label { font-size: 11px; font-weight: 600; margin-bottom: 3px; }
-.stat-num { font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1; }
-.stat-view-btn {
-  display: flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600;
-  color: var(--text2);
-}
-.stat-view-btn svg { width: 18px; height: 18px; }
-
-/* ── CHARTS ROW ── */
-.charts-row {
-  display: grid; grid-template-columns: 1fr 1fr 320px; gap: 14px; margin-bottom: 20px;
-}
-.chart-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; padding: 18px; overflow: hidden;
-}
-.chart-title {
-  font-family: var(--font-display); font-size: 14px; font-weight: 700;
-  margin-bottom: 14px;
-}
-.chart-wrap { position: relative; height: 180px; }
-
-/* recent activity */
-.ra-header {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
-}
-.ra-title { font-family: var(--font-display); font-size: 14px; font-weight: 700; }
-.ra-viewall {
-  font-size: 12px; font-weight: 600; color: var(--sky); cursor: pointer;
-  text-decoration: none; display: flex; align-items: center; gap: 4px;
-}
-.ra-viewall:hover { opacity: .8; }
-.ra-viewall svg { width: 13px; height: 13px; }
-.ra-item {
-  display: flex; align-items: center; gap: 10px; padding: 9px 0;
-  border-bottom: 1px solid var(--border);
-}
-.ra-item:last-of-type { border-bottom: none; }
-.ra-av {
-  width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
-  background: var(--surface3); display: flex; align-items: center; justify-content: center;
-  color: var(--text3);
-}
-.ra-av svg { width: 16px; height: 16px; }
-.ra-info { flex: 1; }
-.ra-name { font-size: 13px; font-weight: 600; }
-.ra-time { font-size: 11px; color: var(--text3); margin-top: 1px; }
-.ra-badge {
-  font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-}
-.badge-admin { background: rgba(78,181,247,.15); color: var(--sky); }
-.badge-user { background: rgba(255,197,66,.15); color: var(--amber); }
-
-.ra-bottom {
-  display: flex; align-items: center; justify-content: flex-end; margin-top: 12px;
-}
-
-/* ── TABLE ── */
-.table-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; overflow: hidden;
-}
-.table-hdr {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 20px; border-bottom: 1px solid var(--border);
-}
-.table-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
-.table-actions { display: flex; gap: 8px; }
-
-table {
-  width: 100%; border-collapse: collapse;
-}
-thead th {
-  padding: 11px 20px; text-align: left; font-size: 11px; font-weight: 700;
-  text-transform: uppercase; letter-spacing: 1px; color: var(--text3);
-  border-bottom: 1px solid var(--border); background: var(--surface);
-}
-tbody tr {
-  border-bottom: 1px solid var(--border); transition: background .15s;
-}
-tbody tr:last-child { border-bottom: none; }
-tbody tr:hover { background: rgba(255,255,255,.02); }
-tbody td {
-  padding: 13px 20px; font-size: 13px; color: var(--text2);
-}
-tbody td:first-child { color: var(--text3); font-family: var(--font-mono); font-size: 12px; }
-tbody td.name { color: var(--text); font-weight: 600; }
-tbody td.email { font-family: var(--font-mono); font-size: 12px; }
-
-.role-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 10.5px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-  min-width: 60px;
-}
-.role-admin { background: rgba(78,181,247,.15); color: var(--sky); }
-.role-user { background: rgba(255,197,66,.15); color: var(--amber); }
-
-.status-dot {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-size: 12.5px; font-weight: 600; color: var(--mint);
-}
-.status-dot::before {
-  content: ''; width: 6px; height: 6px; border-radius: 50%;
-  background: var(--mint); display: inline-block;
-}
-
-.action-btns { display: flex; gap: 6px; }
-.act-btn {
-  height: 28px; padding: 0 12px; border-radius: 7px; font-size: 11.5px; font-weight: 700;
-  cursor: pointer; border: none; font-family: var(--font-body); transition: all .15s;
-}
-.act-edit { background: rgba(78,181,247,.15); color: var(--sky); }
-.act-edit:hover { background: rgba(78,181,247,.25); }
-.act-delete { background: rgba(239,68,68,.15); color: #ef4444; }
-.act-delete:hover { background: rgba(239,68,68,.25); }
-
-/* ── TOAST ── */
-.toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(60px);
-  background: var(--surface2); border: 1px solid var(--border2);
-  border-radius: 11px; padding: 10px 18px;
-  display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600;
-  transition: transform .3s cubic-bezier(.34,1.56,.64,1); z-index: 999;
-  box-shadow: 0 8px 30px rgba(0,0,0,.5);
-}
-.toast.show { transform: translateX(-50%) translateY(0); }
-.toast svg { width: 15px; height: 15px; color: var(--mint); }
-
-/* ── MODAL ── */
-.overlay {
-  position: fixed; inset: 0; z-index: 200;
-  background: rgba(0,0,0,.65); backdrop-filter: blur(8px);
-  display: none; align-items: center; justify-content: center; padding: 20px;
-}
-.overlay.open { display: flex; }
-.modal {
-  background: var(--surface); border: 1px solid var(--border2);
-  border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.6);
-  width: 100%; max-width: 480px; overflow: hidden;
-  animation: su .2s cubic-bezier(.34,1.56,.64,1);
-}
-@keyframes su { from { opacity: 0; transform: translateY(16px) scale(.97); } to { opacity: 1; transform: none; } }
-.mhd {
-  display: flex; align-items: center; gap: 12px;
-  padding: 16px 20px; border-bottom: 1px solid var(--border);
-}
-.mhd-title { font-family: var(--font-display); font-size: 15px; font-weight: 700; }
-.mhd-close {
-  width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
-  background: var(--surface3); color: var(--text2); cursor: pointer;
-  display: flex; align-items: center; justify-content: center; margin-left: auto;
-  transition: all .15s;
-}
-.mhd-close:hover { background: var(--surface2); color: var(--text); }
-.mhd-close svg { width: 14px; height: 14px; }
-.mbody { padding: 18px 20px; }
-.frow { display: flex; flex-direction: column; gap: 5px; margin-bottom: 13px; }
-.frow:last-child { margin-bottom: 0; }
-.flabel { font-size: 11.5px; font-weight: 600; color: var(--text2); }
-.finput, .fselect {
-  height: 36px; border-radius: 9px; border: 1px solid var(--border);
-  background: var(--surface3); color: var(--text); font-family: var(--font-body);
-  font-size: 13px; padding: 0 11px; outline: none; transition: border-color .15s; width: 100%;
-}
-.finput:focus, .fselect:focus { border-color: var(--sky); }
-.finput::placeholder { color: var(--text3); }
-.fgrid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.mfoot {
-  display: flex; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--border);
-  justify-content: flex-end;
-}
-.mbtn {
-  height: 34px; padding: 0 16px; border-radius: 9px; font-size: 13px; font-weight: 600;
-  cursor: pointer; border: none; font-family: var(--font-body); transition: all .15s;
-  display: flex; align-items: center; gap: 5px;
-}
-.mbtn-ghost { background: var(--surface3); border: 1px solid var(--border); color: var(--text2); }
-.mbtn-ghost:hover { color: var(--text); }
-.mbtn-primary { background: linear-gradient(135deg, var(--sky), var(--violet)); color: #fff; }
-.mbtn-primary:hover { opacity: .9; }
-.mbtn-danger { background: rgba(239,68,68,.15); color: #ef4444; border: 1px solid rgba(239,68,68,.2); }
-.mbtn-danger:hover { background: rgba(239,68,68,.25); }
-
-/* pagination */
-.pagination {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 20px; border-top: 1px solid var(--border);
-}
-.page-info { font-size: 12.5px; color: var(--text3); }
-.page-btns { display: flex; gap: 4px; }
-.pg-btn {
-  width: 30px; height: 30px; border-radius: 7px; border: 1px solid var(--border);
-  background: var(--surface2); color: var(--text2); cursor: pointer; font-size: 12.5px;
-  font-weight: 600; display: flex; align-items: center; justify-content: center;
-  transition: all .15s; font-family: var(--font-body);
-}
-.pg-btn:hover { border-color: var(--border2); color: var(--text); }
-.pg-btn.active { background: var(--sky); border-color: var(--sky); color: #fff; }
-.pg-btn svg { width: 12px; height: 12px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskFlow — Admin Dashboard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Geist+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="../styles/admin.css" />
 </head>
+
 <body>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-brand">
-    <div class="brand-mark">⚡</div>
-    <div class="brand-text">Task<span>Flow</span></div>
-  </div>
-  <div class="nav-center">
-    <div class="nav-search">
-      <span class="ns-icon"><i data-lucide="search"></i></span>
-      <input type="text" placeholder="Search tasks, projects, people…"/>
+  <!-- NAV -->
+  <nav>
+    <div class="nav-brand">
+      <div class="brand-mark">⚡</div>
+      <div class="brand-text">Task<span>Flow</span></div>
     </div>
-  </div>
-  <div class="nav-right">
-    <button class="n-btn" title="Keyboard shortcuts"><i data-lucide="keyboard"></i></button>
-    <button class="n-btn n-badge" title="Notifications"><i data-lucide="bell"></i></button>
-    <button class="n-btn" title="Cart"><i data-lucide="shopping-cart"></i></button>
-    <button class="n-btn" title="Messages"><i data-lucide="message-circle"></i></button>
-    <div class="nav-avatar" onclick="showToast('Profile opened')">JD</div>
-  </div>
-</nav>
-
-<div class="layout">
-
-<!-- SIDEBAR -->
-<aside>
-  <div class="s-label">Menu</div>
-  <div class="s-item active" onclick="setActive(this)">
-    <i data-lucide="layout-dashboard"></i> Dashboard
-    <span class="s-badge">3</span>
-  </div>
-  <div class="s-item" onclick="setActive(this);document.getElementById('sec-users').scrollIntoView({behavior:'smooth'})">
-    <i data-lucide="users"></i> User management
-    <span class="s-badge">12</span>
-  </div>
-
-  <div class="sidebar-bottom">
-    <div class="user-tile">
-      <div class="ut-av">JD</div>
-      <div>
-        <div class="ut-name">Jamie Davis</div>
-        <div class="ut-role">Designer</div>
+    <div class="nav-center">
+      <div class="nav-search">
+        <span class="ns-icon"><i data-lucide="search"></i></span>
+        <input type="text" placeholder="Search tasks, projects, people…" />
       </div>
     </div>
-  </div>
-</aside>
+    <div class="nav-right">
+      <button class="n-btn" title="Keyboard shortcuts"><i data-lucide="keyboard"></i></button>
+      <button class="n-btn n-badge" title="Notifications"><i data-lucide="bell"></i></button>
+      <button class="n-btn" title="Cart"><i data-lucide="shopping-cart"></i></button>
+      <button class="n-btn" title="Messages"><i data-lucide="message-circle"></i></button>
+      <div class="nav-avatar" onclick="showToast('Profile opened')">JD</div>
+    </div>
+  </nav>
 
-<!-- MAIN -->
-<main>
+  <div class="layout">
 
-  <!-- Page Header -->
-  <div class="page-hdr">
-    <h1>Admin dashboard</h1>
-    <div class="hdr-actions">
-      <button class="btn btn-ghost" onclick="openModal('invite')">
-        <i data-lucide="user-plus"></i> Invite
-      </button>
-      <button class="btn btn-primary" onclick="openModal('new-task')">
-        <i data-lucide="plus"></i> New Task
-      </button>
-    </div>
-  </div>
-
-  <!-- STAT CARDS -->
-  <div class="stat-grid">
-    <div class="stat-card">
-      <div class="stat-icon" style="background:rgba(78,181,247,.12)">
-        <i data-lucide="user" style="color:var(--sky)"></i>
+    <!-- SIDEBAR -->
+    <aside>
+      <div class="s-label">Menu</div>
+      <div class="s-item active" onclick="setActive(this)">
+        <i data-lucide="layout-dashboard"></i> Dashboard
+        <span class="s-badge">3</span>
       </div>
-      <div>
-        <div class="stat-label" style="color:var(--sky)">Total Users</div>
-        <div class="stat-num">24</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:rgba(255,107,107,.1)">
-        <i data-lucide="folder" style="color:var(--coral)"></i>
-      </div>
-      <div>
-        <div class="stat-label" style="color:var(--coral)">Total Projects</div>
-        <div class="stat-num">52</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:rgba(62,207,142,.1)">
-        <i data-lucide="check-square" style="color:var(--mint)"></i>
-      </div>
-      <div>
-        <div class="stat-label" style="color:var(--mint)">Total Tasks</div>
-        <div class="stat-num">704</div>
-      </div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-icon" style="background:rgba(255,197,66,.1)">
-        <i data-lucide="clock" style="color:var(--amber)"></i>
-      </div>
-      <div>
-        <div class="stat-label" style="color:var(--amber)">Active Users</div>
-        <div class="stat-num">102</div>
-      </div>
-    </div>
-    <div class="stat-card last" onclick="showToast('Opening calendar view…')">
-      <div class="stat-icon" style="background:rgba(167,139,250,.1)">
-        <i data-lucide="calendar" style="color:var(--violet)"></i>
-      </div>
-      <div class="stat-view-btn">
-        <span style="color:var(--violet);font-size:14px;font-weight:700">View</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHARTS ROW -->
-  <div class="charts-row">
-
-    <!-- Task Statistics -->
-    <div class="chart-card">
-      <div class="chart-title">Task Statistics</div>
-      <div class="chart-wrap">
-        <canvas id="taskChart"></canvas>
-      </div>
-    </div>
-
-    <!-- User Activity -->
-    <div class="chart-card">
-      <div class="chart-title">User Activity</div>
-      <div class="chart-wrap">
-        <canvas id="activityChart"></canvas>
-      </div>
-    </div>
-
-    <!-- Recent Activity -->
-    <div class="chart-card">
-      <div class="ra-header">
-        <div class="ra-title">Recent Activity</div>
-        <a class="ra-viewall" onclick="showToast('View All clicked')">View All <i data-lucide="arrow-right"></i></a>
+      <div class="s-item"
+        onclick="setActive(this);document.getElementById('sec-users').scrollIntoView({behavior:'smooth'})">
+        <i data-lucide="users"></i> User management
+        <span class="s-badge">12</span>
       </div>
 
-      <div class="ra-item">
-        <div class="ra-av"><i data-lucide="user"></i></div>
-        <div class="ra-info">
-          <div class="ra-name">Tien Nguyen</div>
-          <div class="ra-time">active 5 mins ago</div>
+      <div class="sidebar-bottom">
+        <div class="user-tile">
+          <div class="ut-av">JD</div>
+          <div>
+            <div class="ut-name">Jamie Davis</div>
+            <div class="ut-role">Designer</div>
+          </div>
         </div>
-        <span class="ra-badge badge-admin">Admin</span>
       </div>
-      <div class="ra-item">
-        <div class="ra-av"><i data-lucide="user"></i></div>
-        <div class="ra-info">
-          <div class="ra-name">Hung Pham</div>
-          <div class="ra-time">active 7 mins ago</div>
+    </aside>
+
+    <!-- MAIN -->
+    <main>
+
+      <!-- Page Header -->
+      <div class="page-hdr">
+        <h1>Admin dashboard</h1>
+        <div class="hdr-actions">
+          <button class="btn btn-ghost" onclick="openModal('invite')">
+            <i data-lucide="user-plus"></i> Invite
+          </button>
+          <button class="btn btn-primary" onclick="openModal('new-task')">
+            <i data-lucide="plus"></i> New Task
+          </button>
         </div>
-        <span class="ra-badge badge-user">User</span>
-      </div>
-      <div class="ra-item">
-        <div class="ra-av"><i data-lucide="user"></i></div>
-        <div class="ra-info">
-          <div class="ra-name">Ngoc Anh</div>
-          <div class="ra-time">active 12 mins ago</div>
-        </div>
-        <span class="ra-badge badge-user">User</span>
       </div>
 
-      <div class="ra-bottom">
-        <a class="ra-viewall" onclick="showToast('View All clicked')">View All <i data-lucide="arrow-right"></i></a>
+      <!-- STAT CARDS -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(78,181,247,.12)">
+            <i data-lucide="user" style="color:var(--sky)"></i>
+          </div>
+          <div>
+            <div class="stat-label" style="color:var(--sky)">Total Users</div>
+            <div class="stat-num">24</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(255,107,107,.1)">
+            <i data-lucide="folder" style="color:var(--coral)"></i>
+          </div>
+          <div>
+            <div class="stat-label" style="color:var(--coral)">Total Projects</div>
+            <div class="stat-num">52</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(62,207,142,.1)">
+            <i data-lucide="check-square" style="color:var(--mint)"></i>
+          </div>
+          <div>
+            <div class="stat-label" style="color:var(--mint)">Total Tasks</div>
+            <div class="stat-num">704</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:rgba(255,197,66,.1)">
+            <i data-lucide="clock" style="color:var(--amber)"></i>
+          </div>
+          <div>
+            <div class="stat-label" style="color:var(--amber)">Active Users</div>
+            <div class="stat-num">102</div>
+          </div>
+        </div>
+        <div class="stat-card last" onclick="showToast('Opening calendar view…')">
+          <div class="stat-icon" style="background:rgba(167,139,250,.1)">
+            <i data-lucide="calendar" style="color:var(--violet)"></i>
+          </div>
+          <div class="stat-view-btn">
+            <span style="color:var(--violet);font-size:14px;font-weight:700">View</span>
+          </div>
+        </div>
       </div>
-    </div>
 
+      <!-- CHARTS ROW -->
+      <div class="charts-row">
+
+        <!-- Task Statistics -->
+        <div class="chart-card">
+          <div class="chart-title">Task Statistics</div>
+          <div class="chart-wrap">
+            <canvas id="taskChart"></canvas>
+          </div>
+        </div>
+
+        <!-- User Activity -->
+        <div class="chart-card">
+          <div class="chart-title">User Activity</div>
+          <div class="chart-wrap">
+            <canvas id="activityChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="chart-card">
+          <div class="ra-header">
+            <div class="ra-title">Recent Activity</div>
+            <a class="ra-viewall" onclick="showToast('View All clicked')">View All <i data-lucide="arrow-right"></i></a>
+          </div>
+
+          <div class="ra-item">
+            <div class="ra-av"><i data-lucide="user"></i></div>
+            <div class="ra-info">
+              <div class="ra-name">Tien Nguyen</div>
+              <div class="ra-time">active 5 mins ago</div>
+            </div>
+            <span class="ra-badge badge-admin">Admin</span>
+          </div>
+          <div class="ra-item">
+            <div class="ra-av"><i data-lucide="user"></i></div>
+            <div class="ra-info">
+              <div class="ra-name">Hung Pham</div>
+              <div class="ra-time">active 7 mins ago</div>
+            </div>
+            <span class="ra-badge badge-user">User</span>
+          </div>
+          <div class="ra-item">
+            <div class="ra-av"><i data-lucide="user"></i></div>
+            <div class="ra-info">
+              <div class="ra-name">Ngoc Anh</div>
+              <div class="ra-time">active 12 mins ago</div>
+            </div>
+            <span class="ra-badge badge-user">User</span>
+          </div>
+
+          <div class="ra-bottom">
+            <a class="ra-viewall" onclick="showToast('View All clicked')">View All <i data-lucide="arrow-right"></i></a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- USER MANAGEMENT TABLE -->
+      <div class="table-card" id="sec-users">
+        <div class="table-hdr">
+          <div class="table-title">User Management</div>
+          <div class="table-actions">
+            <button class="btn btn-ghost" onclick="showToast('Filter applied')">
+              <i data-lucide="filter"></i> Filter
+            </button>
+            <button class="btn btn-primary" onclick="openAddUser()">
+              <i data-lucide="user-plus"></i> Add User
+            </button>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="user-table-body"></tbody>
+        </table>
+
+        <div class="pagination">
+          <div class="page-info">Showing 1–8 of 24 users</div>
+          <div class="page-btns">
+            <button class="pg-btn"><i data-lucide="chevron-left"></i></button>
+            <button class="pg-btn active">1</button>
+            <button class="pg-btn"
+              onclick="this.parentElement.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">2</button>
+            <button class="pg-btn"
+              onclick="this.parentElement.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">3</button>
+            <button class="pg-btn"><i data-lucide="chevron-right"></i></button>
+          </div>
+        </div>
+      </div>
+
+    </main>
   </div>
 
-  <!-- USER MANAGEMENT TABLE -->
-  <div class="table-card" id="sec-users">
-    <div class="table-hdr">
-      <div class="table-title">User Management</div>
-      <div class="table-actions">
-        <button class="btn btn-ghost" onclick="showToast('Filter applied')">
-          <i data-lucide="filter"></i> Filter
-        </button>
-        <button class="btn btn-primary" onclick="openAddUser()">
-          <i data-lucide="user-plus"></i> Add User
-        </button>
+  <!-- ── MODALS ── -->
+
+  <!-- New Task Modal -->
+  <div class="overlay" id="ov-new-task">
+    <div class="modal">
+      <div class="mhd">
+        <div class="mhd-title">New Task</div>
+        <button class="mhd-close" onclick="closeModal('new-task')"><i data-lucide="x"></i></button>
       </div>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="user-table-body"></tbody>
-    </table>
-
-    <div class="pagination">
-      <div class="page-info">Showing 1–8 of 24 users</div>
-      <div class="page-btns">
-        <button class="pg-btn"><i data-lucide="chevron-left"></i></button>
-        <button class="pg-btn active">1</button>
-        <button class="pg-btn" onclick="this.parentElement.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">2</button>
-        <button class="pg-btn" onclick="this.parentElement.querySelectorAll('.pg-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">3</button>
-        <button class="pg-btn"><i data-lucide="chevron-right"></i></button>
+      <div class="mbody">
+        <div class="frow"><label class="flabel">Task title *</label><input class="finput"
+            placeholder="e.g. Review Q2 reports…" /></div>
+        <div class="fgrid2">
+          <div class="frow"><label class="flabel">Assign to</label>
+            <select class="fselect">
+              <option>Tien Nguyen</option>
+              <option>Hung Pham</option>
+              <option>Ngoc Anh</option>
+              <option>Chi Trung</option>
+            </select>
+          </div>
+          <div class="frow"><label class="flabel">Priority</label>
+            <select class="fselect">
+              <option>High</option>
+              <option>Medium</option>
+              <option>Low</option>
+            </select>
+          </div>
+        </div>
+        <div class="frow"><label class="flabel">Due Date</label><input class="finput" type="date" /></div>
+      </div>
+      <div class="mfoot">
+        <button class="mbtn mbtn-ghost" onclick="closeModal('new-task')">Cancel</button>
+        <button class="mbtn mbtn-primary" onclick="showToast('Task created!');closeModal('new-task')">Create
+          Task</button>
       </div>
     </div>
   </div>
 
-</main>
-</div>
-
-<!-- ── MODALS ── -->
-
-<!-- New Task Modal -->
-<div class="overlay" id="ov-new-task">
-  <div class="modal">
-    <div class="mhd">
-      <div class="mhd-title">New Task</div>
-      <button class="mhd-close" onclick="closeModal('new-task')"><i data-lucide="x"></i></button>
-    </div>
-    <div class="mbody">
-      <div class="frow"><label class="flabel">Task title *</label><input class="finput" placeholder="e.g. Review Q2 reports…"/></div>
-      <div class="fgrid2">
-        <div class="frow"><label class="flabel">Assign to</label>
+  <!-- Invite Modal -->
+  <div class="overlay" id="ov-invite">
+    <div class="modal">
+      <div class="mhd">
+        <div class="mhd-title">Invite Member</div>
+        <button class="mhd-close" onclick="closeModal('invite')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="mbody">
+        <div class="frow"><label class="flabel">Email *</label><input class="finput" type="email"
+            placeholder="colleague@company.com" /></div>
+        <div class="frow"><label class="flabel">Role</label>
           <select class="fselect">
-            <option>Tien Nguyen</option><option>Hung Pham</option><option>Ngoc Anh</option><option>Chi Trung</option>
+            <option>User</option>
+            <option>Admin</option>
+            <option>Viewer</option>
           </select>
         </div>
-        <div class="frow"><label class="flabel">Priority</label>
-          <select class="fselect"><option>High</option><option>Medium</option><option>Low</option></select>
-        </div>
       </div>
-      <div class="frow"><label class="flabel">Due Date</label><input class="finput" type="date"/></div>
-    </div>
-    <div class="mfoot">
-      <button class="mbtn mbtn-ghost" onclick="closeModal('new-task')">Cancel</button>
-      <button class="mbtn mbtn-primary" onclick="showToast('Task created!');closeModal('new-task')">Create Task</button>
-    </div>
-  </div>
-</div>
-
-<!-- Invite Modal -->
-<div class="overlay" id="ov-invite">
-  <div class="modal">
-    <div class="mhd">
-      <div class="mhd-title">Invite Member</div>
-      <button class="mhd-close" onclick="closeModal('invite')"><i data-lucide="x"></i></button>
-    </div>
-    <div class="mbody">
-      <div class="frow"><label class="flabel">Email *</label><input class="finput" type="email" placeholder="colleague@company.com"/></div>
-      <div class="frow"><label class="flabel">Role</label>
-        <select class="fselect"><option>User</option><option>Admin</option><option>Viewer</option></select>
+      <div class="mfoot">
+        <button class="mbtn mbtn-ghost" onclick="closeModal('invite')">Cancel</button>
+        <button class="mbtn mbtn-primary" onclick="showToast('Invite sent!');closeModal('invite')">Send Invite</button>
       </div>
     </div>
-    <div class="mfoot">
-      <button class="mbtn mbtn-ghost" onclick="closeModal('invite')">Cancel</button>
-      <button class="mbtn mbtn-primary" onclick="showToast('Invite sent!');closeModal('invite')">Send Invite</button>
-    </div>
   </div>
-</div>
 
-<!-- Add / Edit User Modal -->
-<div class="overlay" id="ov-add-user">
-  <div class="modal">
-    <div class="mhd">
-      <div class="mhd-title" id="user-modal-title">Add User</div>
-      <button class="mhd-close" onclick="closeModal('add-user')"><i data-lucide="x"></i></button>
-    </div>
-    <div class="mbody">
-      <div class="fgrid2">
-        <div class="frow"><label class="flabel">Full Name *</label><input class="finput" id="um-name" placeholder="Tien Nguyen"/></div>
-        <div class="frow"><label class="flabel">Email *</label><input class="finput" id="um-email" type="email" placeholder="user@ut.edu.vn"/></div>
+  <!-- Add / Edit User Modal -->
+  <div class="overlay" id="ov-add-user">
+    <div class="modal">
+      <div class="mhd">
+        <div class="mhd-title" id="user-modal-title">Add User</div>
+        <button class="mhd-close" onclick="closeModal('add-user')"><i data-lucide="x"></i></button>
       </div>
-      <div class="fgrid2">
-        <div class="frow"><label class="flabel">Role</label>
-          <select class="fselect" id="um-role"><option value="User">User</option><option value="Admin">Admin</option></select>
+      <div class="mbody">
+        <div class="fgrid2">
+          <div class="frow"><label class="flabel">Full Name *</label><input class="finput" id="um-name"
+              placeholder="Tien Nguyen" /></div>
+          <div class="frow"><label class="flabel">Email *</label><input class="finput" id="um-email" type="email"
+              placeholder="user@ut.edu.vn" /></div>
         </div>
-        <div class="frow"><label class="flabel">Status</label>
-          <select class="fselect" id="um-status"><option>Active</option><option>Inactive</option></select>
+        <div class="fgrid2">
+          <div class="frow"><label class="flabel">Role</label>
+            <select class="fselect" id="um-role">
+              <option value="User">User</option>
+              <option value="Admin">Admin</option>
+            </select>
+          </div>
+          <div class="frow"><label class="flabel">Status</label>
+            <select class="fselect" id="um-status">
+              <option>Active</option>
+              <option>Inactive</option>
+            </select>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="mfoot">
-      <button class="mbtn mbtn-ghost" onclick="closeModal('add-user')">Cancel</button>
-      <button class="mbtn mbtn-primary" id="um-save-btn" onclick="saveUser()">Save User</button>
-    </div>
-  </div>
-</div>
-
-<!-- Delete Confirm Modal -->
-<div class="overlay" id="ov-delete-user">
-  <div class="modal">
-    <div class="mhd">
-      <div class="mhd-title">Delete User</div>
-      <button class="mhd-close" onclick="closeModal('delete-user')"><i data-lucide="x"></i></button>
-    </div>
-    <div class="mbody">
-      <p style="font-size:13.5px;color:var(--text2);line-height:1.6">
-        Are you sure you want to delete <b id="del-name" style="color:var(--text)"></b>?
-        This action cannot be undone.
-      </p>
-    </div>
-    <div class="mfoot">
-      <button class="mbtn mbtn-ghost" onclick="closeModal('delete-user')">Cancel</button>
-      <button class="mbtn mbtn-danger" onclick="confirmDelete()">Delete</button>
+      <div class="mfoot">
+        <button class="mbtn mbtn-ghost" onclick="closeModal('add-user')">Cancel</button>
+        <button class="mbtn mbtn-primary" id="um-save-btn" onclick="saveUser()">Save User</button>
+      </div>
     </div>
   </div>
-</div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">
-  <i data-lucide="circle-check"></i>
-  <span id="toast-msg">Done</span>
-</div>
+  <!-- Delete Confirm Modal -->
+  <div class="overlay" id="ov-delete-user">
+    <div class="modal">
+      <div class="mhd">
+        <div class="mhd-title">Delete User</div>
+        <button class="mhd-close" onclick="closeModal('delete-user')"><i data-lucide="x"></i></button>
+      </div>
+      <div class="mbody">
+        <p style="font-size:13.5px;color:var(--text2);line-height:1.6">
+          Are you sure you want to delete <b id="del-name" style="color:var(--text)"></b>?
+          This action cannot be undone.
+        </p>
+      </div>
+      <div class="mfoot">
+        <button class="mbtn mbtn-ghost" onclick="closeModal('delete-user')">Cancel</button>
+        <button class="mbtn mbtn-danger" onclick="confirmDelete()">Delete</button>
+      </div>
+    </div>
+  </div>
 
-<script>
-// ── DATA ──
-let users = [
-  { id: 1, name: 'Tien Nguyen',  email: 'tienn123@ut.edu.vn',    role: 'Admin', status: 'Active' },
-  { id: 2, name: 'Hung Pham',    email: 'hungnp1272@ut.edu.vn',  role: 'User',  status: 'Active' },
-  { id: 3, name: 'Ngoc Anh',     email: 'ngocnta4878@ut.edu.vn', role: 'User',  status: 'Active' },
-  { id: 4, name: 'Chi Trung',    email: 'trungnc7062@ut.edu.vn', role: 'User',  status: 'Active' },
-  { id: 5, name: 'Lan Huong',    email: 'huonglt9921@ut.edu.vn', role: 'User',  status: 'Active' },
-  { id: 6, name: 'Minh Duc',     email: 'ducnm5543@ut.edu.vn',   role: 'Admin', status: 'Active' },
-  { id: 7, name: 'Thanh Thao',   email: 'thaott1135@ut.edu.vn',  role: 'User',  status: 'Active' },
-  { id: 8, name: 'Quoc Bao',     email: 'baonq8872@ut.edu.vn',   role: 'User',  status: 'Active' },
-];
-let editingId = null;
-let deletingId = null;
-let nextId = 9;
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <i data-lucide="circle-check"></i>
+    <span id="toast-msg">Done</span>
+  </div>
 
-function renderTable() {
-  const tbody = document.getElementById('user-table-body');
-  tbody.innerHTML = users.map(u => `
-    <tr>
-      <td>${u.id}</td>
-      <td class="name">${u.name}</td>
-      <td class="email">${u.email}</td>
-      <td><span class="role-badge ${u.role === 'Admin' ? 'role-admin' : 'role-user'}">${u.role}</span></td>
-      <td><span class="status-dot">${u.status}</span></td>
-      <td>
-        <div class="action-btns">
-          <button class="act-btn act-edit" onclick="openEdit(${u.id})">Edit</button>
-          <button class="act-btn act-delete" onclick="openDelete(${u.id})">Delete</button>
-        </div>
-      </td>
-    </tr>
-  `).join('');
-  lucide.createIcons();
-}
-
-function openModal(name) {
-  document.getElementById('ov-' + name)?.classList.add('open');
-}
-function closeModal(name) {
-  document.getElementById('ov-' + name)?.classList.remove('open');
-}
-document.querySelectorAll('.overlay').forEach(ov => {
-  ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('open'); });
-});
-
-function openEdit(id) {
-  editingId = id;
-  const u = users.find(u => u.id === id);
-  document.getElementById('user-modal-title').textContent = 'Edit User';
-  document.getElementById('um-name').value = u.name;
-  document.getElementById('um-email').value = u.email;
-  document.getElementById('um-role').value = u.role;
-  document.getElementById('um-status').value = u.status;
-  document.getElementById('um-save-btn').textContent = 'Save Changes';
-  openModal('add-user');
-}
-
-function openAddUser() {
-  editingId = null;
-  document.getElementById('user-modal-title').textContent = 'Add User';
-  document.getElementById('um-name').value = '';
-  document.getElementById('um-email').value = '';
-  document.getElementById('um-role').value = 'User';
-  document.getElementById('um-status').value = 'Active';
-  document.getElementById('um-save-btn').textContent = 'Save User';
-  openModal('add-user');
-}
-
-function saveUser() {
-  const name = document.getElementById('um-name').value.trim();
-  const email = document.getElementById('um-email').value.trim();
-  const role = document.getElementById('um-role').value;
-  const status = document.getElementById('um-status').value;
-  if (!name || !email) { showToast('Please fill all required fields'); return; }
-  if (editingId) {
-    const u = users.find(u => u.id === editingId);
-    u.name = name; u.email = email; u.role = role; u.status = status;
-    showToast('User updated!');
-  } else {
-    users.push({ id: nextId++, name, email, role, status });
-    showToast('User added!');
-  }
-  renderTable();
-  closeModal('add-user');
-}
-
-function openDelete(id) {
-  deletingId = id;
-  const u = users.find(u => u.id === id);
-  document.getElementById('del-name').textContent = u.name;
-  openModal('delete-user');
-}
-function confirmDelete() {
-  users = users.filter(u => u.id !== deletingId);
-  renderTable();
-  showToast('User deleted');
-  closeModal('delete-user');
-}
-
-let toastTimer;
-function showToast(msg) {
-  const el = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-  lucide.createIcons();
-}
-
-function setActive(el) {
-  document.querySelectorAll('.s-item').forEach(i => i.classList.remove('active'));
-  el.classList.add('active');
-}
-
-// ── CHARTS ──
-Chart.defaults.font.family = "'Instrument Sans', sans-serif";
-Chart.defaults.color = '#8a9ab5';
-
-new Chart(document.getElementById('taskChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Completed', 'Pending', 'Overdue'],
-    datasets: [{
-      data: [605, 387, 257],
-      backgroundColor: ['rgba(78,181,247,.8)', 'rgba(255,197,66,.8)', 'rgba(239,68,68,.8)'],
-      borderRadius: 6,
-      borderSkipped: false,
-      barThickness: 36,
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { display: false }, border: { display: false }, ticks: { color: '#8a9ab5', font: { size: 11 } } },
-      y: { grid: { color: 'rgba(255,255,255,.05)' }, border: { display: false }, ticks: { color: '#8a9ab5', font: { size: 11 } } }
-    }
-  }
-});
-
-new Chart(document.getElementById('activityChart'), {
-  type: 'bar',
-  data: {
-    labels: ['Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    datasets: [{
-      data: [60, 80, 140, 100, 130, 150, 120],
-      backgroundColor: 'rgba(78,181,247,.75)',
-      borderRadius: 5,
-      borderSkipped: false,
-      barThickness: 22,
-    }]
-  },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false } },
-    scales: {
-      x: { grid: { display: false }, border: { display: false }, ticks: { color: '#8a9ab5', font: { size: 11 } } },
-      y: { grid: { color: 'rgba(255,255,255,.05)' }, border: { display: false }, ticks: { color: '#8a9ab5', font: { size: 11 } } }
-    }
-  }
-});
-
-renderTable();
-lucide.createIcons();
-</script>
+  <script src="../scripts/admin.js"></script>
 </body>
+
 </html>
