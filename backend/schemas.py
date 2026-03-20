@@ -11,6 +11,7 @@ class TaskCreate(BaseModel):
     due_date: Optional[datetime] = None
     completed: Optional[bool] = False
     priority: Optional[int] = 2
+    tags: list[str] = []
 
 
 class TaskUpdate(BaseModel):
@@ -20,6 +21,7 @@ class TaskUpdate(BaseModel):
     due_date: Optional[datetime] = None
     completed: Optional[bool] = None
     priority: Optional[int] = None
+    tags: Optional[list[str]] = None
 
 
 class TaskResponse(BaseModel):
@@ -31,6 +33,27 @@ class TaskResponse(BaseModel):
     priority: int
     due_date: Optional[datetime] = None
     list_id: Optional[int] = None
+    tags: list[str] = []
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+
+class TaskCommentCreate(BaseModel):
+    content: Optional[str] = None
+    user_id: Optional[int] = None
+
+
+class TaskCommentResponse(BaseModel):
+    id: int
+    task_id: int
+    user_id: Optional[int] = None
+    user_name: str
+    content: str
+    created_at: Optional[datetime] = None
+
+
+class TaskCommentsResponse(BaseModel):
+    comments: list[TaskCommentResponse]
 
 
 class TaskListResponse(BaseModel):

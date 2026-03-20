@@ -8,6 +8,7 @@ import socket
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text, create_engine, text
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from datetime import datetime
+from typing import Optional, List
 
 from schemas import (
     AuthLoginRequest,
@@ -19,6 +20,9 @@ from schemas import (
     TagResponse,
     TagsResponse,
     TaskCreate,
+    TaskCommentCreate,
+    TaskCommentResponse,
+    TaskCommentsResponse,
     TaskListCreate,
     TaskListItemResponse,
     TaskListResponse,
@@ -51,6 +55,7 @@ class Task(Base):
     status = Column(String, nullable=False, default="todo", index=True)
     priority = Column(Integer, nullable=False, default=2, index=True)
     due_date = Column(DateTime, nullable=True, index=True)
+    tags = Column(Text, nullable=True)
     completed = Column(Boolean, default=False, nullable=False)
     completed_at = Column(DateTime, nullable=True)
     parent_task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True, index=True)
@@ -100,6 +105,16 @@ class TaskTag(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 
+class TaskComment(Base):
+    __tablename__ = "task_comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    content = Column(Text, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+
 def ensure_task_table_upgrade():
     migration_sql = [
         "ALTER TABLE tasks ADD COLUMN list_id INTEGER",
@@ -107,6 +122,7 @@ def ensure_task_table_upgrade():
         "ALTER TABLE tasks ADD COLUMN status VARCHAR NOT NULL DEFAULT 'todo'",
         "ALTER TABLE tasks ADD COLUMN priority INTEGER NOT NULL DEFAULT 2",
         "ALTER TABLE tasks ADD COLUMN due_date DATETIME",
+        "ALTER TABLE tasks ADD COLUMN tags TEXT",
         "ALTER TABLE tasks ADD COLUMN completed_at DATETIME",
         "ALTER TABLE tasks ADD COLUMN parent_task_id INTEGER",
         "ALTER TABLE tasks ADD COLUMN created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
@@ -214,7 +230,11 @@ async def http_exception_handler(request: Request, exc: HTTPException):
     )
 
 
-def task_to_dict(task: Task):
+def task_to_dict(task: Task, tags: Optional[List[str]] = None):
+    stored_tags = tags
+    if stored_tags is None:
+        stored_tags = [tag_name for tag_name in (task.tags or "").split(",") if tag_name]
+
     return {
         "id": task.id,
         "title": task.title,
@@ -224,6 +244,9 @@ def task_to_dict(task: Task):
         "priority": task.priority,
         "due_date": task.due_date,
         "list_id": task.list_id,
+        "tags": stored_tags,
+        "created_at": task.created_at,
+        "updated_at": task.updated_at,
     }
 
 
@@ -250,6 +273,17 @@ def user_to_dict(user: User):
         "email": user.email,
         "role": user.role,
         "status": user.status,
+    }
+
+
+def task_comment_to_dict(task_comment: TaskComment, user_name: str):
+    return {
+        "id": task_comment.id,
+        "task_id": task_comment.task_id,
+        "user_id": task_comment.user_id,
+        "user_name": user_name,
+        "content": task_comment.content,
+        "created_at": task_comment.created_at,
     }
 
 
@@ -309,6 +343,7 @@ def create_task(task: TaskCreate):
             status=(task.status or "todo"),
             priority=task.priority or 2,
             due_date=task.due_date,
+            tags=",".join(list(dict.fromkeys([tag_name.strip() for tag_name in (task.tags or []) if tag_name and tag_name.strip()]))),
             completed_at=datetime.utcnow() if task.completed else None,
         )
         db.add(new_task)
@@ -359,6 +394,11 @@ def update_task(task_id: int, task: TaskUpdate):
             db_task.completed = task.completed
             db_task.completed_at = datetime.utcnow() if task.completed else None
 
+        if task.tags is not None:
+            normalized_tags = [tag_name.strip() for tag_name in task.tags if tag_name and tag_name.strip()]
+            unique_tags = list(dict.fromkeys(normalized_tags))
+            db_task.tags = ",".join(unique_tags)
+
         db.commit()
         db.refresh(db_task)
         return task_to_dict(db_task)
@@ -380,10 +420,92 @@ def delete_task(task_id: int):
                 detail={"error": "Not found", "message": "Task not found"},
             )
 
+        db.query(TaskComment).filter(TaskComment.task_id == db_task.id).delete(synchronize_session=False)
         db.query(TaskTag).filter(TaskTag.task_id == db_task.id).delete(synchronize_session=False)
         db.delete(db_task)
         db.commit()
         return {"message": "Task deleted"}
+    finally:
+        db.close()
+
+
+@app.get(
+    "/api/tasks/{task_id}/comments",
+    response_model=TaskCommentsResponse,
+    responses={404: {"model": ErrorResponse}},
+)
+def get_task_comments(task_id: int):
+    db: Session = SessionLocal()
+    try:
+        db_task = db.query(Task).filter(Task.id == task_id).first()
+        if db_task is None:
+            raise HTTPException(
+                status_code=404,
+                detail={"error": "Not found", "message": "Task not found"},
+            )
+
+        db_comments = db.query(TaskComment).filter(
+            TaskComment.task_id == task_id
+        ).order_by(TaskComment.created_at.asc(), TaskComment.id.asc()).all()
+
+        user_map = {
+            user.id: user.full_name or user.email
+            for user in db.query(User).all()
+        }
+
+        return {
+            "comments": [
+                task_comment_to_dict(comment, user_map.get(comment.user_id, "Unknown user"))
+                for comment in db_comments
+            ]
+        }
+    finally:
+        db.close()
+
+
+@app.post(
+    "/api/tasks/{task_id}/comments",
+    status_code=201,
+    response_model=TaskCommentResponse,
+    responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
+)
+def create_task_comment(task_id: int, payload: TaskCommentCreate):
+    content = (payload.content or "").strip()
+    if not content:
+        raise HTTPException(
+            status_code=400,
+            detail={"error": "Invalid request", "message": "Comment content is required"},
+        )
+
+    db: Session = SessionLocal()
+    try:
+        db_task = db.query(Task).filter(Task.id == task_id).first()
+        if db_task is None:
+            raise HTTPException(
+                status_code=404,
+                detail={"error": "Not found", "message": "Task not found"},
+            )
+
+        db_user = None
+        if payload.user_id is not None:
+            db_user = db.query(User).filter(User.id == payload.user_id).first()
+            if db_user is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail={"error": "Invalid request", "message": "User not found"},
+                )
+
+        new_comment = TaskComment(
+            task_id=task_id,
+            user_id=db_user.id if db_user else None,
+            content=content,
+        )
+        db.add(new_comment)
+        db.commit()
+        db.refresh(new_comment)
+
+        user_name = (db_user.full_name or db_user.email) if db_user else "Unknown user"
+        return task_comment_to_dict(new_comment, user_name)
     finally:
         db.close()
 
