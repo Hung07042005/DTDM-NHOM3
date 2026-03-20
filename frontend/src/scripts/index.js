@@ -1,4 +1,20 @@
 /* ── PAGE ROUTING ── */
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : `${window.location.protocol}//${window.location.hostname}:8000/api`;
+
+async function apiRequest(path, options = {}) {
+    const response = await fetch(`${API_BASE}${path}`, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data?.message || 'Request failed');
+    }
+    return data;
+}
+
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.getElementById('page-' + id).classList.add('active');
@@ -27,17 +43,29 @@ function socialLogin(provider) {
 }
 
 /* ── LOGIN ── */
-function doLogin() {
+async function doLogin() {
     const btn = document.getElementById('login-btn');
     const email = document.getElementById('login-email').value.trim();
     const pw = document.getElementById('login-pw').value;
     if (!email || !pw) { showToast('Please fill in all fields'); return; }
+
     btn.classList.add('loading');
-    setTimeout(() => {
+    try {
+        const data = await apiRequest('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify({
+                email,
+                password: pw,
+            }),
+        });
+        localStorage.setItem('taskflow-user', JSON.stringify(data.user));
         btn.classList.remove('loading');
-        showToast('Welcome back, Jamie!');
+        showToast(`Welcome back, ${data.user.name || 'User'}!`);
         setTimeout(() => goToApp(), 800);
-    }, 1600);
+    } catch (error) {
+        btn.classList.remove('loading');
+        showToast(error.message);
+    }
 }
 
 /* ── REGISTER STEPS ── */
@@ -79,14 +107,36 @@ function nextStep(n) {
     document.querySelector('.auth-right').scrollTop = 0;
 }
 
-function doRegister() {
+async function doRegister() {
     const btn = document.getElementById('reg-submit-btn');
+    const email = document.getElementById('reg-email').value.trim();
+    const pw = document.getElementById('reg-pw').value;
+    const fname = document.getElementById('reg-fname').value.trim();
+    const lname = document.getElementById('reg-lname').value.trim();
+
+    if (!fname || !email || !pw) { showToast('Please complete all fields'); return; }
+    if (!document.getElementById('agree').checked) { showToast('Please accept the terms'); return; }
+
     btn.classList.add('loading');
-    setTimeout(() => {
+
+    try {
+        const fullName = `${fname} ${lname}`.trim();
+        const data = await apiRequest('/auth/register', {
+            method: 'POST',
+            body: JSON.stringify({
+                name: fullName,
+                email,
+                password: pw,
+            }),
+        });
+        localStorage.setItem('taskflow-user', JSON.stringify(data.user));
         btn.classList.remove('loading');
         showToast('Account created! Welcome to TaskFlow!');
         setTimeout(() => goToApp(), 1000);
-    }, 2000);
+    } catch (error) {
+        btn.classList.remove('loading');
+        showToast(error.message);
+    }
 }
 
 /* ── GO TO APP ── */

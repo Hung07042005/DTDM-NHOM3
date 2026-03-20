@@ -35,7 +35,7 @@
             </button>
             <div class="nav-divider"></div>
             <div class="avatar" onclick="openModal('profile')">
-                <div class="avatar-placeholder">JD</div>
+                <div class="avatar-placeholder" id="current-user-avatar-nav">JD</div>
             </div>
         </div>
     </nav>
@@ -90,10 +90,10 @@
             </div>
             <div class="sidebar-bottom">
                 <div class="user-card" onclick="openModal('profile')">
-                    <div class="avatar-sm">JD</div>
+                    <div class="avatar-sm" id="current-user-avatar-sidebar">JD</div>
                     <div>
-                        <div class="user-name">Jamie Davis</div>
-                        <div class="user-role">Product Designer</div>
+                        <div class="user-name" id="current-user-name-sidebar">Jamie Davis</div>
+                        <div class="user-role" id="current-user-role-sidebar">Product Designer</div>
                     </div>
                 </div>
             </div>
@@ -609,9 +609,9 @@
             </div>
             <div class="mbody">
                 <div class="frow"><label class="flabel">Task title *</label><input class="finput" type="text"
-                        placeholder="e.g. Redesign pricing page…" /></div>
+                    id="new-task-title" placeholder="e.g. Redesign pricing page…" /></div>
                 <div class="frow"><label class="flabel">Description</label><textarea class="ftextarea"
-                        placeholder="Describe what needs to be done…"></textarea></div>
+                    id="new-task-desc" placeholder="Describe what needs to be done…"></textarea></div>
                 <div class="fgrid2">
                     <div class="frow"><label class="flabel">Project</label><select class="fselect">
                             <option>Website Redesign</option>
@@ -619,7 +619,7 @@
                             <option>Brand Guidelines</option>
                             <option>API Integration</option>
                         </select></div>
-                    <div class="frow"><label class="flabel">Status</label><select class="fselect">
+                    <div class="frow"><label class="flabel">Status</label><select class="fselect" id="new-task-status">
                             <option>To Do</option>
                             <option>In Progress</option>
                             <option>In Review</option>
@@ -627,23 +627,26 @@
                         </select></div>
                 </div>
                 <div class="fgrid2">
-                    <div class="frow"><label class="flabel">Due Date</label><input class="finput" type="date" /></div>
+                    <div class="frow"><label class="flabel">Due Date</label><input class="finput" id="new-task-due-date" type="date" /></div>
                     <div class="frow"><label class="flabel">Estimate (hrs)</label><input class="finput" type="number"
                             placeholder="e.g. 4" /></div>
                 </div>
                 <div class="frow"><label class="flabel">Priority</label>
-                    <div class="prio-row"><button class="prio-btn sel-high" onclick="selPrio(this,'high')">🔴
-                            High</button><button class="prio-btn" onclick="selPrio(this,'med')">🟡
-                            Medium</button><button class="prio-btn" onclick="selPrio(this,'low')">🟢 Low</button></div>
+                    <div class="prio-row"><button type="button" class="prio-btn sel-high" onclick="selPrio(this,'high')">🔴
+                        High</button><button type="button" class="prio-btn" onclick="selPrio(this,'med')">🟡
+                        Medium</button><button type="button" class="prio-btn" onclick="selPrio(this,'low')">🟢 Low</button></div>
                 </div>
                 <div class="frow"><label class="flabel">Tags</label>
-                    <div class="tag-chips"><button class="tag-chip-item"
+                    <div class="tag-chips"><button type="button" class="tag-chip-item"
                             onclick="this.classList.toggle('sel')">Design</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Engineering</button><button class="tag-chip-item"
+                        type="button" onclick="this.classList.toggle('sel')">Engineering</button><button class="tag-chip-item"
+                        type="button"
                             onclick="this.classList.toggle('sel')">Research</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Marketing</button><button class="tag-chip-item"
+                        type="button" onclick="this.classList.toggle('sel')">Marketing</button><button class="tag-chip-item"
+                        type="button"
                             onclick="this.classList.toggle('sel')">UX</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Content</button><button class="tag-chip-item"
+                        type="button" onclick="this.classList.toggle('sel')">Content</button><button class="tag-chip-item"
+                        type="button"
                             onclick="this.classList.toggle('sel')">Bug</button></div>
                 </div>
                 <div class="frow"><label class="flabel">Assign To</label>
@@ -685,7 +688,7 @@
                 </div>
             </div>
             <div class="mfoot"><button class="mbtn mbtn-ghost" onclick="closeModal('new-task')">Cancel</button><button
-                    class="mbtn mbtn-primary" onclick="toast('Task created!');closeModal('new-task')">＋ Create
+                    class="mbtn mbtn-primary" onclick="createTaskFromModal()">＋ Create
                     Task</button></div>
         </div>
     </div>
@@ -1053,10 +1056,10 @@
                             style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:16px;background:var(--bg);border-radius:14px">
                             <div
                                 style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--rose));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0">
-                                JD</div>
+                                <span id="current-user-avatar-settings">JD</span></div>
                             <div>
-                                <div style="font-size:16px;font-weight:700">Jamie Davis</div>
-                                <div style="font-size:13px;color:var(--text-tertiary)">Product Designer</div>
+                                <div style="font-size:16px;font-weight:700" id="current-user-name-settings">Jamie Davis</div>
+                                <div style="font-size:13px;color:var(--text-tertiary)" id="current-user-role-settings">Product Designer</div>
                             </div><button class="mbtn mbtn-ghost" style="margin-left:auto;height:32px;font-size:12.5px"
                                 onclick="toast('Photo updated!')">Change Photo</button>
                         </div>
@@ -1066,8 +1069,8 @@
                             <div class="frow"><label class="flabel">Last Name</label><input class="finput"
                                     value="Davis" /></div>
                         </div>
-                        <div class="frow"><label class="flabel">Email</label><input class="finput" type="email"
-                                value="jamie@company.io" /></div>
+                        <div class="frow"><label class="flabel">Email</label><input class="finput" type="email" id="current-user-email-settings"
+                            value="jamie@company.io" /></div>
                         <div class="frow"><label class="flabel">Role / Title</label><input class="finput"
                                 value="Product Designer" /></div>
                         <div class="frow"><label class="flabel">Bio</label><textarea class="ftextarea"
@@ -1324,10 +1327,10 @@
             <div style="background:linear-gradient(135deg,var(--dark),#1e293b);padding:28px 24px;text-align:center">
                 <div
                     style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--rose));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 12px;border:3px solid rgba(255,255,255,.15)">
-                    JD</div>
-                <div style="font-size:18px;font-weight:700;color:#fff">Jamie Davis</div>
-                <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px">Product Designer</div>
-                <div style="font-size:12.5px;color:rgba(255,255,255,.4);margin-top:2px">jamie@company.io</div>
+                    <span id="current-user-avatar-menu">JD</span></div>
+                <div style="font-size:18px;font-weight:700;color:#fff" id="current-user-name-menu">Jamie Davis</div>
+                <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px" id="current-user-role-menu">Product Designer</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.4);margin-top:2px" id="current-user-email-menu">jamie@company.io</div>
             </div>
             <div class="mbody" style="padding:8px 0">
                 <div style="display:flex;flex-direction:column">
@@ -1363,7 +1366,7 @@
             <div class="profile-cover">
                 <div class="profile-cover-pattern"></div>
                 <div class="profile-avatar-wrap">
-                    <div class="profile-avatar">JD</div>
+                    <div class="profile-avatar" id="current-user-avatar-public">JD</div>
                     <div class="profile-online"></div>
                 </div>
                 <div class="profile-cover-actions">
@@ -1381,8 +1384,8 @@
                 <div class="profile-info">
                     <div class="profile-name-row">
                         <div>
-                            <div class="profile-name">Jamie Davis</div>
-                            <div class="profile-role-row">
+                            <div class="profile-name" id="current-user-name-public">Jamie Davis</div>
+                            <div class="profile-role-row" id="current-user-role-public">
                                 <i data-lucide="briefcase" style="width:13px;height:13px;color:var(--sky)"></i>
                                 Product Designer · TaskFlow Inc.
                             </div>
@@ -1472,7 +1475,7 @@
                             style="width:12px;height:12px;color:var(--mint)"></i>Contact</div>
                     <div class="contact-row">
                         <div class="contact-icon"><i data-lucide="mail" style="color:var(--sky)"></i></div>
-                        jamie@company.io
+                        <span id="current-user-email-public">jamie@company.io</span>
                     </div>
                     <div class="contact-row">
                         <div class="contact-icon"><i data-lucide="map-pin" style="color:var(--coral)"></i></div>Ho Chi

@@ -22,6 +22,240 @@ function closeModal(id) {
     if (el) el.classList.remove('show');
 }
 
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : `${window.location.protocol}//${window.location.hostname}:8000/api`;
+const AUTH_USER_KEY = 'taskflow-user';
+
+function getCurrentUser() {
+    try {
+        const rawUser = localStorage.getItem(AUTH_USER_KEY);
+        return rawUser ? JSON.parse(rawUser) : null;
+    } catch {
+        return null;
+    }
+}
+
+function getUserInitials(name) {
+    if (!name) return 'U';
+    return name
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part[0].toUpperCase())
+        .join('');
+}
+
+function applyCurrentUserToUI() {
+    const user = getCurrentUser();
+    if (!user) return;
+
+    const displayName = user.name || 'User';
+    const role = user.role || 'User';
+    const email = user.email || '';
+    const initials = getUserInitials(displayName);
+
+    const textMap = {
+        'current-user-name-sidebar': displayName,
+        'current-user-role-sidebar': role,
+        'current-user-name-settings': displayName,
+        'current-user-role-settings': role,
+        'current-user-name-menu': displayName,
+        'current-user-role-menu': role,
+        'current-user-email-menu': email,
+        'current-user-name-public': displayName,
+        'current-user-email-public': email,
+    };
+
+    Object.entries(textMap).forEach(([elementId, value]) => {
+        const element = document.getElementById(elementId);
+        if (element) element.textContent = value;
+    });
+
+    const publicRole = document.getElementById('current-user-role-public');
+    if (publicRole) {
+        publicRole.innerHTML = `<i data-lucide="briefcase" style="width:13px;height:13px;color:var(--sky)"></i>${role} · TaskFlow`;
+    }
+
+    const settingsEmail = document.getElementById('current-user-email-settings');
+    if (settingsEmail) settingsEmail.value = email;
+
+    [
+        'current-user-avatar-nav',
+        'current-user-avatar-sidebar',
+        'current-user-avatar-settings',
+        'current-user-avatar-menu',
+        'current-user-avatar-public',
+    ].forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) element.textContent = initials;
+    });
+}
+
+function ensureAuthenticated() {
+    const user = getCurrentUser();
+    if (user) return true;
+
+    const loginPath = '../../index.html';
+    window.location.href = loginPath;
+    return false;
+}
+
+function _statusLabelToApiStatus(statusLabel) {
+    const map = {
+        'To Do': 'todo',
+        'In Progress': 'in-progress',
+        'In Review': 'review',
+        'Done': 'done',
+    };
+    return map[statusLabel] || 'todo';
+}
+
+function _apiStatusToColumnTitle(status) {
+    const map = {
+        'todo': 'To Do',
+        'in-progress': 'In Progress',
+        'review': 'In Review',
+        'done': 'Done',
+    };
+    return map[status] || 'To Do';
+}
+
+async function apiRequest(path, options = {}) {
+    const response = await fetch(`${API_BASE}${path}`, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data?.message || 'Request failed');
+    }
+
+    return data;
+}
+
+function _ensureBackendTaskContainers() {
+    document.querySelectorAll('.kanban-col').forEach(col => {
+        const colBody = col.querySelector('.col-body');
+        if (!colBody) return;
+
+        let container = colBody.querySelector('.backend-task-list');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'backend-task-list';
+            colBody.prepend(container);
+        }
+        container.innerHTML = '';
+    });
+}
+
+function _renderBackendTasks(tasks) {
+    _ensureBackendTaskContainers();
+
+    tasks.forEach(task => {
+        const targetTitle = _apiStatusToColumnTitle(task.status);
+        const targetCol = Array.from(document.querySelectorAll('.kanban-col')).find(col => {
+            const title = col.querySelector('.col-title')?.textContent?.trim();
+            return title === targetTitle;
+        });
+
+        const colBody = targetCol?.querySelector('.col-body');
+        const container = colBody?.querySelector('.backend-task-list');
+        if (!container) return;
+
+        const card = document.createElement('div');
+        card.className = 'card';
+        const due = task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date';
+        const desc = task.description || 'No description';
+        const statusText = STATUS_LABELS[task.status] || 'To Do';
+        const priorityText = task.priority === 1 ? 'High' : task.priority === 3 ? 'Low' : 'Medium';
+
+        card.innerHTML = `
+            <div class="card-top"><span class="priority-tag medium">${priorityText}</span></div>
+            <div class="card-title">${task.title}</div>
+            <div class="card-desc">${desc}</div>
+            <div class="card-footer">
+                <div class="due-date"><i data-lucide="calendar"></i>${due}</div>
+                <div class="card-footer-sep"></div>
+                <div class="card-tags"><span class="tag">${statusText}</span></div>
+            </div>
+        `;
+
+        card.onclick = () => openCardDetail(task.title, `Backend Task · ${statusText}`, desc);
+
+        container.appendChild(card);
+    });
+
+    lucide.createIcons();
+}
+
+async function loadTasksFromBackend() {
+    try {
+        const data = await apiRequest('/tasks');
+        _renderBackendTasks(data.tasks || []);
+    } catch (error) {
+        toast(`Load tasks failed: ${error.message}`);
+    }
+}
+
+async function createTaskFromModal() {
+    const titleInput = document.getElementById('new-task-title');
+    const descInput = document.getElementById('new-task-desc');
+    const statusSelect = document.getElementById('new-task-status');
+    const dueDateInput = document.getElementById('new-task-due-date');
+
+    const title = titleInput?.value?.trim();
+    const description = descInput?.value?.trim();
+    const status = _statusLabelToApiStatus(statusSelect?.value);
+    const dueDate = dueDateInput?.value;
+    const selectedPriorityButton = document.querySelector('.prio-row .prio-btn.sel-high, .prio-row .prio-btn.sel-med, .prio-row .prio-btn.sel-low');
+
+    let priority = 2;
+    if (selectedPriorityButton?.classList.contains('sel-high')) priority = 1;
+    if (selectedPriorityButton?.classList.contains('sel-low')) priority = 3;
+
+    if (!title) {
+        toast('Task title is required');
+        return;
+    }
+
+    try {
+        await apiRequest('/tasks', {
+            method: 'POST',
+            body: JSON.stringify({
+                title,
+                description: description || null,
+                status,
+                priority,
+                due_date: dueDate ? `${dueDate}T00:00:00` : null,
+            }),
+        });
+
+        titleInput.value = '';
+        if (descInput) descInput.value = '';
+        if (dueDateInput) dueDateInput.value = '';
+
+        closeModal('new-task');
+        toast('Task created!');
+        await loadTasksFromBackend();
+    } catch (error) {
+        toast(error.message);
+    }
+}
+
+async function loadContainerId() {
+    const sub = document.querySelector('.page-sub');
+    if (!sub) return;
+
+    try {
+        const data = await apiRequest('/container');
+        sub.textContent = `${sub.textContent} · Container: ${data.container_id}`;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 // Đóng khi click ngoài modal box
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.overlay').forEach(overlay => {
@@ -193,6 +427,31 @@ function selPrio(btn, type) {
     btn.classList.add('sel-' + type);
 }
 
+function initNewTaskInteractions() {
+    const modal = document.getElementById('ov-new-task');
+    if (!modal) return;
+
+    modal.addEventListener('click', (event) => {
+        const prioButton = event.target.closest('.prio-btn');
+        if (prioButton) {
+            if (prioButton.classList.contains('sel-high')) {
+                selPrio(prioButton, 'high');
+            } else if (prioButton.classList.contains('sel-low')) {
+                selPrio(prioButton, 'low');
+            } else {
+                const text = (prioButton.textContent || '').toLowerCase();
+                selPrio(prioButton, text.includes('high') ? 'high' : text.includes('low') ? 'low' : 'med');
+            }
+            return;
+        }
+
+        const tagButton = event.target.closest('.tag-chip-item');
+        if (tagButton) {
+            tagButton.classList.toggle('sel');
+        }
+    });
+}
+
 /* ════════════════════════════
    8. IMPORT SOURCE SELECT
 ════════════════════════════ */
@@ -299,8 +558,8 @@ function logout() {
     closeModal('profile');
     toast('👋 Signing out…');
     setTimeout(() => {
-        // Trong demo: chỉ hiện toast. Thực tế: window.location.href = '/login'
-        console.log('User signed out');
+        localStorage.removeItem(AUTH_USER_KEY);
+        window.location.href = '../../index.html';
     }, 1000);
 }
 
@@ -774,18 +1033,25 @@ function _syncScroll() {
    16. INIT
 ════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
+    if (!ensureAuthenticated()) return;
+
     // Khởi tạo theme (sync cards sau khi DOM sẵn sàng)
     const savedTheme = localStorage.getItem(THEME_KEY) || 'light';
     setTheme(savedTheme, false);
+    applyCurrentUserToUI();
 
     lucide.createIcons();
     renderCal();
     buildHeatmap();
     _syncScroll();
+    initNewTaskInteractions();
 
     // Render gantt nếu timeline đang active
     const tlView = document.getElementById('view-timeline');
     if (tlView && tlView.classList.contains('active')) render();
+
+    loadTasksFromBackend();
+    loadContainerId();
 });
 
 /* ════════════════════════════
