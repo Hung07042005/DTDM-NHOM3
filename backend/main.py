@@ -9,6 +9,8 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, T
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
 from datetime import datetime
 from typing import Optional, List
+from schemas import ProjectResponse, ProjectCreate
+from schemas import AssignTaskRequest
 
 from schemas import (
     AuthLoginRequest,
@@ -61,6 +63,7 @@ class Task(Base):
     parent_task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True, index=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    assigned_to = Column(Integer, ForeignKey("users.id"), nullable=True)
 
 
 class User(Base):
@@ -114,6 +117,13 @@ class TaskComment(Base):
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
+class Project(Base):
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 def ensure_task_table_upgrade():
     migration_sql = [
@@ -1045,6 +1055,40 @@ def get_container():
     return {
         "container_id": container_id
     }
+
+@app.post("/api/projects", response_model=ProjectResponse)
+def create_project(project: ProjectCreate):
+    db = SessionLocal()
+    new_project = Project(
+        name=project.name,
+        description=project.description
+    )
+    db.add(new_project)
+    db.commit()
+    db.refresh(new_project)
+    db.close()
+    return new_project
+
+@app.put("/api/tasks/{task_id}/assign", response_model=TaskResponse)
+def assign_task(task_id: int, request: AssignTaskRequest):
+    db = SessionLocal()
+
+    task = db.query(Task).filter(Task.id == task_id).first()
+    if not task:
+        db.close()
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        db.close()
+        raise HTTPException(status_code=404, detail="User not found")
+
+    task.assigned_to = request.user_id
+    db.commit()
+    db.refresh(task)
+    db.close()
+
+    return task
 
 
 if __name__ == "__main__":

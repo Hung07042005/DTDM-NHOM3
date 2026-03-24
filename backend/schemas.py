@@ -150,3 +150,18 @@ class ContainerResponse(BaseModel):
 class ErrorResponse(BaseModel):
     error: str
     message: str
+
+class ProjectCreate(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class ProjectResponse(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+
+    class Config:
+        from_attributes = True
+
+class AssignTaskRequest(BaseModel):
+    user_id: int
