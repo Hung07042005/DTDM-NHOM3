@@ -134,8 +134,14 @@
             </button>
             <button class="social-btn" onclick="socialLogin('GitHub')">
               <svg class="social-icon-svg" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                  d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c
+                  -3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083
+                  -.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418
+                  -1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124
+                  -.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 
+                  3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 
+                  3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 
+                  21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
               </svg>
               Continue with GitHub
             </button>
@@ -208,7 +214,6 @@
       </div>
     </div>
   </div>
-
 
   <!-- ════════════════════════════════
      PAGE: REGISTER
@@ -452,70 +457,14 @@
                 <button class="btn-submit"
                   style="background:var(--bg);color:var(--text-p);box-shadow:none;border:1.5px solid var(--border);flex:1"
                   onclick="nextStep(1)">← Back</button>
-                <button class="btn-submit" style="flex:2" onclick="nextStep(3)">
-                  <span class="btn-label">Continue →</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- STEP 3: Choose plan -->
-            <div class="form-step" id="reg-step-3">
-              <div class="form-row">
-                <label class="form-label">Choose Your Plan</label>
-                <div class="plan-grid">
-                  <div class="plan-card sel" onclick="selectPlan(this)">
-                    <div class="plan-name">Free</div>
-                    <div class="plan-price">$0 / month</div>
-                    <div class="plan-badge">5 projects</div>
-                  </div>
-                  <div class="plan-card" onclick="selectPlan(this)">
-                    <div class="plan-name">Pro</div>
-                    <div class="plan-price">$12 / month</div>
-                    <div class="plan-badge">Unlimited</div>
-                  </div>
-                  <div class="plan-card" onclick="selectPlan(this)">
-                    <div class="plan-name">Team</div>
-                    <div class="plan-price">$8 / seat</div>
-                    <div class="plan-badge">SSO + Admin</div>
-                  </div>
-                </div>
-              </div>
-              <div class="form-row">
-                <label class="form-label">How did you hear about us?</label>
-                <select class="form-input" style="height:44px;appearance:none;cursor:pointer;background:var(--bg)">
-                  <option value="">Select an option…</option>
-                  <option>Google Search</option>
-                  <option>Twitter / X</option>
-                  <option>LinkedIn</option>
-                  <option>Friend / Colleague</option>
-                  <option>Product Hunt</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div
-                style="background:rgba(62,207,142,.07);border:1.5px solid rgba(62,207,142,.25);border-radius:var(--r-md);padding:14px 16px;margin-bottom:18px;display:flex;gap:10px;align-items:flex-start">
-                <span style="font-size:18px;flex-shrink:0"><i data-lucide="gift"></i></span>
-                <div>
-                  <div style="font-size:13.5px;font-weight:700;color:#059669">14-day Pro trial included
-                  </div>
-                  <div style="font-size:12px;color:var(--text-s);margin-top:2px">Try all Pro features
-                    free. No credit card needed. Downgrade anytime.</div>
-                </div>
-              </div>
-              <div style="display:flex;gap:10px">
-                <button class="btn-submit"
-                  style="background:var(--bg);color:var(--text-p);box-shadow:none;border:1.5px solid var(--border);flex:1"
-                  onclick="nextStep(2)">← Back</button>
                 <button class="btn-submit" style="flex:2" id="reg-submit-btn" onclick="doRegister()">
                   <div class="spinner"></div>
                   <span class="btn-label">Create Account</span>
                 </button>
               </div>
             </div>
-
           </div>
         </div>
-
       </div>
     </div>
 
