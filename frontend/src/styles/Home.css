@@ -1851,6 +1851,9 @@ main {
 .prio-row {
     display: flex;
     gap: 8px;
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
 }
 
 .prio-btn {
@@ -1864,6 +1867,9 @@ main {
     font-size: 12.5px;
     font-weight: 700;
     transition: all .15s;
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
 }
 
 .prio-btn:hover {
@@ -1892,6 +1898,9 @@ main {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
 }
 
 .tag-chip-item {
@@ -1906,6 +1915,9 @@ main {
     cursor: pointer;
     font-family: inherit;
     transition: all .15s;
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
 }
 
 .tag-chip-item.sel,

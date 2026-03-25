@@ -35,7 +35,7 @@
             </button>
             <div class="nav-divider"></div>
             <div class="avatar" onclick="openModal('profile')">
-                <div class="avatar-placeholder">JD</div>
+                <div class="avatar-placeholder" id="current-user-avatar-nav">JD</div>
             </div>
         </div>
     </nav>
@@ -90,10 +90,10 @@
             </div>
             <div class="sidebar-bottom">
                 <div class="user-card" onclick="openModal('profile')">
-                    <div class="avatar-sm">JD</div>
+                    <div class="avatar-sm" id="current-user-avatar-sidebar">JD</div>
                     <div>
-                        <div class="user-name">Jamie Davis</div>
-                        <div class="user-role">Product Designer</div>
+                        <div class="user-name" id="current-user-name-sidebar">Jamie Davis</div>
+                        <div class="user-role" id="current-user-role-sidebar">Product Designer</div>
                     </div>
                 </div>
             </div>
@@ -117,14 +117,14 @@
                 <div class="stat-chip">
                     <div class="stat-icon" style="background:rgba(255,107,107,.1)"><i data-lucide="folder"></i></div>
                     <div>
-                        <div class="stat-num">24</div>
+                        <div class="stat-num" id="stat-total-tasks">24</div>
                         <div class="stat-lbl">Total Tasks</div>
                     </div>
                 </div>
                 <div class="stat-chip">
                     <div class="stat-icon" style="background:rgba(78,181,247,.1)"><i data-lucide="hourglass"></i></div>
                     <div>
-                        <div class="stat-num">8</div>
+                        <div class="stat-num" id="stat-in-progress-tasks">8</div>
                         <div class="stat-lbl">In Progress</div>
                     </div>
                 </div>
@@ -132,7 +132,7 @@
                     <div class="stat-icon" style="background:rgba(62,207,142,.1)"><i data-lucide="circle-check"></i>
                     </div>
                     <div>
-                        <div class="stat-num">11</div>
+                        <div class="stat-num" id="stat-completed-tasks">11</div>
                         <div class="stat-lbl">Completed</div>
                     </div>
                 </div>
@@ -140,7 +140,7 @@
                     <div class="stat-icon" style="background:rgba(255,197,66,.12)"><i data-lucide="triangle-alert"></i>
                     </div>
                     <div>
-                        <div class="stat-num">3</div>
+                        <div class="stat-num" id="stat-overdue-tasks">3</div>
                         <div class="stat-lbl">Overdue</div>
                     </div>
                 </div>
@@ -167,113 +167,9 @@
                     <div class="col-header">
                         <div class="col-dot" style="background:#94a3b8"></div>
                         <div class="col-title">To Do</div>
-                        <div class="col-count" style="background:#f1f5f9;color:#64748b">5</div>
+                        <div class="col-count" style="background:#f1f5f9;color:#64748b">0</div>
                     </div>
-                    <div class="col-body">
-                        <div class="card"
-                            onclick="openCardDetail('Redesign landing page hero section','Design & UX · High Priority','Update layout and copy to reflect new brand direction and improve conversion.')">
-                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Redesign landing page hero section</div>
-                            <div class="card-desc">Update layout and copy to reflect new brand direction.</div>
-                            <div class="card-tags"><span class="tag">Design</span><span class="tag">UX</span></div>
-                            <div class="card-footer">
-                                <div class="due-date overdue"><i data-lucide="calendar"></i>Mar 12</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i
-                                            data-lucide="message-circle"></i>3</button><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="paperclip"></i>2</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
-                                        JD</div>
-                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
-                                        AM</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card"
-                            onclick="openCardDetail('Write content for About Us page','Content · Medium Priority','Team bios, company story and mission statement copy.')">
-                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Write content for About Us page</div>
-                            <div class="card-desc">Team bios, company story and mission statement copy.</div>
-                            <div class="card-tags"><span class="tag">Content</span></div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 16</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="message-circle"></i>1</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card"
-                            onclick="openCardDetail('Set up analytics dashboard','Engineering · Low Priority','Configure Google Analytics 4 with custom events.')">
-                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
-                                    onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Set up analytics dashboard</div>
-                            <div class="card-tags"><span class="tag">Engineering</span><span
-                                    class="tag">Analytics</span></div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 20</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="avatars">
-                                    <div class="av"
-                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card"
-                            onclick="openCardDetail('Define user personas for mobile app','Research · Medium Priority','Research-based personas to guide feature prioritisation in Q2.')">
-                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Define user personas for mobile app</div>
-                            <div class="card-desc">Research-based personas to guide feature prioritisation in Q2.</div>
-                            <div class="card-tags"><span class="tag">Research</span><span class="tag">Strategy</span>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 18</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i
-                                            data-lucide="message-circle"></i>5</button><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="paperclip"></i>1</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
-                                    </div>
-                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
-                                        JD</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card"
-                            onclick="openCardDetail('Fix broken checkout flow on Safari','Bug · High Priority','Users report payment fails after address entry on iOS Safari 17.')">
-                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Fix broken checkout flow on Safari</div>
-                            <div class="card-desc">Users report payment fails after address entry on iOS Safari 17.
-                            </div>
-                            <div class="card-tags"><span class="tag">Bug</span><span class="tag">Engineering</span>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date overdue"><i data-lucide="calendar"></i>Mar 10</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="message-circle"></i>8</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
-                                        AM</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="col-body"></div>
                     <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
                 </div>
                 <!-- IN PROGRESS -->
@@ -281,119 +177,9 @@
                     <div class="col-header">
                         <div class="col-dot" style="background:var(--sky)"></div>
                         <div class="col-title">In Progress</div>
-                        <div class="col-count" style="background:rgba(78,181,247,.12);color:var(--sky)">4</div>
+                        <div class="col-count" style="background:rgba(78,181,247,.12);color:var(--sky)">0</div>
                     </div>
-                    <div class="col-body">
-                        <div class="card" style="border-top:3px solid var(--sky)"
-                            onclick="openCardDetail('Build component library in Figma','Design System · High Priority','Create a shared component system with tokens, auto-layout and docs.')">
-                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Build component library in Figma</div>
-                            <div class="card-desc">Create a shared component system with tokens, auto-layout and docs.
-                            </div>
-                            <div class="card-tags"><span class="tag">Design System</span><span class="tag">Figma</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:68%;background:linear-gradient(90deg,var(--sky),var(--violet))"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 15</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i
-                                            data-lucide="message-circle"></i>12</button><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="paperclip"></i>4</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
-                                        JD</div>
-                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
-                                    </div>
-                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="border-top:3px solid var(--sky)"
-                            onclick="openCardDetail('Integrate Stripe payment gateway','Engineering · Medium Priority','Replace legacy PayPal with Stripe Checkout + webhooks.')">
-                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Integrate Stripe payment gateway</div>
-                            <div class="card-desc">Replace legacy PayPal with Stripe Checkout + webhooks for
-                                subscription events.</div>
-                            <div class="card-tags"><span class="tag">Engineering</span><span class="tag">Payments</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:40%;background:linear-gradient(90deg,var(--amber),var(--coral))"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 19</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="message-circle"></i>6</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av"
-                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="border-top:3px solid var(--sky)"
-                            onclick="openCardDetail('Write onboarding email sequence','Marketing · Low Priority','5-email drip campaign for new signups covering core features.')">
-                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
-                                    onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Write onboarding email sequence</div>
-                            <div class="card-desc">5-email drip campaign for new signups covering core features.</div>
-                            <div class="card-tags"><span class="tag">Marketing</span><span class="tag">Copy</span></div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:80%;background:linear-gradient(90deg,var(--mint),var(--sky))"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 14</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i
-                                            data-lucide="message-circle"></i>3</button><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="paperclip"></i>2</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
-                                    </div>
-                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="border-top:3px solid var(--sky)"
-                            onclick="openCardDetail('Conduct usability testing sessions','Research · High Priority','5 moderated sessions with target users on prototype v2.')">
-                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Conduct usability testing sessions</div>
-                            <div class="card-desc">5 moderated sessions with target users on prototype v2.</div>
-                            <div class="card-tags"><span class="tag">Research</span><span class="tag">UX</span></div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:55%;background:linear-gradient(90deg,var(--coral),var(--violet))">
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 13</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="message-circle"></i>9</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
-                                        JD</div>
-                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
-                                        AM</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="col-body"></div>
                     <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
                 </div>
                 <!-- IN REVIEW -->
@@ -401,70 +187,9 @@
                     <div class="col-header">
                         <div class="col-dot" style="background:var(--amber)"></div>
                         <div class="col-title">In Review</div>
-                        <div class="col-count" style="background:rgba(255,197,66,.15);color:#d97706">3</div>
+                        <div class="col-count" style="background:rgba(255,197,66,.15);color:#d97706">0</div>
                     </div>
-                    <div class="col-body">
-                        <div class="card" style="border-top:3px solid var(--amber)"
-                            onclick="openCardDetail('Homepage SEO audit & optimisation','SEO · Medium Priority','Keyword research, meta tags, structured data and page speed improvements.')">
-                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Homepage SEO audit & optimisation</div>
-                            <div class="card-desc">Keyword research, meta tags, structured data and page speed
-                                improvements.</div>
-                            <div class="card-tags"><span class="tag">SEO</span><span class="tag">Marketing</span></div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 17</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i
-                                            data-lucide="message-circle"></i>4</button><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="paperclip"></i>3</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="border-top:3px solid var(--amber)"
-                            onclick="openCardDetail('Dark mode implementation','Engineering · High Priority','Full dark theme with CSS variables and system preference detection.')">
-                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Dark mode implementation</div>
-                            <div class="card-desc">Full dark theme with CSS variables and system preference detection.
-                            </div>
-                            <div class="card-tags"><span class="tag">Engineering</span><span class="tag">Design</span>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 13</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="card-actions"><button class="card-action-btn"
-                                        onclick="event.stopPropagation()"><i data-lucide="message-circle"></i>7</button>
-                                </div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
-                                        AM</div>
-                                    <div class="av"
-                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="border-top:3px solid var(--amber)"
-                            onclick="openCardDetail('Update privacy policy for GDPR v2','Legal · Low Priority','Review and update all data processing clauses for compliance.')">
-                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
-                                    onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title">Update privacy policy for GDPR v2</div>
-                            <div class="card-tags"><span class="tag">Legal</span></div>
-                            <div class="card-footer">
-                                <div class="due-date"><i data-lucide="calendar"></i>Mar 22</div>
-                                <div class="card-footer-sep"></div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="col-body"></div>
                     <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
                 </div>
                 <!-- DONE -->
@@ -472,123 +197,9 @@
                     <div class="col-header">
                         <div class="col-dot" style="background:var(--mint)"></div>
                         <div class="col-title">Done</div>
-                        <div class="col-count" style="background:rgba(62,207,142,.12);color:#059669">5</div>
+                        <div class="col-count" style="background:rgba(62,207,142,.12);color:#059669">0</div>
                     </div>
-                    <div class="col-body">
-                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
-                            onclick="openCardDetail('Set up CI/CD pipeline with GitHub Actions','DevOps · Completed','Automated builds, tests and deployment on every push to main.')">
-                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">Set
-                                up CI/CD pipeline with GitHub Actions</div>
-                            <div class="card-tags"><span class="tag">DevOps</span><span class="tag">Engineering</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date" style="color:var(--mint)"><i data-lucide="circle-check"></i>Mar 8
-                                </div>
-                                <div class="card-footer-sep"></div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
-                                        AM</div>
-                                    <div class="av"
-                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
-                            onclick="openCardDetail('Stakeholder presentation — Q1 roadmap','Strategy · Completed','Presented product roadmap and OKRs to senior leadership.')">
-                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
-                                Stakeholder presentation — Q1 roadmap</div>
-                            <div class="card-tags"><span class="tag">Strategy</span></div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date" style="color:var(--mint)"><i data-lucide="circle-check"></i>Mar 5
-                                </div>
-                                <div class="card-footer-sep"></div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
-                                        JD</div>
-                                    <div class="av" style="background:linear-gradient(135deg,var(--violet),#ec4899)">LM
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
-                            onclick="openCardDetail('Create brand color token system','Design System · Completed','Defined all color tokens and exported to Figma and CSS variables.')">
-                            <div class="card-top"><span class="priority-tag low">🟢 Low</span><button class="card-menu"
-                                    onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
-                                Create brand color token system</div>
-                            <div class="card-tags"><span class="tag">Design System</span></div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date" style="color:var(--mint)"><i data-lucide="circle-check"></i>Mar 6
-                                </div>
-                                <div class="card-footer-sep"></div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
-                                        JD</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
-                            onclick="openCardDetail('User interview synthesis report','Research · Completed','Analysed 12 user interviews and documented key insights and pain points.')">
-                            <div class="card-top"><span class="priority-tag medium">🟡 Medium</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
-                                User interview synthesis report</div>
-                            <div class="card-tags"><span class="tag">Research</span></div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date" style="color:var(--mint)"><i data-lucide="circle-check"></i>Mar 7
-                                </div>
-                                <div class="card-footer-sep"></div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--mint),var(--sky))">SK
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card" style="opacity:.72;border-top:3px solid var(--mint)"
-                            onclick="openCardDetail('Migrate database to Postgres 16','Engineering · Completed','Zero-downtime migration with full rollback plan and performance benchmarks.')">
-                            <div class="card-top"><span class="priority-tag high">🔴 High</span><button
-                                    class="card-menu" onclick="event.stopPropagation()">⋯</button></div>
-                            <div class="card-title" style="text-decoration:line-through;color:var(--text-secondary)">
-                                Migrate database to Postgres 16</div>
-                            <div class="card-tags"><span class="tag">Engineering</span><span class="tag">DevOps</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill"
-                                    style="width:100%;background:linear-gradient(90deg,var(--mint),#10b981)"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="due-date" style="color:var(--mint)"><i data-lucide="circle-check"></i>Mar 4
-                                </div>
-                                <div class="card-footer-sep"></div>
-                                <div class="avatars">
-                                    <div class="av" style="background:linear-gradient(135deg,var(--sky),var(--violet))">
-                                        AM</div>
-                                    <div class="av"
-                                        style="background:linear-gradient(135deg,var(--amber),var(--coral))">PK</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <div class="col-body"></div>
                     <button class="add-card" onclick="openModal('new-task')">＋ Add task</button>
                 </div>
             </div>
@@ -609,9 +220,9 @@
             </div>
             <div class="mbody">
                 <div class="frow"><label class="flabel">Task title *</label><input class="finput" type="text"
-                        placeholder="e.g. Redesign pricing page…" /></div>
+                    id="new-task-title" placeholder="e.g. Redesign pricing page…" /></div>
                 <div class="frow"><label class="flabel">Description</label><textarea class="ftextarea"
-                        placeholder="Describe what needs to be done…"></textarea></div>
+                    id="new-task-desc" placeholder="Describe what needs to be done…"></textarea></div>
                 <div class="fgrid2">
                     <div class="frow"><label class="flabel">Project</label><select class="fselect">
                             <option>Website Redesign</option>
@@ -619,7 +230,7 @@
                             <option>Brand Guidelines</option>
                             <option>API Integration</option>
                         </select></div>
-                    <div class="frow"><label class="flabel">Status</label><select class="fselect">
+                    <div class="frow"><label class="flabel">Status</label><select class="fselect" id="new-task-status">
                             <option>To Do</option>
                             <option>In Progress</option>
                             <option>In Review</option>
@@ -627,24 +238,27 @@
                         </select></div>
                 </div>
                 <div class="fgrid2">
-                    <div class="frow"><label class="flabel">Due Date</label><input class="finput" type="date" /></div>
+                    <div class="frow"><label class="flabel">Due Date</label><input class="finput" id="new-task-due-date" type="date" /></div>
                     <div class="frow"><label class="flabel">Estimate (hrs)</label><input class="finput" type="number"
                             placeholder="e.g. 4" /></div>
                 </div>
                 <div class="frow"><label class="flabel">Priority</label>
-                    <div class="prio-row"><button class="prio-btn sel-high" onclick="selPrio(this,'high')">🔴
-                            High</button><button class="prio-btn" onclick="selPrio(this,'med')">🟡
-                            Medium</button><button class="prio-btn" onclick="selPrio(this,'low')">🟢 Low</button></div>
+                    <div class="prio-row"><button type="button" class="prio-btn sel-high" onclick="return selectPriority(this,'high', event)">🔴
+                        High</button><button type="button" class="prio-btn" onclick="return selectPriority(this,'med', event)">🟡
+                        Medium</button><button type="button" class="prio-btn" onclick="return selectPriority(this,'low', event)">🟢 Low</button></div>
                 </div>
                 <div class="frow"><label class="flabel">Tags</label>
-                    <div class="tag-chips"><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Design</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Engineering</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Research</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Marketing</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">UX</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Content</button><button class="tag-chip-item"
-                            onclick="this.classList.toggle('sel')">Bug</button></div>
+                    <div class="tag-chips"><button type="button" class="tag-chip-item"
+                            onclick="return toggleTag(this, event)">Design</button><button class="tag-chip-item"
+                        type="button" onclick="return toggleTag(this, event)">Engineering</button><button class="tag-chip-item"
+                        type="button"
+                            onclick="return toggleTag(this, event)">Research</button><button class="tag-chip-item"
+                        type="button" onclick="return toggleTag(this, event)">Marketing</button><button class="tag-chip-item"
+                        type="button"
+                            onclick="return toggleTag(this, event)">UX</button><button class="tag-chip-item"
+                        type="button" onclick="return toggleTag(this, event)">Content</button><button class="tag-chip-item"
+                        type="button"
+                            onclick="return toggleTag(this, event)">Bug</button></div>
                 </div>
                 <div class="frow"><label class="flabel">Assign To</label>
                     <div class="assignee-grid">
@@ -685,7 +299,7 @@
                 </div>
             </div>
             <div class="mfoot"><button class="mbtn mbtn-ghost" onclick="closeModal('new-task')">Cancel</button><button
-                    class="mbtn mbtn-primary" onclick="toast('Task created!');closeModal('new-task')">＋ Create
+                    class="mbtn mbtn-primary" onclick="createTaskFromModal()">＋ Create
                     Task</button></div>
         </div>
     </div>
@@ -854,8 +468,8 @@
                 <div style="display:flex;gap:6px;margin-left:auto;margin-right:10px"><button class="mbtn mbtn-ghost"
                         style="height:32px;font-size:12px" onclick="toast('Link copied!')"><i
                             data-lucide="link"></i>Share</button><button class="mbtn mbtn-ghost"
-                        style="height:32px;font-size:12px" onclick="toast('Editing…')"><i
-                            data-lucide="pencil"></i>Edit</button></div><button class="mhd-close"
+                        style="height:32px;font-size:12px" onclick="saveCurrentTaskDetails()"><i
+                            data-lucide="save"></i>Save</button></div><button class="mhd-close"
                     onclick="closeModal('card-detail')"><i data-lucide="x"></i></button>
             </div>
             <div class="mbody">
@@ -866,10 +480,10 @@
                                 style="min-height:100px">Update layout and copy to reflect new brand direction and improve conversion rate.</textarea>
                         </div>
                         <div class="fdivider"></div>
-                        <div class="fsection">Checklist <span
+                        <div class="fsection" id="cd-checklist-title">Checklist <span
                                 style="color:var(--text-tertiary);font-weight:400;font-size:11px;text-transform:none;letter-spacing:0">3/5
                                 done</span></div>
-                        <div style="background:var(--bg);border-radius:10px;padding:4px 8px;margin-bottom:14px">
+                        <div style="background:var(--bg);border-radius:10px;padding:4px 8px;margin-bottom:14px" id="cd-checklist-content">
                             <div
                                 style="height:4px;background:var(--border);border-radius:2px;margin:8px 0 4px;overflow:hidden">
                                 <div
@@ -897,8 +511,8 @@
                             </div>
                         </div>
                         <div class="fdivider"></div>
-                        <div class="fsection">Comments (3)</div>
-                        <div>
+                        <div class="fsection" id="cd-comments-title">Comments (3)</div>
+                        <div id="cd-comments-list">
                             <div class="act-item">
                                 <div class="act-av" style="background:linear-gradient(135deg,var(--coral),var(--rose))">
                                     JD</div>
@@ -927,34 +541,36 @@
                                 </div>
                             </div>
                         </div>
-                        <div style="display:flex;gap:10px;margin-top:12px">
+                        <div style="display:flex;gap:10px;margin-top:12px" id="cd-comment-compose">
                             <div class="act-av"
                                 style="background:linear-gradient(135deg,var(--coral),var(--rose));flex-shrink:0">JD
-                            </div><input class="finput" type="text" placeholder="Write a comment…"
+                            </div><input class="finput" id="cd-comment-input" type="text" placeholder="Write a comment…"
                                 style="flex:1" /><button class="mbtn mbtn-primary" style="flex-shrink:0"
-                                onclick="toast('Comment posted!')">Post</button>
+                                onclick="postCurrentTaskComment()">Post</button>
                         </div>
                     </div>
                     <div class="detail-side">
                         <div style="background:var(--bg);border-radius:14px;padding:14px">
                             <div class="detail-meta-row"><span class="detail-meta-label">Status</span><span
-                                    style="background:rgba(78,181,247,.12);color:var(--sky);font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px">In
+                                id="cd-status"
+                                style="background:rgba(78,181,247,.12);color:var(--sky);font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px">In
                                     Progress</span></div>
                             <div class="detail-meta-row"><span class="detail-meta-label">Priority</span><span
-                                    style="background:rgba(255,107,107,.1);color:var(--coral);font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px">🔴
+                                id="cd-priority"
+                                style="background:rgba(255,107,107,.1);color:var(--coral);font-size:12px;font-weight:700;padding:3px 9px;border-radius:6px">🔴
                                     High</span></div>
                             <div class="detail-meta-row"><span class="detail-meta-label">Due date</span><span
-                                    class="detail-meta-val" style="color:var(--coral)"><i data-lucide="calendar"></i>Mar
+                                class="detail-meta-val" id="cd-due-date" style="color:var(--coral)"><i data-lucide="calendar"></i>Mar
                                     12, 2026</span></div>
-                            <div class="detail-meta-row"><span class="detail-meta-label">Project</span><span
-                                    class="detail-meta-val">Website Redesign</span></div>
+                                <div class="detail-meta-row"><span class="detail-meta-label">Project</span><span
+                                    class="detail-meta-val" id="cd-project">Website Redesign</span></div>
                             <div class="detail-meta-row" style="border-bottom:none"><span
                                     class="detail-meta-label">Estimate</span><span class="detail-meta-val">8 hrs</span>
                             </div>
                         </div>
                         <div style="margin-top:14px">
                             <div class="fsection">Assignees</div>
-                            <div style="display:flex;flex-direction:column;gap:6px">
+                            <div style="display:flex;flex-direction:column;gap:6px" id="cd-assignees-content">
                                 <div
                                     style="display:flex;align-items:center;gap:9px;padding:7px;background:var(--bg);border-radius:9px">
                                     <div class="act-av"
@@ -993,8 +609,8 @@
                             </div>
                         </div>
                         <div style="margin-top:14px">
-                            <div class="fsection">Attachments (2)</div>
-                            <div style="display:flex;flex-direction:column;gap:6px">
+                            <div class="fsection" id="cd-attachments-title">Attachments (2)</div>
+                            <div style="display:flex;flex-direction:column;gap:6px" id="cd-attachments-content">
                                 <div style="display:flex;align-items:center;gap:9px;padding:9px;background:var(--bg);border-radius:9px;cursor:pointer"
                                     onclick="toast('Opening hero-wireframe-v3.fig')"><i data-lucide="palette"></i>
                                     <div>
@@ -1009,18 +625,18 @@
                                         <div style="font-size:11px;color:var(--text-tertiary)">Word · 48 KB</div>
                                     </div>
                                 </div>
-                            </div><button class="add-card" style="margin-top:6px;font-size:12px"
+                            </div><button class="add-card" id="cd-attach-btn" style="margin-top:6px;font-size:12px"
                                 onclick="toast('File picker opened')">＋ Attach file</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="mfoot"><button class="mbtn mbtn-ghost" style="color:#ef4444;border-color:#fecaca"
-                    onclick="toast('Task deleted!');closeModal('card-detail')"><i
+                    onclick="deleteCurrentTask()"><i
                         data-lucide="trash"></i>Delete</button>
                 <div style="flex:1"></div><button class="mbtn mbtn-ghost"
                     onclick="closeModal('card-detail')">Close</button><button class="mbtn mbtn-mint"
-                    onclick="toast('Task marked done!');closeModal('card-detail')"><i
+                    onclick="markCurrentTaskDone()"><i
                         data-lucide="circle-check"></i>Mark Done</button>
             </div>
         </div>
@@ -1053,10 +669,10 @@
                             style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:16px;background:var(--bg);border-radius:14px">
                             <div
                                 style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--rose));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0">
-                                JD</div>
+                                <span id="current-user-avatar-settings">JD</span></div>
                             <div>
-                                <div style="font-size:16px;font-weight:700">Jamie Davis</div>
-                                <div style="font-size:13px;color:var(--text-tertiary)">Product Designer</div>
+                                <div style="font-size:16px;font-weight:700" id="current-user-name-settings">Jamie Davis</div>
+                                <div style="font-size:13px;color:var(--text-tertiary)" id="current-user-role-settings">Product Designer</div>
                             </div><button class="mbtn mbtn-ghost" style="margin-left:auto;height:32px;font-size:12.5px"
                                 onclick="toast('Photo updated!')">Change Photo</button>
                         </div>
@@ -1066,8 +682,8 @@
                             <div class="frow"><label class="flabel">Last Name</label><input class="finput"
                                     value="Davis" /></div>
                         </div>
-                        <div class="frow"><label class="flabel">Email</label><input class="finput" type="email"
-                                value="jamie@company.io" /></div>
+                        <div class="frow"><label class="flabel">Email</label><input class="finput" type="email" id="current-user-email-settings"
+                            value="jamie@company.io" /></div>
                         <div class="frow"><label class="flabel">Role / Title</label><input class="finput"
                                 value="Product Designer" /></div>
                         <div class="frow"><label class="flabel">Bio</label><textarea class="ftextarea"
@@ -1324,10 +940,10 @@
             <div style="background:linear-gradient(135deg,var(--dark),#1e293b);padding:28px 24px;text-align:center">
                 <div
                     style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--coral),var(--rose));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;margin:0 auto 12px;border:3px solid rgba(255,255,255,.15)">
-                    JD</div>
-                <div style="font-size:18px;font-weight:700;color:#fff">Jamie Davis</div>
-                <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px">Product Designer</div>
-                <div style="font-size:12.5px;color:rgba(255,255,255,.4);margin-top:2px">jamie@company.io</div>
+                    <span id="current-user-avatar-menu">JD</span></div>
+                <div style="font-size:18px;font-weight:700;color:#fff" id="current-user-name-menu">Jamie Davis</div>
+                <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:4px" id="current-user-role-menu">Product Designer</div>
+                <div style="font-size:12.5px;color:rgba(255,255,255,.4);margin-top:2px" id="current-user-email-menu">jamie@company.io</div>
             </div>
             <div class="mbody" style="padding:8px 0">
                 <div style="display:flex;flex-direction:column">
@@ -1363,7 +979,7 @@
             <div class="profile-cover">
                 <div class="profile-cover-pattern"></div>
                 <div class="profile-avatar-wrap">
-                    <div class="profile-avatar">JD</div>
+                    <div class="profile-avatar" id="current-user-avatar-public">JD</div>
                     <div class="profile-online"></div>
                 </div>
                 <div class="profile-cover-actions">
@@ -1381,8 +997,8 @@
                 <div class="profile-info">
                     <div class="profile-name-row">
                         <div>
-                            <div class="profile-name">Jamie Davis</div>
-                            <div class="profile-role-row">
+                            <div class="profile-name" id="current-user-name-public">Jamie Davis</div>
+                            <div class="profile-role-row" id="current-user-role-public">
                                 <i data-lucide="briefcase" style="width:13px;height:13px;color:var(--sky)"></i>
                                 Product Designer · TaskFlow Inc.
                             </div>
@@ -1401,19 +1017,19 @@
                 <!-- Stats -->
                 <div class="profile-stats">
                     <div class="pstat">
-                        <div class="pstat-num" style="color:var(--sky)">24</div>
+                        <div class="pstat-num" style="color:var(--sky)" id="profile-stat-tasks">24</div>
                         <div class="pstat-lbl">Tasks</div>
                     </div>
                     <div class="pstat">
-                        <div class="pstat-num" style="color:var(--mint)">11</div>
+                        <div class="pstat-num" style="color:var(--mint)" id="profile-stat-completed">11</div>
                         <div class="pstat-lbl">Completed</div>
                     </div>
                     <div class="pstat">
-                        <div class="pstat-num" style="color:var(--violet)">5</div>
+                        <div class="pstat-num" style="color:var(--violet)" id="profile-stat-projects">5</div>
                         <div class="pstat-lbl">Projects</div>
                     </div>
                     <div class="pstat">
-                        <div class="pstat-num" style="color:var(--amber)">142</div>
+                        <div class="pstat-num" style="color:var(--amber)" id="profile-stat-contributions">142</div>
                         <div class="pstat-lbl">Contributions</div>
                     </div>
                 </div>
@@ -1442,7 +1058,7 @@
                 <div class="profile-section">
                     <div class="ps-title"><i data-lucide="clock"
                             style="width:12px;height:12px;color:var(--sky)"></i>Recent Tasks</div>
-                    <div>
+                    <div id="profile-recent-tasks">
                         <div class="ptask-row">
                             <div class="ptask-dot" style="background:var(--coral)"></div><span
                                 class="ptask-title">Redesign landing page hero section</span><span class="ptask-badge"
@@ -1472,7 +1088,7 @@
                             style="width:12px;height:12px;color:var(--mint)"></i>Contact</div>
                     <div class="contact-row">
                         <div class="contact-icon"><i data-lucide="mail" style="color:var(--sky)"></i></div>
-                        jamie@company.io
+                        <span id="current-user-email-public">jamie@company.io</span>
                     </div>
                     <div class="contact-row">
                         <div class="contact-icon"><i data-lucide="map-pin" style="color:var(--coral)"></i></div>Ho Chi
@@ -1521,25 +1137,25 @@
                     <div class="act-card">
                         <div class="act-card-icon" style="background:rgba(78,181,247,.1)"><i data-lucide="circle-check"
                                 style="color:var(--sky)"></i></div>
-                        <div class="act-card-num" style="color:var(--sky)">47</div>
+                        <div class="act-card-num" style="color:var(--sky)" id="activity-summary-completed">47</div>
                         <div class="act-card-lbl">Tasks Completed</div>
                     </div>
                     <div class="act-card">
                         <div class="act-card-icon" style="background:rgba(62,207,142,.1)"><i data-lucide="zap"
                                 style="color:var(--mint)"></i></div>
-                        <div class="act-card-num" style="color:var(--mint)">12</div>
-                        <div class="act-card-lbl">Day Streak</div>
+                        <div class="act-card-num" style="color:var(--mint)" id="activity-summary-streak">12</div>
+                        <div class="act-card-lbl">Day Streak 🔥</div>
                     </div>
                     <div class="act-card">
                         <div class="act-card-icon" style="background:rgba(167,139,250,.1)"><i
                                 data-lucide="message-square" style="color:var(--violet)"></i></div>
-                        <div class="act-card-num" style="color:var(--violet)">138</div>
+                        <div class="act-card-num" style="color:var(--violet)" id="activity-summary-comments">138</div>
                         <div class="act-card-lbl">Comments</div>
                     </div>
                     <div class="act-card">
                         <div class="act-card-icon" style="background:rgba(255,197,66,.1)"><i data-lucide="clock"
                                 style="color:var(--amber)"></i></div>
-                        <div class="act-card-num" style="color:var(--amber)">86h</div>
+                        <div class="act-card-num" style="color:var(--amber)" id="activity-summary-hours">86h</div>
                         <div class="act-card-lbl">Time Logged</div>
                     </div>
                 </div>

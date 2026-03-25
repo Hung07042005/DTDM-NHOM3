@@ -1,18 +1,33 @@
+const API_BASE = window.location.hostname === 'localhost'
+    ? 'http://localhost:8000/api'
+    : `${window.location.protocol}//${window.location.hostname}:8000/api`;
 
-// ── DATA ──
-let users = [
-    { id: 1, name: 'Tien Nguyen', email: 'tienn123@ut.edu.vn', role: 'Admin', status: 'Active' },
-    { id: 2, name: 'Hung Pham', email: 'hungnp1272@ut.edu.vn', role: 'User', status: 'Active' },
-    { id: 3, name: 'Ngoc Anh', email: 'ngocnta4878@ut.edu.vn', role: 'User', status: 'Active' },
-    { id: 4, name: 'Chi Trung', email: 'trungnc7062@ut.edu.vn', role: 'User', status: 'Active' },
-    { id: 5, name: 'Lan Huong', email: 'huonglt9921@ut.edu.vn', role: 'User', status: 'Active' },
-    { id: 6, name: 'Minh Duc', email: 'ducnm5543@ut.edu.vn', role: 'Admin', status: 'Active' },
-    { id: 7, name: 'Thanh Thao', email: 'thaott1135@ut.edu.vn', role: 'User', status: 'Active' },
-    { id: 8, name: 'Quoc Bao', email: 'baonq8872@ut.edu.vn', role: 'User', status: 'Active' },
-];
+let users = [];
 let editingId = null;
 let deletingId = null;
-let nextId = 9;
+
+async function apiRequest(path, options = {}) {
+    const response = await fetch(`${API_BASE}${path}`, {
+        headers: { 'Content-Type': 'application/json' },
+        ...options,
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data?.message || 'Request failed');
+    }
+    return data;
+}
+
+async function loadUsers() {
+    try {
+        const data = await apiRequest('/users');
+        users = data.users || [];
+        renderTable();
+    } catch (error) {
+        showToast(`Load users failed: ${error.message}`);
+    }
+}
 
 function renderTable() {
     const tbody = document.getElementById('user-table-body');
@@ -67,22 +82,33 @@ function openAddUser() {
     openModal('add-user');
 }
 
-function saveUser() {
+async function saveUser() {
     const name = document.getElementById('um-name').value.trim();
     const email = document.getElementById('um-email').value.trim();
     const role = document.getElementById('um-role').value;
     const status = document.getElementById('um-status').value;
     if (!name || !email) { showToast('Please fill all required fields'); return; }
-    if (editingId) {
-        const u = users.find(u => u.id === editingId);
-        u.name = name; u.email = email; u.role = role; u.status = status;
-        showToast('User updated!');
-    } else {
-        users.push({ id: nextId++, name, email, role, status });
-        showToast('User added!');
+
+    try {
+        const payload = { name, email, role, status };
+        if (editingId) {
+            await apiRequest(`/users/${editingId}`, {
+                method: 'PUT',
+                body: JSON.stringify(payload),
+            });
+            showToast('User updated!');
+        } else {
+            await apiRequest('/users', {
+                method: 'POST',
+                body: JSON.stringify(payload),
+            });
+            showToast('User added!');
+        }
+        await loadUsers();
+        closeModal('add-user');
+    } catch (error) {
+        showToast(error.message);
     }
-    renderTable();
-    closeModal('add-user');
 }
 
 function openDelete(id) {
@@ -91,11 +117,15 @@ function openDelete(id) {
     document.getElementById('del-name').textContent = u.name;
     openModal('delete-user');
 }
-function confirmDelete() {
-    users = users.filter(u => u.id !== deletingId);
-    renderTable();
-    showToast('User deleted');
-    closeModal('delete-user');
+async function confirmDelete() {
+    try {
+        await apiRequest(`/users/${deletingId}`, { method: 'DELETE' });
+        await loadUsers();
+        showToast('User deleted');
+        closeModal('delete-user');
+    } catch (error) {
+        showToast(error.message);
+    }
 }
 
 let toastTimer;
@@ -161,5 +191,7 @@ new Chart(document.getElementById('activityChart'), {
     }
 });
 
-renderTable();
-lucide.createIcons();
+document.addEventListener('DOMContentLoaded', async () => {
+    lucide.createIcons();
+    await loadUsers();
+});
