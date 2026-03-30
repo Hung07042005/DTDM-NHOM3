@@ -35,11 +35,12 @@ function showTab(t) {
 
 /* ── SOCIAL LOGIN ── */
 function socialLogin(provider) {
-    showToast('Connecting to ' + provider + '...');
-    setTimeout(() => {
-        showToast('Signed in with ' + provider + '!');
-        setTimeout(() => goToApp(), 900);
-    }, 1200);
+    if (provider === 'Google') {
+        window.location.href = 'http://localhost:8000/login/google';
+    }
+    if (provider === 'GitHub') {
+        window.location.href = 'http://localhost:8000/login/github';
+    }
 }
 
 /* ── LOGIN ── */
@@ -85,7 +86,7 @@ function setRegStep(n) {
             if (line) line.classList.toggle('done', i < n);
         }
     }
-    const titles = ['Create your account', 'Set up your profile', 'Almost there! 🎉'];
+    const titles = ['Create your account', 'Set up your profile'];
     const subs = [
         'Already have an account? <a onclick="goToLogin()">Sign in</a>',
         'Tell us a bit about yourself',
@@ -142,7 +143,7 @@ async function doRegister() {
 /* ── GO TO APP ── */
 function goToApp() {
     // Redirect to the main app (Home.html)
-    window.location.href = './src/display/Home.html';
+    window.location.href = 'Home.html';
 }
 
 /* ── VALIDATE EMAIL ── */
