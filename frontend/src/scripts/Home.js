@@ -14,6 +14,11 @@ function openModal(id) {
         el.classList.add('show');
         lucide.createIcons();         // render icon mới trong modal
         _trapFocus(el);               // giữ focus trong modal
+        
+        // Load user list khi mở modal create task
+        if (id === 'new-task') {
+            loadUsersForAssignment('assignee-grid-create');
+        }
     }
 }
 
@@ -167,6 +172,72 @@ async function apiRequest(path, options = {}) {
     return data;
 }
 
+// Load users từ backend để hiển thị trong assign modal
+async function loadUsersForAssignment(gridSelector = 'assignee-grid') {
+    try {
+        const data = await apiRequest('/users');
+        const users = data.users || [];
+        renderAssigneeList(gridSelector, users);
+    } catch (error) {
+        console.error('Failed to load users:', error);
+        toast('Failed to load users');
+    }
+}
+
+// Render assignee list từ user data
+function renderAssigneeList(gridSelector, users) {
+    const grid = document.querySelector(`.${gridSelector}`) || document.querySelector(`.${gridSelector.replace(/-/g, '_')}`);
+    if (!grid) return;
+    
+    grid.innerHTML = '';
+    
+    users.forEach(user => {
+        const initials = user.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+        const bgGradients = [
+            'linear-gradient(135deg,var(--coral),var(--rose))',
+            'linear-gradient(135deg,var(--mint),var(--sky))',
+            'linear-gradient(135deg,var(--sky),var(--violet))',
+            'linear-gradient(135deg,var(--amber),var(--coral))',
+            'linear-gradient(135deg,var(--violet),#ec4899)'
+        ];
+        const bgGradient = bgGradients[user.id % bgGradients.length];
+        
+        const item = document.createElement('div');
+        item.className = 'assignee-item';
+        item.setAttribute('data-user-id', user.id);
+        item.innerHTML = `
+            <div class="assignee-av" style="background:${bgGradient}">${_escapeHtml(initials)}</div>
+            <span class="assignee-name">${_escapeHtml(user.name || user.email)}</span>
+            <div class="assignee-check"></div>
+        `;
+        
+        item.addEventListener('click', function(e) {
+            // Bỏ select từ các item khác (chỉ select 1 user)
+            grid.querySelectorAll('.assignee-item').forEach(el => {
+                if (el !== this) {
+                    el.classList.remove('sel');
+                    el.querySelector('.assignee-check').classList.remove('checked');
+                    el.querySelector('.assignee-check').textContent = '';
+                }
+            });
+            
+            // Toggle select cho item hiện tại
+            this.classList.toggle('sel');
+            this.querySelector('.assignee-check').classList.toggle('checked');
+            this.querySelector('.assignee-check').textContent = this.classList.contains('sel') ? '✓' : '';
+        });
+        
+        grid.appendChild(item);
+    });
+}
+
+// Get selected assignee ID từ modal
+function getSelectedAssigneeId(gridSelector = 'assignee-grid') {
+    const selected = document.querySelector(`.${gridSelector}.sel, .${gridSelector.replace(/-/g, '_')} .assignee-item.sel`);
+    if (!selected) return null;
+    return selected.getAttribute('data-user-id');
+}
+
 function _renderBackendTasks(tasks) {
     const columns = Array.from(document.querySelectorAll('.kanban-col')).map(col => {
         const title = col.querySelector('.col-title')?.textContent?.trim();
@@ -219,7 +290,7 @@ function _renderBackendTasks(tasks) {
                 </div>
             `;
 
-            card.onclick = () => openCardDetail(task.title, `${STATUS_LABELS[task.status] || 'Task'} · Backend`, description, task);
+            card.onclick = async () => openCardDetail(task.title, `${STATUS_LABELS[task.status] || 'Task'} · Backend`, description, task);
             column.body.appendChild(card);
         });
 
@@ -334,6 +405,10 @@ async function createTaskFromModal() {
     const selectedPriorityButton = document.querySelector('.prio-row .prio-btn.sel-high, .prio-row .prio-btn.sel-med, .prio-row .prio-btn.sel-low');
     const tags = selectedTagButtons.map(button => button.textContent?.trim()).filter(Boolean);
 
+    // Get selected assignee ID
+    const selectedAssigneeEl = document.querySelector('.assignee-grid-create .assignee-item.sel');
+    const assignedToId = selectedAssigneeEl ? parseInt(selectedAssigneeEl.getAttribute('data-user-id')) : null;
+
     let priority = 2;
     if (selectedPriorityButton?.classList.contains('sel-high')) priority = 1;
     if (selectedPriorityButton?.classList.contains('sel-low')) priority = 3;
@@ -353,6 +428,7 @@ async function createTaskFromModal() {
                 priority,
                 tags,
                 due_date: dueDate ? `${dueDate}T00:00:00` : null,
+                assigned_to: assignedToId,
             }),
         });
 
@@ -361,6 +437,7 @@ async function createTaskFromModal() {
         if (dueDateInput) dueDateInput.value = '';
         document.querySelectorAll('.tag-chip-item.sel').forEach(button => button.classList.remove('sel'));
         document.querySelectorAll('.prio-row .prio-btn').forEach(button => button.classList.remove('sel-high', 'sel-med', 'sel-low'));
+        document.querySelectorAll('.assignee-grid-create .assignee-item.sel').forEach(item => item.classList.remove('sel'));
         const defaultHigh = document.querySelector('.prio-row .prio-btn');
         if (defaultHigh) defaultHigh.classList.add('sel-high');
 
@@ -523,7 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ════════════════════════════
    5. CARD DETAIL MODAL
 ════════════════════════════ */
-function openCardDetail(title, sub, desc, task = null) {
+async function openCardDetail(title, sub, desc, task = null) {
     const tEl = document.getElementById('cd-title');
     const sEl = document.getElementById('cd-sub');
     const dEl = document.getElementById('cd-desc');
@@ -590,20 +667,35 @@ function openCardDetail(title, sub, desc, task = null) {
             commentAvatarEl.textContent = getUserInitials(currentUser?.name || 'U');
         }
 
-        const user = getCurrentUser();
-        const initials = getUserInitials(user?.name || 'U');
-        const role = user?.role || 'Member';
-        const name = user?.name || 'Current user';
+        // Load and display assignee from database
         if (assigneesEl) {
-            assigneesEl.innerHTML = `
-                <div style="display:flex;align-items:center;gap:9px;padding:7px;background:var(--bg);border-radius:9px">
-                    <div class="act-av" style="background:linear-gradient(135deg,var(--sky),var(--violet));width:28px;height:28px;font-size:10px">${_escapeHtml(initials)}</div>
-                    <div>
-                        <div style="font-size:13px;font-weight:600">${_escapeHtml(name)}</div>
-                        <div style="font-size:11px;color:var(--text-tertiary)">${_escapeHtml(role)}</div>
-                    </div>
-                </div>
-            `;
+            assigneesEl.innerHTML = '<div style="padding:4px 0;color:var(--text-secondary);font-size:12px">Loading assignee...</div>';
+            try {
+                const usersData = await apiRequest('/users');
+                const users = usersData.users || [];
+                
+                if (task.assigned_to) {
+                    // Show assigned user
+                    const assignedUser = users.find(u => u.id === task.assigned_to);
+                    if (assignedUser) {
+                        const initials = assignedUser.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U';
+                        assigneesEl.innerHTML = `
+                            <div style="display:flex;align-items:center;gap:9px;padding:7px;background:var(--bg);border-radius:9px">
+                                <div class="act-av" style="background:linear-gradient(135deg,var(--sky),var(--violet));width:28px;height:28px;font-size:10px">${_escapeHtml(initials)}</div>
+                                <div>
+                                    <div style="font-size:13px;font-weight:600">${_escapeHtml(assignedUser.name || assignedUser.email)}</div>
+                                    <div style="font-size:11px;color:var(--text-tertiary)">${_escapeHtml(assignedUser.role || 'Member')}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else {
+                    assigneesEl.innerHTML = '<div style="padding:4px 0;color:var(--text-secondary);font-size:12px">No assignee</div>';
+                }
+            } catch (error) {
+                console.error('Failed to load assignee:', error);
+                assigneesEl.innerHTML = '<div style="padding:4px 0;color:var(--text-secondary);font-size:12px">Error loading assignee</div>';
+            }
         }
 
         if (attachmentsEl) {
