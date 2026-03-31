@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticating...</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'DM Sans', sans-serif;
+            background: #0f1623;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .auth-loader {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #4eb5f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="auth-loader">
+        <div class="spinner"></div>
+        <p>Completing authentication...</p>
+    </div>
+
+    <script>
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get('user');
+        const provider = urlParams.get('provider');
+        const error = urlParams.get('error');
+
+        if (error) {
+            // Handle error
+            alert(`Authentication failed: ${decodeURIComponent(error)}`);
+            window.location.href = 'index.html';
+        } else if (userParam) {
+            try {
+                // Decode and parse user data
+                const user = JSON.parse(decodeURIComponent(userParam));
+
+                // Save to localStorage
+                localStorage.setItem('taskflow-user', JSON.stringify(user));
+
+                // Log successful login
+                console.log(`Successfully authenticated with ${provider}:`, user);
+
+                // Redirect to home page
+                setTimeout(() => {
+                    window.location.href = 'Home.html';
+                }, 500);
+            } catch (e) {
+                console.error('Failed to parse user data:', e);
+                alert('Authentication error: Failed to process user data');
+                window.location.href = 'index.html';
+            }
+        } else {
+            // No user data or error
+            console.error('No authentication data received');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

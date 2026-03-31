@@ -1,17 +1,3 @@
-from fastapi import FastAPI, HTTPException, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-import hashlib
-import os
-import socket
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text, create_engine, text
-from sqlalchemy.orm import Session, declarative_base, sessionmaker
-from datetime import datetime
-from typing import Optional, List
-from schemas import ProjectResponse, ProjectCreate
-from schemas import AssignTaskRequest
-
 from schemas import (
     AuthLoginRequest,
     AuthRegisterRequest,
@@ -38,10 +24,36 @@ from schemas import (
     UsersResponse,
     UserUpdate,
 )
+from schemas import AssignTaskRequest
+from schemas import ProjectResponse, ProjectCreate
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, RedirectResponse
+import hashlib
+import os
+import socket
+import httpx
+import json
+from urllib.parse import urlencode
+from dotenv import load_dotenv
+from pathlib import Path
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text, create_engine, text
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
+from datetime import datetime
+from typing import Optional, List
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Auto-create data directory for SQLite database
+backend_dir = Path(__file__).parent
+data_dir = backend_dir / "data"
+data_dir.mkdir(exist_ok=True)
 
 app = FastAPI()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/todo.db")
+DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{data_dir}/todo.db")
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
@@ -51,7 +63,8 @@ class Task(Base):
     __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True, index=True)
-    list_id = Column(Integer, ForeignKey("task_lists.id"), nullable=True, index=True)
+    list_id = Column(Integer, ForeignKey(
+        "task_lists.id"), nullable=True, index=True)
     title = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     status = Column(String, nullable=False, default="todo", index=True)
@@ -60,9 +73,11 @@ class Task(Base):
     tags = Column(Text, nullable=True)
     completed = Column(Boolean, default=False, nullable=False)
     completed_at = Column(DateTime, nullable=True)
-    parent_task_id = Column(Integer, ForeignKey("tasks.id"), nullable=True, index=True)
+    parent_task_id = Column(Integer, ForeignKey(
+        "tasks.id"), nullable=True, index=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False,
+                        default=datetime.utcnow, onupdate=datetime.utcnow)
     assigned_to = Column(Integer, ForeignKey("users.id"), nullable=True)
 
 
@@ -76,25 +91,29 @@ class User(Base):
     role = Column(String, nullable=False, default="User")
     status = Column(String, nullable=False, default="Active")
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False,
+                        default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class TaskList(Base):
     __tablename__ = "task_lists"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"),
+                     nullable=False, index=True)
     name = Column(String, nullable=False)
     color = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False,
+                        default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
 class Tag(Base):
     __tablename__ = "tags"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"),
+                     nullable=False, index=True)
     name = Column(String, nullable=False)
     color = Column(String, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -112,10 +131,13 @@ class TaskComment(Base):
     __tablename__ = "task_comments"
 
     id = Column(Integer, primary_key=True, index=True)
-    task_id = Column(Integer, ForeignKey("tasks.id"), nullable=False, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    task_id = Column(Integer, ForeignKey("tasks.id"),
+                     nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey(
+        "users.id"), nullable=True, index=True)
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+
 
 class Project(Base):
     __tablename__ = "projects"
@@ -124,6 +146,7 @@ class Project(Base):
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
 
 def ensure_task_table_upgrade():
     migration_sql = [
@@ -164,7 +187,8 @@ def ensure_user_table_upgrade():
 def ensure_default_data():
     db: Session = SessionLocal()
     try:
-        default_user = db.query(User).filter(User.email == "default@local").first()
+        default_user = db.query(User).filter(
+            User.email == "default@local").first()
         if default_user is None:
             default_user = User(
                 email="default@local",
@@ -181,7 +205,8 @@ def ensure_default_data():
         ).first()
 
         if default_list is None:
-            default_list = TaskList(user_id=default_user.id, name="Inbox", color="#007bff")
+            default_list = TaskList(
+                user_id=default_user.id, name="Inbox", color="#007bff")
             db.add(default_list)
             db.commit()
             db.refresh(default_list)
@@ -243,7 +268,8 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 def task_to_dict(task: Task, tags: Optional[List[str]] = None):
     stored_tags = tags
     if stored_tags is None:
-        stored_tags = [tag_name for tag_name in (task.tags or "").split(",") if tag_name]
+        stored_tags = [tag_name for tag_name in (
+            task.tags or "").split(",") if tag_name]
 
     return {
         "id": task.id,
@@ -344,7 +370,8 @@ def create_task(task: TaskCreate):
 
     db: Session = SessionLocal()
     try:
-        default_list = db.query(TaskList).filter(TaskList.name == "Inbox").order_by(TaskList.id.asc()).first()
+        default_list = db.query(TaskList).filter(
+            TaskList.name == "Inbox").order_by(TaskList.id.asc()).first()
         new_task = Task(
             list_id=default_list.id if default_list else None,
             title=task.title.strip(),
@@ -353,7 +380,8 @@ def create_task(task: TaskCreate):
             status=(task.status or "todo"),
             priority=task.priority or 2,
             due_date=task.due_date,
-            tags=",".join(list(dict.fromkeys([tag_name.strip() for tag_name in (task.tags or []) if tag_name and tag_name.strip()]))),
+            tags=",".join(list(dict.fromkeys([tag_name.strip() for tag_name in (
+                task.tags or []) if tag_name and tag_name.strip()]))),
             completed_at=datetime.utcnow() if task.completed else None,
         )
         db.add(new_task)
@@ -384,7 +412,8 @@ def update_task(task_id: int, task: TaskUpdate):
             if not new_title:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "Title field is required"},
+                    detail={"error": "Invalid request",
+                            "message": "Title field is required"},
                 )
             db_task.title = new_title
 
@@ -405,7 +434,8 @@ def update_task(task_id: int, task: TaskUpdate):
             db_task.completed_at = datetime.utcnow() if task.completed else None
 
         if task.tags is not None:
-            normalized_tags = [tag_name.strip() for tag_name in task.tags if tag_name and tag_name.strip()]
+            normalized_tags = [
+                tag_name.strip() for tag_name in task.tags if tag_name and tag_name.strip()]
             unique_tags = list(dict.fromkeys(normalized_tags))
             db_task.tags = ",".join(unique_tags)
 
@@ -430,8 +460,10 @@ def delete_task(task_id: int):
                 detail={"error": "Not found", "message": "Task not found"},
             )
 
-        db.query(TaskComment).filter(TaskComment.task_id == db_task.id).delete(synchronize_session=False)
-        db.query(TaskTag).filter(TaskTag.task_id == db_task.id).delete(synchronize_session=False)
+        db.query(TaskComment).filter(TaskComment.task_id ==
+                                     db_task.id).delete(synchronize_session=False)
+        db.query(TaskTag).filter(TaskTag.task_id ==
+                                 db_task.id).delete(synchronize_session=False)
         db.delete(db_task)
         db.commit()
         return {"message": "Task deleted"}
@@ -465,7 +497,8 @@ def get_task_comments(task_id: int):
 
         return {
             "comments": [
-                task_comment_to_dict(comment, user_map.get(comment.user_id, "Unknown user"))
+                task_comment_to_dict(comment, user_map.get(
+                    comment.user_id, "Unknown user"))
                 for comment in db_comments
             ]
         }
@@ -484,7 +517,8 @@ def create_task_comment(task_id: int, payload: TaskCommentCreate):
     if not content:
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "Comment content is required"},
+            detail={"error": "Invalid request",
+                    "message": "Comment content is required"},
         )
 
     db: Session = SessionLocal()
@@ -502,7 +536,8 @@ def create_task_comment(task_id: int, payload: TaskCommentCreate):
             if db_user is None:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "User not found"},
+                    detail={"error": "Invalid request",
+                            "message": "User not found"},
                 )
 
         new_comment = TaskComment(
@@ -514,7 +549,8 @@ def create_task_comment(task_id: int, payload: TaskCommentCreate):
         db.commit()
         db.refresh(new_comment)
 
-        user_name = (db_user.full_name or db_user.email) if db_user else "Unknown user"
+        user_name = (
+            db_user.full_name or db_user.email) if db_user else "Unknown user"
         return task_comment_to_dict(new_comment, user_name)
     finally:
         db.close()
@@ -546,13 +582,15 @@ def register(auth: AuthRegisterRequest):
     if auth.email is None or not auth.email.strip():
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "Email is required"},
+            detail={"error": "Invalid request",
+                    "message": "Email is required"},
         )
 
     if auth.password is None or len(auth.password) < 6:
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "Password must be at least 6 characters"},
+            detail={"error": "Invalid request",
+                    "message": "Password must be at least 6 characters"},
         )
 
     db: Session = SessionLocal()
@@ -562,7 +600,8 @@ def register(auth: AuthRegisterRequest):
         if existed is not None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Email already exists"},
+                detail={"error": "Invalid request",
+                        "message": "Email already exists"},
             )
 
         new_user = User(
@@ -594,13 +633,15 @@ def login(auth: AuthLoginRequest):
     if auth.email is None or not auth.email.strip():
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "Email is required"},
+            detail={"error": "Invalid request",
+                    "message": "Email is required"},
         )
 
     if auth.password is None or not auth.password:
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "Password is required"},
+            detail={"error": "Invalid request",
+                    "message": "Password is required"},
         )
 
     db: Session = SessionLocal()
@@ -610,7 +651,8 @@ def login(auth: AuthLoginRequest):
         if db_user is None or not verify_password(auth.password, db_user.password_hash):
             raise HTTPException(
                 status_code=401,
-                detail={"error": "Unauthorized", "message": "Invalid email or password"},
+                detail={"error": "Unauthorized",
+                        "message": "Invalid email or password"},
             )
 
         return {"message": "Login successful", "user": user_to_dict(db_user)}
@@ -634,7 +676,8 @@ def create_user(user: UserCreate):
     if user.email is None or not user.email.strip():
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "Email is required"},
+            detail={"error": "Invalid request",
+                    "message": "Email is required"},
         )
 
     db: Session = SessionLocal()
@@ -644,7 +687,8 @@ def create_user(user: UserCreate):
         if existed is not None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Email already exists"},
+                detail={"error": "Invalid request",
+                        "message": "Email already exists"},
             )
 
         new_user = User(
@@ -652,7 +696,8 @@ def create_user(user: UserCreate):
             email=email,
             role=user.role or "User",
             status=user.status or "Active",
-            password_hash=hash_password(user.password) if user.password else hash_password("123456"),
+            password_hash=hash_password(
+                user.password) if user.password else hash_password("123456"),
         )
         db.add(new_user)
         db.commit()
@@ -682,7 +727,8 @@ def update_user(user_id: int, user: UserUpdate):
             if not new_name:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "Name is required"},
+                    detail={"error": "Invalid request",
+                            "message": "Name is required"},
                 )
             db_user.full_name = new_name
 
@@ -691,14 +737,17 @@ def update_user(user_id: int, user: UserUpdate):
             if not new_email:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "Email is required"},
+                    detail={"error": "Invalid request",
+                            "message": "Email is required"},
                 )
 
-            existed = db.query(User).filter(User.email == new_email, User.id != db_user.id).first()
+            existed = db.query(User).filter(
+                User.email == new_email, User.id != db_user.id).first()
             if existed is not None:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "Email already exists"},
+                    detail={"error": "Invalid request",
+                            "message": "Email already exists"},
                 )
             db_user.email = new_email
 
@@ -732,11 +781,14 @@ def delete_user(user_id: int):
         if db_user.email == "default@local":
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Cannot delete default user"},
+                detail={"error": "Invalid request",
+                        "message": "Cannot delete default user"},
             )
 
-        db.query(TaskList).filter(TaskList.user_id == db_user.id).delete(synchronize_session=False)
-        db.query(Tag).filter(Tag.user_id == db_user.id).delete(synchronize_session=False)
+        db.query(TaskList).filter(TaskList.user_id ==
+                                  db_user.id).delete(synchronize_session=False)
+        db.query(Tag).filter(Tag.user_id == db_user.id).delete(
+            synchronize_session=False)
         db.delete(db_user)
         db.commit()
         return {"message": "User deleted"}
@@ -770,7 +822,8 @@ def create_task_list(task_list: TaskListCreate):
     if task_list.name is None or not task_list.name.strip():
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "List name is required"},
+            detail={"error": "Invalid request",
+                    "message": "List name is required"},
         )
 
     db: Session = SessionLocal()
@@ -779,7 +832,8 @@ def create_task_list(task_list: TaskListCreate):
         if default_user is None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Default user not found"},
+                detail={"error": "Invalid request",
+                        "message": "Default user not found"},
             )
 
         name = task_list.name.strip()
@@ -790,10 +844,12 @@ def create_task_list(task_list: TaskListCreate):
         if existed is not None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "List name already exists"},
+                detail={"error": "Invalid request",
+                        "message": "List name already exists"},
             )
 
-        new_list = TaskList(user_id=default_user.id, name=name, color=task_list.color)
+        new_list = TaskList(user_id=default_user.id,
+                            name=name, color=task_list.color)
         db.add(new_list)
         db.commit()
         db.refresh(new_list)
@@ -814,7 +870,8 @@ def update_task_list(list_id: int, task_list: TaskListUpdate):
         if default_user is None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Default user not found"},
+                detail={"error": "Invalid request",
+                        "message": "Default user not found"},
             )
 
         db_list = db.query(TaskList).filter(
@@ -824,7 +881,8 @@ def update_task_list(list_id: int, task_list: TaskListUpdate):
         if db_list is None:
             raise HTTPException(
                 status_code=404,
-                detail={"error": "Not found", "message": "Task list not found"},
+                detail={"error": "Not found",
+                        "message": "Task list not found"},
             )
 
         if task_list.name is not None:
@@ -832,7 +890,8 @@ def update_task_list(list_id: int, task_list: TaskListUpdate):
             if not new_name:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "List name is required"},
+                    detail={"error": "Invalid request",
+                            "message": "List name is required"},
                 )
 
             existed = db.query(TaskList).filter(
@@ -843,7 +902,8 @@ def update_task_list(list_id: int, task_list: TaskListUpdate):
             if existed is not None:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "List name already exists"},
+                    detail={"error": "Invalid request",
+                            "message": "List name already exists"},
                 )
             db_list.name = new_name
 
@@ -868,7 +928,8 @@ def delete_task_list(list_id: int):
         if default_user is None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Default user not found"},
+                detail={"error": "Invalid request",
+                        "message": "Default user not found"},
             )
 
         db_list = db.query(TaskList).filter(
@@ -878,18 +939,21 @@ def delete_task_list(list_id: int):
         if db_list is None:
             raise HTTPException(
                 status_code=404,
-                detail={"error": "Not found", "message": "Task list not found"},
+                detail={"error": "Not found",
+                        "message": "Task list not found"},
             )
 
         inbox_list = get_default_inbox_list(db, default_user.id)
         if inbox_list is not None and db_list.id == inbox_list.id:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Cannot delete Inbox list"},
+                detail={"error": "Invalid request",
+                        "message": "Cannot delete Inbox list"},
             )
 
         if inbox_list is None:
-            inbox_list = TaskList(user_id=default_user.id, name="Inbox", color="#007bff")
+            inbox_list = TaskList(user_id=default_user.id,
+                                  name="Inbox", color="#007bff")
             db.add(inbox_list)
             db.commit()
             db.refresh(inbox_list)
@@ -913,7 +977,8 @@ def get_tags():
         if default_user is None:
             return {"tags": []}
 
-        db_tags = db.query(Tag).filter(Tag.user_id == default_user.id).order_by(Tag.id.asc()).all()
+        db_tags = db.query(Tag).filter(
+            Tag.user_id == default_user.id).order_by(Tag.id.asc()).all()
         return {"tags": [tag_to_dict(tag) for tag in db_tags]}
     finally:
         db.close()
@@ -929,7 +994,8 @@ def create_tag(tag: TagCreate):
     if tag.name is None or not tag.name.strip():
         raise HTTPException(
             status_code=400,
-            detail={"error": "Invalid request", "message": "Tag name is required"},
+            detail={"error": "Invalid request",
+                    "message": "Tag name is required"},
         )
 
     db: Session = SessionLocal()
@@ -938,7 +1004,8 @@ def create_tag(tag: TagCreate):
         if default_user is None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Default user not found"},
+                detail={"error": "Invalid request",
+                        "message": "Default user not found"},
             )
 
         name = tag.name.strip()
@@ -949,7 +1016,8 @@ def create_tag(tag: TagCreate):
         if existed is not None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Tag name already exists"},
+                detail={"error": "Invalid request",
+                        "message": "Tag name already exists"},
             )
 
         new_tag = Tag(user_id=default_user.id, name=name, color=tag.color)
@@ -973,7 +1041,8 @@ def update_tag(tag_id: int, tag: TagUpdate):
         if default_user is None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Default user not found"},
+                detail={"error": "Invalid request",
+                        "message": "Default user not found"},
             )
 
         db_tag = db.query(Tag).filter(
@@ -991,7 +1060,8 @@ def update_tag(tag_id: int, tag: TagUpdate):
             if not new_name:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "Tag name is required"},
+                    detail={"error": "Invalid request",
+                            "message": "Tag name is required"},
                 )
 
             existed = db.query(Tag).filter(
@@ -1002,7 +1072,8 @@ def update_tag(tag_id: int, tag: TagUpdate):
             if existed is not None:
                 raise HTTPException(
                     status_code=400,
-                    detail={"error": "Invalid request", "message": "Tag name already exists"},
+                    detail={"error": "Invalid request",
+                            "message": "Tag name already exists"},
                 )
             db_tag.name = new_name
 
@@ -1027,7 +1098,8 @@ def delete_tag(tag_id: int):
         if default_user is None:
             raise HTTPException(
                 status_code=400,
-                detail={"error": "Invalid request", "message": "Default user not found"},
+                detail={"error": "Invalid request",
+                        "message": "Default user not found"},
             )
 
         db_tag = db.query(Tag).filter(
@@ -1040,7 +1112,8 @@ def delete_tag(tag_id: int):
                 detail={"error": "Not found", "message": "Tag not found"},
             )
 
-        db.query(TaskTag).filter(TaskTag.tag_id == db_tag.id).delete(synchronize_session=False)
+        db.query(TaskTag).filter(TaskTag.tag_id ==
+                                 db_tag.id).delete(synchronize_session=False)
         db.delete(db_tag)
         db.commit()
         return {"message": "Tag deleted"}
@@ -1056,6 +1129,7 @@ def get_container():
         "container_id": container_id
     }
 
+
 @app.post("/api/projects", response_model=ProjectResponse)
 def create_project(project: ProjectCreate):
     db = SessionLocal()
@@ -1068,6 +1142,7 @@ def create_project(project: ProjectCreate):
     db.refresh(new_project)
     db.close()
     return new_project
+
 
 @app.put("/api/tasks/{task_id}/assign", response_model=TaskResponse)
 def assign_task(task_id: int, request: AssignTaskRequest):
@@ -1089,6 +1164,219 @@ def assign_task(task_id: int, request: AssignTaskRequest):
     db.close()
 
     return task
+
+
+# ════════════════════════════════════════════
+# OAuth Login Endpoints (GitHub & Google)
+# ════════════════════════════════════════════
+
+@app.get("/login/github")
+async def login_github(request: Request):
+    """Redirect to GitHub OAuth authorization endpoint"""
+    github_client_id = os.getenv("GITHUB_CLIENT_ID")
+    redirect_uri = "http://localhost:8000/auth/github/callback"
+
+    params = {
+        "client_id": github_client_id,
+        "redirect_uri": redirect_uri,
+        "scope": "user:email",
+        "state": "github_oauth",
+    }
+
+    auth_url = f"https://github.com/login/oauth/authorize?{urlencode(params)}"
+    return RedirectResponse(url=auth_url)
+
+
+@app.get("/auth/github/callback")
+async def github_callback(code: str = None, state: str = None):
+    """Handle GitHub OAuth callback"""
+    if not code:
+        raise HTTPException(
+            status_code=400, detail="No authorization code provided")
+
+    try:
+        github_client_id = os.getenv("GITHUB_CLIENT_ID")
+        github_client_secret = os.getenv("GITHUB_CLIENT_SECRET")
+
+        # Exchange code for access token
+        async with httpx.AsyncClient() as client:
+            token_response = await client.post(
+                "https://github.com/login/oauth/access_token",
+                json={
+                    "client_id": github_client_id,
+                    "client_secret": github_client_secret,
+                    "code": code,
+                },
+                headers={"Accept": "application/json"}
+            )
+            token_data = token_response.json()
+
+            if "error" in token_data:
+                raise HTTPException(status_code=400, detail=token_data.get(
+                    "error_description", "Token exchange failed"))
+
+            access_token = token_data.get("access_token")
+
+            # Get user info from GitHub
+            user_response = await client.get(
+                "https://api.github.com/user",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            github_user = user_response.json()
+
+            # Get email if not in main response
+            email = github_user.get("email")
+            if not email:
+                email_response = await client.get(
+                    "https://api.github.com/user/emails",
+                    headers={"Authorization": f"Bearer {access_token}"}
+                )
+                emails = email_response.json()
+                primary_email = next(
+                    (e["email"] for e in emails if e.get("primary")), None)
+                if primary_email:
+                    email = primary_email
+
+            if not email:
+                raise HTTPException(
+                    status_code=400, detail="Could not retrieve email from GitHub")
+
+        # Create or get user in database
+        db: Session = SessionLocal()
+        try:
+            user_email = email.lower()
+            db_user = db.query(User).filter(User.email == user_email).first()
+
+            if not db_user:
+                # Create new user
+                user_name = github_user.get(
+                    "name") or github_user.get("login", "GitHub User")
+                db_user = User(
+                    email=user_email,
+                    full_name=user_name,
+                    role="User",
+                    status="Active",
+                    password_hash=hash_password(
+                        f"oauth_github_{github_user.get('id')}"),
+                )
+                db.add(db_user)
+                db.commit()
+                db.refresh(db_user)
+        finally:
+            db.close()
+
+        # Redirect to frontend with user info
+        user_data = json.dumps(user_to_dict(db_user))
+        escaped_user_data = urlencode({"user": user_data})
+        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{escaped_user_data}&provider=github")
+
+    except Exception as e:
+        error_msg = urlencode({"error": str(e)})
+        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{error_msg}")
+
+
+@app.get("/login/google")
+async def login_google(request: Request):
+    """Redirect to Google OAuth authorization endpoint"""
+    google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+    redirect_uri = "http://localhost:8000/auth/google/callback"
+
+    params = {
+        "client_id": google_client_id,
+        "redirect_uri": redirect_uri,
+        "response_type": "code",
+        "scope": "openid profile email",
+        "access_type": "offline",
+        "state": "google_oauth",
+    }
+
+    auth_url = f"https://accounts.google.com/o/oauth2/v2/auth?{urlencode(params)}"
+    return RedirectResponse(url=auth_url)
+
+
+@app.get("/auth/google/callback")
+async def google_callback(code: str = None, state: str = None, error: str = None):
+    """Handle Google OAuth callback"""
+    if error:
+        raise HTTPException(
+            status_code=400, detail=f"Google OAuth error: {error}")
+
+    if not code:
+        raise HTTPException(
+            status_code=400, detail="No authorization code provided")
+
+    try:
+        google_client_id = os.getenv("GOOGLE_CLIENT_ID")
+        google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
+        redirect_uri = "http://localhost:8000/auth/google/callback"
+
+        # Exchange code for access token
+        async with httpx.AsyncClient() as client:
+            token_response = await client.post(
+                "https://oauth2.googleapis.com/token",
+                json={
+                    "client_id": google_client_id,
+                    "client_secret": google_client_secret,
+                    "code": code,
+                    "grant_type": "authorization_code",
+                    "redirect_uri": redirect_uri,
+                }
+            )
+            token_data = token_response.json()
+
+            if "error" in token_data:
+                raise HTTPException(status_code=400, detail=token_data.get(
+                    "error", "Token exchange failed"))
+
+            access_token = token_data.get("access_token")
+
+            # Get user info from Google
+            user_response = await client.get(
+                "https://www.googleapis.com/oauth2/v2/userinfo",
+                headers={"Authorization": f"Bearer {access_token}"}
+            )
+            google_user = user_response.json()
+
+            if "error" in google_user:
+                raise HTTPException(
+                    status_code=400, detail="Failed to get user info from Google")
+
+            email = google_user.get("email")
+            if not email:
+                raise HTTPException(
+                    status_code=400, detail="Could not retrieve email from Google")
+
+        # Create or get user in database
+        db: Session = SessionLocal()
+        try:
+            user_email = email.lower()
+            db_user = db.query(User).filter(User.email == user_email).first()
+
+            if not db_user:
+                # Create new user
+                user_name = google_user.get("name", "Google User")
+                db_user = User(
+                    email=user_email,
+                    full_name=user_name,
+                    role="User",
+                    status="Active",
+                    password_hash=hash_password(
+                        f"oauth_google_{google_user.get('id')}"),
+                )
+                db.add(db_user)
+                db.commit()
+                db.refresh(db_user)
+        finally:
+            db.close()
+
+        # Redirect to frontend with user info
+        user_data = json.dumps(user_to_dict(db_user))
+        escaped_user_data = urlencode({"user": user_data})
+        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{escaped_user_data}&provider=google")
+
+    except Exception as e:
+        error_msg = urlencode({"error": str(e)})
+        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{error_msg}")
 
 
 if __name__ == "__main__":
