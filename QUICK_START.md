@@ -58,27 +58,27 @@ Mở browser:
 http://localhost:5173/
 ```
 
-✅ **XONG! Chương trình đã chạy**
+**XONG! Chương trình đã chạy**
 
 ---
 
-## **🧪 TEST OAUTH LOGIN**
+## **TEST OAUTH LOGIN**
 
 ### **Test GitHub Login:**
 1. Click "Login with GitHub"
 2. Đăng nhập GitHub
 3. Chấp nhận permissions
-4. ✅ Redirect về Home.html
+4. Redirect về Home.html
 
 ### **Test Google Login:**
 1. Click "Login with Google" 
 2. Đăng nhập Google
 3. Chấp nhận permissions
-4. ✅ Redirect về Home.html
+4. Redirect về Home.html
 
 ---
 
-## **📊 API ENDPOINTS**
+## **API ENDPOINTS**
 
 | Endpoint | Method | Mô Tả |
 |----------|--------|-------|
@@ -96,7 +96,7 @@ http://localhost:5173/
 
 ---
 
-## **🔍 KIỂM TRA DATABASE**
+## **KIỂM TRA DATABASE**
 
 ```powershell
 # Xem database
@@ -121,7 +121,7 @@ http://localhost:8000/docs
 
 ---
 
-## **📁 FILE STRUCTURE**
+## **FILE STRUCTURE**
 
 ```
 DTDM-NHOM3/
@@ -130,7 +130,7 @@ DTDM-NHOM3/
 │   ├── requirements.txt (Python packages)
 │   ├── .env (Credentials - TẠO FILE NÀY)
 │   └── data/
-│       └── todo.db (Database - Auto-created)
+│       └── todo.db â(Database - Auto-created)
 │
 ├── frontend/
 │   ├── src/
@@ -151,7 +151,7 @@ DTDM-NHOM3/
 
 ---
 
-## **❌ LỖI THƯỜNG GẶP & CÁC CÁCH KHẮC PHỤC**
+## **LỖI THƯỜNG GẶP & CÁC CÁCH KHẮC PHỤC**
 
 | Lỗi | Giải Pháp |
 |-----|----------|
@@ -163,31 +163,27 @@ DTDM-NHOM3/
 
 ---
 
-## **⚡ THÔNG TIN QUAN TRỌNG**
+## **THÔNG TIN QUAN TRỌNG**
 
-✅ **Đã cấu hình:**
+**Đã cấu hình:**
 - OAuth GitHub & Google
 - CORS (Cross-Origin)
 - Database (SQLite)
 - API Documentation (Swagger)
 
-✅ **Credentials đã có:**
+**Credentials đã có:**
 - GitHub OAuth credentials
 - Google OAuth credentials
 
-⚠️ **Cần tạo:**
+**Cần tạo:**
 - `backend/.env` file (từ template trên)
 
 ---
 
-## **📞 CẦN GIÚP?**
 
-1. **Hướng dẫn chi tiết:** Xem `HUONG_DAN_CHAY_CHUONG_TRINH.md`
-2. **Mã lệnh copy-paste:** Xem `HAY_CHAY_LEH_CODE.md`
-3. **Mã source OAuth:** Xem `OAUTH_CODE_SOURCE.md`
-4. **API Documentation:** Truy cập `http://localhost:8000/docs`
+ **API Documentation:** Truy cập `http://localhost:8000/docs`
 
 ---
 
-**Status:** ✅ Ready to Run  
+**Status:** Ready to Run  
 **Last Updated:** 2026-03-31

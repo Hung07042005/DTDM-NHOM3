@@ -427,7 +427,16 @@ python-dotenv==1.0.0
 httpx==0.25.2
 ```
 
----
+---─────────────────────────────────┐
+│ 6. BACKEND: /auth/github/callback ENDPOINT                  │
+│    - Receive authorization code                             │
+│    - Exchange code for access token (GitHub API)            │
+│    - Fetch user info using access token                     │
+│    - Extract email and user details                         │
+└─────────────────────────────────────────────────────────────┘
+                            ↓
+┌─────────────────────────────────────────────────────────────┐
+│ 7. DATABASE OPERATIONS                            
 
 ## **8. COMPLETE FLOW DIAGRAM**
 
@@ -457,16 +466,7 @@ httpx==0.25.2
 │    GET /auth/github/callback?code=xxx&state=xxx             │
 └─────────────────────────────────────────────────────────────┘
                             ↓
-┌─────────────────────────────────────────────────────────────┐
-│ 6. BACKEND: /auth/github/callback ENDPOINT                  │
-│    - Receive authorization code                             │
-│    - Exchange code for access token (GitHub API)            │
-│    - Fetch user info using access token                     │
-│    - Extract email and user details                         │
-└─────────────────────────────────────────────────────────────┘
-                            ↓
-┌─────────────────────────────────────────────────────────────┐
-│ 7. DATABASE OPERATIONS                                      │
+┌────────────────────────────          │
 │    - Check if user exists (by email)                        │
 │    - If YES: Update last login time                         │
 │    - If NO: Create new user                                 │
