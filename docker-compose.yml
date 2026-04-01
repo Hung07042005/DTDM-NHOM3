@@ -1,20 +1,29 @@
 services:
   backend:
-    build: ./backend
-    ports:
-      - "8000:8000"
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
     volumes:
-      - ./backend:/app
-      - ./backend/data:/app/data
+      - backend_data:/app/data
     environment:
       - PYTHONUNBUFFERED=1
       - DATABASE_URL=sqlite:///./data/todo_runtime.db
+      - BACKEND_BASE_URL=http://localhost:8080
+      - FRONTEND_BASE_URL=http://localhost:8080
+    # If you have a .env file, it must be assigned to a specific service
+    env_file:
+      - backend/.env
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
     ports:
       - "8080:80"
-    volumes:
-      - ./frontend:/usr/share/nginx/html
     depends_on:
       - backend
+
+volumes:
+  backend_data: # Added the missing colon here

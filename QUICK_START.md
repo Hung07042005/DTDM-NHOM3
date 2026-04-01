@@ -1,6 +1,42 @@
 # 🚀 QUICK START GUIDE (TÓM TẮT NHANH)
 
-## **⏱️ 2 PHÚT ĐỂ CHẠY CHƯƠNG TRÌNH**
+## **⏱️ 2 PHÚT ĐỂ CHẠY CHƯƠNG TRÌNH (KHUYẾN NGHỊ: DOCKER)**
+
+### **Cách nhanh nhất: chạy bằng Docker Compose**
+
+```powershell
+cd e:\DTDM-NHOM3
+docker compose up --build
+```
+
+Mở trình duyệt tại:
+```
+http://localhost:8080
+```
+
+Lưu ý:
+- Bạn chỉ cần cài Docker Desktop, không cần cài `pip`/`npm` trên máy.
+- Database SQLite được lưu trong Docker volume `backend_data`.
+
+---
+
+### **Bước bắt buộc trước khi chạy Docker: Tạo .env file**
+
+Tạo file `backend/.env` với credentials của bạn:
+
+```env
+GITHUB_CLIENT_ID=your_github_client_id
+GITHUB_CLIENT_SECRET=your_github_client_secret
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+DATABASE_URL=sqlite:///./data/todo_runtime.db
+BACKEND_BASE_URL=http://localhost:8080
+FRONTEND_BASE_URL=http://localhost:8080
+```
+
+---
+
+## **Chạy thủ công (không dùng Docker)**
 
 ### **Bước 1: Cài Dependencies (Lần Đầu)**
 
@@ -24,6 +60,8 @@ GITHUB_CLIENT_SECRET=your_github_client_secret
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 DATABASE_URL=sqlite:///./data/todo.db
+BACKEND_BASE_URL=http://localhost:8000
+FRONTEND_BASE_URL=http://localhost:5500
 ```
 
 ### **Bước 3: Chạy Backend**

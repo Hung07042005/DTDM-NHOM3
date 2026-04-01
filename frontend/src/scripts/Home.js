@@ -22,9 +22,7 @@ function closeModal(id) {
     if (el) el.classList.remove('show');
 }
 
-const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api'
-    : `${window.location.protocol}//${window.location.hostname}:8000/api`;
+const API_BASE = '/api';
 const AUTH_USER_KEY = 'taskflow-user';
 let currentDetailTask = null;
 let detailDefaultsCaptured = false;
@@ -465,15 +463,15 @@ function toggleTheme() {
     const html = document.documentElement;
     const currentTheme = html.getAttribute('data-theme') || 'light';
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
+
     html.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
-    
+
     const btn = document.getElementById('theme-toggle-btn');
     if (btn) {
         btn.classList.toggle('dark-mode', newTheme === 'dark');
     }
-    
+
     lucide.createIcons();
     toast(newTheme === 'dark' ? '🌙 Dark mode enabled' : '☀️ Light mode enabled');
 }
@@ -481,26 +479,26 @@ function toggleTheme() {
 function selectAppearance(theme) {
     const html = document.documentElement;
     html.setAttribute('data-theme', theme);
-    
+
     if (theme !== 'auto') {
         localStorage.setItem('theme', theme);
     } else {
         localStorage.removeItem('theme');
     }
-    
+
     // Update active state in settings
     document.querySelectorAll('.appearance-card').forEach(card => {
         card.classList.remove('active');
     });
     const activeCard = document.querySelector(`[data-theme="${theme}"]`);
     if (activeCard) activeCard.classList.add('active');
-    
+
     // Update theme toggle button visibility
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     if (themeToggleBtn) {
         themeToggleBtn.style.display = theme === 'auto' ? 'none' : 'flex';
     }
-    
+
     lucide.createIcons();
     toast(`Theme changed to ${theme}`);
 }
@@ -510,12 +508,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     const html = document.documentElement;
     html.setAttribute('data-theme', savedTheme);
-    
+
     const themeToggleBtn = document.getElementById('theme-toggle-btn');
     if (themeToggleBtn && savedTheme === 'dark') {
         themeToggleBtn.classList.add('dark-mode');
     }
-    
+
     const activeCard = document.querySelector(`[data-theme="${savedTheme}"]`);
     if (activeCard) activeCard.classList.add('active');
 });

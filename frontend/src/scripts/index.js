@@ -1,7 +1,5 @@
 /* ── PAGE ROUTING ── */
-const API_BASE = window.location.hostname === 'localhost'
-    ? 'http://localhost:8000/api'
-    : `${window.location.protocol}//${window.location.hostname}:8000/api`;
+const API_BASE = '/api';
 
 async function apiRequest(path, options = {}) {
     const response = await fetch(`${API_BASE}${path}`, {
@@ -36,10 +34,10 @@ function showTab(t) {
 /* ── SOCIAL LOGIN ── */
 function socialLogin(provider) {
     if (provider === 'Google') {
-        window.location.href = 'http://localhost:8000/login/google';
+        window.location.href = '/login/google';
     }
     if (provider === 'GitHub') {
-        window.location.href = 'http://localhost:8000/login/github';
+        window.location.href = '/login/github';
     }
 }
 

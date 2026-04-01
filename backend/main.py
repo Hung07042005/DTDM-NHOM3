@@ -46,6 +46,13 @@ from typing import Optional, List
 # Load environment variables from .env file
 load_dotenv()
 
+BACKEND_BASE_URL = os.getenv(
+    "BACKEND_BASE_URL", "http://localhost:8000").rstrip("/")
+FRONTEND_BASE_URL = os.getenv(
+    "FRONTEND_BASE_URL", "http://localhost:8080").rstrip("/")
+FRONTEND_AUTH_CALLBACK_PATH = os.getenv(
+    "FRONTEND_AUTH_CALLBACK_PATH", "/src/auth-callback.html")
+
 # Auto-create data directory for SQLite database
 backend_dir = Path(__file__).parent
 data_dir = backend_dir / "data"
@@ -1174,7 +1181,7 @@ def assign_task(task_id: int, request: AssignTaskRequest):
 async def login_github(request: Request):
     """Redirect to GitHub OAuth authorization endpoint"""
     github_client_id = os.getenv("GITHUB_CLIENT_ID")
-    redirect_uri = "http://localhost:8000/auth/github/callback"
+    redirect_uri = f"{BACKEND_BASE_URL}/auth/github/callback"
 
     params = {
         "client_id": github_client_id,
@@ -1268,18 +1275,18 @@ async def github_callback(code: str = None, state: str = None):
         # Redirect to frontend with user info
         user_data = json.dumps(user_to_dict(db_user))
         escaped_user_data = urlencode({"user": user_data})
-        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{escaped_user_data}&provider=github")
+        return RedirectResponse(url=f"{FRONTEND_BASE_URL}{FRONTEND_AUTH_CALLBACK_PATH}?{escaped_user_data}&provider=github")
 
     except Exception as e:
         error_msg = urlencode({"error": str(e)})
-        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{error_msg}")
+        return RedirectResponse(url=f"{FRONTEND_BASE_URL}{FRONTEND_AUTH_CALLBACK_PATH}?{error_msg}")
 
 
 @app.get("/login/google")
 async def login_google(request: Request):
     """Redirect to Google OAuth authorization endpoint"""
     google_client_id = os.getenv("GOOGLE_CLIENT_ID")
-    redirect_uri = "http://localhost:8000/auth/google/callback"
+    redirect_uri = f"{BACKEND_BASE_URL}/auth/google/callback"
 
     params = {
         "client_id": google_client_id,
@@ -1308,7 +1315,7 @@ async def google_callback(code: str = None, state: str = None, error: str = None
     try:
         google_client_id = os.getenv("GOOGLE_CLIENT_ID")
         google_client_secret = os.getenv("GOOGLE_CLIENT_SECRET")
-        redirect_uri = "http://localhost:8000/auth/google/callback"
+        redirect_uri = f"{BACKEND_BASE_URL}/auth/google/callback"
 
         # Exchange code for access token
         async with httpx.AsyncClient() as client:
@@ -1372,11 +1379,11 @@ async def google_callback(code: str = None, state: str = None, error: str = None
         # Redirect to frontend with user info
         user_data = json.dumps(user_to_dict(db_user))
         escaped_user_data = urlencode({"user": user_data})
-        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{escaped_user_data}&provider=google")
+        return RedirectResponse(url=f"{FRONTEND_BASE_URL}{FRONTEND_AUTH_CALLBACK_PATH}?{escaped_user_data}&provider=google")
 
     except Exception as e:
         error_msg = urlencode({"error": str(e)})
-        return RedirectResponse(url=f"http://localhost:5500/src/auth-callback.html?{error_msg}")
+        return RedirectResponse(url=f"{FRONTEND_BASE_URL}{FRONTEND_AUTH_CALLBACK_PATH}?{error_msg}")
 
 
 if __name__ == "__main__":
