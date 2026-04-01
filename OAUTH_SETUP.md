@@ -10,8 +10,8 @@ OAuth đăng nhập vừa mới được triển khai. Để nó hoạt động,
    - Click "New OAuth App"
    - Điền thông tin:
      - Application name: TaskFlow
-     - Homepage URL: http://localhost:5500
-     - Authorization callback URL: **http://localhost:8000/auth/github/callback** (QUAN TRỌNG!)
+   - Homepage URL: http://localhost:8080
+   - Authorization callback URL: **http://localhost:8080/auth/github/callback** (QUAN TRỌNG!)
 
 2. **Cập nhật .env file** ở `backend/.env`:
    ```
@@ -29,8 +29,8 @@ OAuth đăng nhập vừa mới được triển khai. Để nó hoạt động,
    - Click "Create Credentials" → "OAuth 2.0 Client IDs"
    - Chọn "Web application"
    - Thêm Authorized redirect URIs:
-     - **http://localhost:8000/auth/google/callback** (QUAN TRỌNG!)
-     - http://localhost:5500 (optional, cho frontend)
+       - **http://localhost:8080/auth/google/callback** (QUAN TRỌNG!)
+       - http://localhost:8080 (optional, cho frontend)
 
 2. **Cập nhật .env file** ở `backend/.env`:
    ```
@@ -43,22 +43,13 @@ OAuth đăng nhập vừa mới được triển khai. Để nó hoạt động,
 
 1. **Start Backend**:
    ```bash
-   cd backend
-   python main.py
+   cd ..
+   docker compose up --build
    ```
-   Server sẽ chạy ở http://localhost:8000
+   Ứng dụng sẽ chạy ở http://localhost:8080
 
-2. **Start Frontend**:
-   ```bash
-   cd frontend
-   npm run dev
-   # hoặc
-   npx vite
-   ```
-   Frontend sẽ chạy ở http://localhost:5500
-
-3. **Test Login**:
-   - Vào http://localhost:5500/src/index.html
+2. **Test Login**:
+   - Vào http://localhost:8080
    - Click "Continue with GitHub" hoặc "Continue with Google"
    - Bạn sẽ được redirect tới GitHub/Google login
    - Sau đăng nhập thành công, sẽ redirect về auth-callback.html
@@ -69,15 +60,15 @@ OAuth đăng nhập vừa mới được triển khai. Để nó hoạt động,
 
 **Error: "invalid_client" hoặc invalid redirect_uri**
 - Kiểm tra callback URL configuration ở GitHub/Google app settings
-- Đảm bảo match chính xác: `http://localhost:8000/auth/github/callback` (hoặc Google)
-- Không có dấu `/` cuối, không có port 5500, v.v.
+- Đảm bảo match chính xác: `http://localhost:8080/auth/github/callback` (hoặc Google)
+- Không có dấu `/` cuối, không đổi port.
 
 **Error: "Email not found"**
 - Tài khoản GitHub/Google có thể private email
 - Cần phải có public email hoặc access token scopes đúng
 
 **Localhost port issues**
-- Nếu port 5500 hoặc 8000 bị chiếm, update vite.config.js và backend redirect URLs
+- Nếu port 8080 bị chiếm, đổi mapping port trong `docker-compose.yml`
 
 ## Production Deployment
 
