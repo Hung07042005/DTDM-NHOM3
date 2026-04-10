@@ -1,8 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
+from pydantic import BaseModel, Field
 
-from pydantic import BaseModel
 
+# ================= TASK =================
 
 class TaskCreate(BaseModel):
     title: Optional[str] = None
@@ -11,7 +12,7 @@ class TaskCreate(BaseModel):
     due_date: Optional[datetime] = None
     completed: Optional[bool] = False
     priority: Optional[int] = 2
-    tags: list[str] = []
+    tags: List[str] = Field(default_factory=list)
 
 
 class TaskUpdate(BaseModel):
@@ -21,7 +22,7 @@ class TaskUpdate(BaseModel):
     due_date: Optional[datetime] = None
     completed: Optional[bool] = None
     priority: Optional[int] = None
-    tags: Optional[list[str]] = None
+    tags: Optional[List[str]] = None
 
 
 class TaskResponse(BaseModel):
@@ -33,10 +34,15 @@ class TaskResponse(BaseModel):
     priority: int
     due_date: Optional[datetime] = None
     list_id: Optional[int] = None
-    tags: list[str] = []
+    tags: List[str] = Field(default_factory=list)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
 
+    class Config:
+        from_attributes = True
+
+
+# ================= COMMENT =================
 
 class TaskCommentCreate(BaseModel):
     content: Optional[str] = None
@@ -51,13 +57,18 @@ class TaskCommentResponse(BaseModel):
     content: str
     created_at: Optional[datetime] = None
 
+    class Config:
+        from_attributes = True
+
 
 class TaskCommentsResponse(BaseModel):
-    comments: list[TaskCommentResponse]
+    comments: List[TaskCommentResponse]
 
+
+# ================= TASK LIST =================
 
 class TaskListResponse(BaseModel):
-    tasks: list[TaskResponse]
+    tasks: List[TaskResponse]
 
 
 class TaskListCreate(BaseModel):
@@ -75,10 +86,15 @@ class TaskListItemResponse(BaseModel):
     name: str
     color: Optional[str] = None
 
+    class Config:
+        from_attributes = True
+
 
 class TaskListsResponse(BaseModel):
-    task_lists: list[TaskListItemResponse]
+    task_lists: List[TaskListItemResponse]
 
+
+# ================= TAG =================
 
 class TagCreate(BaseModel):
     name: Optional[str] = None
@@ -95,10 +111,15 @@ class TagResponse(BaseModel):
     name: str
     color: Optional[str] = None
 
+    class Config:
+        from_attributes = True
+
 
 class TagsResponse(BaseModel):
-    tags: list[TagResponse]
+    tags: List[TagResponse]
 
+
+# ================= USER =================
 
 class UserCreate(BaseModel):
     name: Optional[str] = None
@@ -122,10 +143,15 @@ class UserResponse(BaseModel):
     role: str
     status: str
 
+    class Config:
+        from_attributes = True
+
 
 class UsersResponse(BaseModel):
-    users: list[UserResponse]
+    users: List[UserResponse]
 
+
+# ================= AUTH =================
 
 class AuthRegisterRequest(BaseModel):
     name: Optional[str] = None
@@ -141,7 +167,10 @@ class AuthLoginRequest(BaseModel):
 class AuthResponse(BaseModel):
     message: str
     user: UserResponse
+    access_token: str   # 🔥 THÊM DÒNG NÀY
 
+
+# ================= OTHER =================
 
 class ContainerResponse(BaseModel):
     container_id: str
@@ -151,17 +180,24 @@ class ErrorResponse(BaseModel):
     error: str
     message: str
 
+
+# ================= PROJECT =================
+
 class ProjectCreate(BaseModel):
     name: str
     description: Optional[str] = None
 
+
 class ProjectResponse(BaseModel):
     id: int
     name: str
-    description: Optional[str]
+    description: Optional[str] = None
 
     class Config:
         from_attributes = True
+
+
+# ================= ASSIGN =================
 
 class AssignTaskRequest(BaseModel):
     user_id: int

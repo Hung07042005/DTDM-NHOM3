@@ -40,8 +40,17 @@ from dotenv import load_dotenv
 from pathlib import Path
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, Text, create_engine, text
 from sqlalchemy.orm import Session, declarative_base, sessionmaker
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional, List
+from jose import JWTError, jwt
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends
+
+SECRET_KEY = "your-secret-key"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60
+
+security = HTTPBearer()
 
 # Load environment variables from .env file
 load_dotenv()
@@ -348,16 +357,62 @@ def get_default_inbox_list(db: Session, user_id: int):
         TaskList.name == "Inbox",
     ).order_by(TaskList.id.asc()).first()
 
-
-@app.get("/api/tasks", response_model=TaskListResponse)
-def get_tasks():
-    db: Session = SessionLocal()
+def get_db():
+    db = SessionLocal()
     try:
-        db_tasks = db.query(Task).order_by(Task.id.asc()).all()
-        return {"tasks": [task_to_dict(task) for task in db_tasks]}
+        yield db
     finally:
         db.close()
 
+def create_access_token(data: dict):
+    to_encode = data.copy()
+    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Depends(security),
+    db: Session = Depends(get_db)
+):
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id = payload.get("user_id")
+
+        if not user_id:
+            raise HTTPException(status_code=401, detail="Invalid token")
+
+        user = db.query(User).filter(User.id == user_id).first()
+
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+
+        return user
+
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+def require_user(current_user: User = Depends(get_current_user)):
+    return current_user
+
+def require_admin(current_user: User = Depends(get_current_user)):
+    if current_user.role != "Admin":
+        raise HTTPException(status_code=403, detail="Admin only")
+    return current_user
+
+@app.get("/api/tasks", response_model=TaskListResponse)
+def get_tasks(user=Depends(require_user), db: Session = Depends(get_db)):
+    try:
+        if user.role == "Admin":
+            db_tasks = db.query(Task).order_by(Task.id.asc()).all()
+        else:
+            db_tasks = db.query(Task).filter(
+                Task.assigned_to == user.id
+            ).order_by(Task.id.asc()).all()
+
+        return {"tasks": [task_to_dict(task) for task in db_tasks]}
+    finally:
+        db.close()
 
 @app.post(
     "/api/tasks",
@@ -365,7 +420,7 @@ def get_tasks():
     response_model=TaskResponse,
     responses={400: {"model": ErrorResponse}},
 )
-def create_task(task: TaskCreate):
+def create_task(task: TaskCreate, user=Depends(require_user)):
     if task.title is None or not task.title.strip():
         raise HTTPException(
             status_code=400,
@@ -378,7 +433,10 @@ def create_task(task: TaskCreate):
     db: Session = SessionLocal()
     try:
         default_list = db.query(TaskList).filter(
-            TaskList.name == "Inbox").order_by(TaskList.id.asc()).first()
+            TaskList.user_id == user.id,
+            TaskList.name == "Inbox"
+        ).first()
+
         new_task = Task(
             list_id=default_list.id if default_list else None,
             title=task.title.strip(),
@@ -387,14 +445,24 @@ def create_task(task: TaskCreate):
             status=(task.status or "todo"),
             priority=task.priority or 2,
             due_date=task.due_date,
-            tags=",".join(list(dict.fromkeys([tag_name.strip() for tag_name in (
-                task.tags or []) if tag_name and tag_name.strip()]))),
+
+            assigned_to=user.id,
+
+            tags=",".join(list(dict.fromkeys([
+                tag_name.strip()
+                for tag_name in (task.tags or [])
+                if tag_name and tag_name.strip()
+            ]))),
+
             completed_at=datetime.utcnow() if task.completed else None,
         )
+
         db.add(new_task)
         db.commit()
         db.refresh(new_task)
+
         return task_to_dict(new_task)
+
     finally:
         db.close()
 
@@ -404,7 +472,7 @@ def create_task(task: TaskCreate):
     response_model=TaskResponse,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def update_task(task_id: int, task: TaskUpdate):
+def update_task(task_id: int, task: TaskUpdate, user: User = Depends(require_user)):
     db: Session = SessionLocal()
     try:
         db_task = db.query(Task).filter(Task.id == task_id).first()
@@ -413,6 +481,9 @@ def update_task(task_id: int, task: TaskUpdate):
                 status_code=404,
                 detail={"error": "Not found", "message": "Task not found"},
             )
+        
+        if db_task.assigned_to != user.id and user.role != "Admin":
+            raise HTTPException(403, "Không có quyền sửa task này")
 
         if task.title is not None:
             new_title = task.title.strip()
@@ -457,7 +528,7 @@ def update_task(task_id: int, task: TaskUpdate):
     "/api/tasks/{task_id}",
     responses={404: {"model": ErrorResponse}},
 )
-def delete_task(task_id: int):
+def delete_task(task_id: int, user: User = Depends(require_user)):
     db: Session = SessionLocal()
     try:
         db_task = db.query(Task).filter(Task.id == task_id).first()
@@ -466,6 +537,9 @@ def delete_task(task_id: int):
                 status_code=404,
                 detail={"error": "Not found", "message": "Task not found"},
             )
+        
+        if db_task.assigned_to != user.id and user.role != "Admin":
+            raise HTTPException(403, "Không có quyền xóa task này")
 
         db.query(TaskComment).filter(TaskComment.task_id ==
                                      db_task.id).delete(synchronize_session=False)
@@ -662,7 +736,17 @@ def login(auth: AuthLoginRequest):
                         "message": "Invalid email or password"},
             )
 
-        return {"message": "Login successful", "user": user_to_dict(db_user)}
+        token = create_access_token({
+            "user_id": db_user.id,
+            "role": db_user.role
+        })
+
+        return {
+            "message": "Login successful",
+            "user": user_to_dict(db_user),
+            "access_token": token
+        }
+
     finally:
         db.close()
 
@@ -1152,7 +1236,7 @@ def create_project(project: ProjectCreate):
 
 
 @app.put("/api/tasks/{task_id}/assign", response_model=TaskResponse)
-def assign_task(task_id: int, request: AssignTaskRequest):
+def assign_task(task_id: int, request: AssignTaskRequest, current_user: User = Depends(require_user)):
     db = SessionLocal()
 
     task = db.query(Task).filter(Task.id == task_id).first()
@@ -1160,8 +1244,8 @@ def assign_task(task_id: int, request: AssignTaskRequest):
         db.close()
         raise HTTPException(status_code=404, detail="Task not found")
 
-    user = db.query(User).filter(User.id == request.user_id).first()
-    if not user:
+    assigned_user = db.query(User).filter(User.id == request.user_id).first()
+    if not assigned_user:
         db.close()
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -1384,7 +1468,6 @@ async def google_callback(code: str = None, state: str = None, error: str = None
     except Exception as e:
         error_msg = urlencode({"error": str(e)})
         return RedirectResponse(url=f"{FRONTEND_BASE_URL}{FRONTEND_AUTH_CALLBACK_PATH}?{error_msg}")
-
 
 if __name__ == "__main__":
     import uvicorn
