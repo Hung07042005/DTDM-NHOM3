@@ -62,9 +62,10 @@ function getUserInitials(name) {
 
 function applyCurrentUserToUI() {
     const user = getCurrentUser();
+    console.log("Current UI User:", user);
     if (!user) return;
 
-    const displayName = user.name || 'User';
+    const displayName = user.full_name || user.name || 'User';
     const role = user.role || 'User';
     const email = user.email || '';
     const initials = getUserInitials(displayName);
@@ -104,6 +105,11 @@ function applyCurrentUserToUI() {
         const element = document.getElementById(elementId);
         if (element) element.textContent = initials;
     });
+
+    const adminMenu = document.getElementById('menu-item-admin');
+    if (adminMenu) {
+        adminMenu.style.display = role === 'Admin' ? 'flex' : 'none';
+    }
 }
 
 function ensureAuthenticated() {
@@ -113,6 +119,11 @@ function ensureAuthenticated() {
     const loginPath = '../../index.html';
     window.location.href = loginPath;
     return false;
+}
+
+function logout() {
+    localStorage.removeItem(AUTH_USER_KEY);
+    window.location.href = '../../index.html';
 }
 
 function _statusLabelToApiStatus(statusLabel) {
@@ -157,8 +168,15 @@ function _escapeHtml(value) {
 }
 
 async function apiRequest(path, options = {}) {
+    const rawUser = localStorage.getItem(AUTH_USER_KEY);
+    const user = rawUser ? JSON.parse(rawUser) : null;
+    const token = typeof user === 'object' && user ? user.access_token : null;
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     const response = await fetch(`${API_BASE}${path}`, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...headers, ...(options.headers || {}) },
         ...options,
     });
 

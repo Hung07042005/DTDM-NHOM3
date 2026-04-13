@@ -57,10 +57,12 @@ async function doLogin() {
                 password: pw,
             }),
         });
-        localStorage.setItem('taskflow-user', JSON.stringify(data.user));
+        console.log("Login Response:", data);
+        const userData = { ...data.user, access_token: data.access_token };
+        localStorage.setItem('taskflow-user', JSON.stringify(userData));
         btn.classList.remove('loading');
-        showToast(`Welcome back, ${data.user.name || 'User'}!`);
-        setTimeout(() => goToApp(), 800);
+        showToast(`Welcome back, ${data.user.full_name || data.user.name || 'User'}!`);
+        setTimeout(() => goToApp(), 1000);
     } catch (error) {
         btn.classList.remove('loading');
         showToast(error.message);
@@ -128,9 +130,11 @@ async function doRegister() {
                 password: pw,
             }),
         });
-        localStorage.setItem('taskflow-user', JSON.stringify(data.user));
+        console.log("Register Response:", data);
+        const userData = { ...data.user, access_token: data.access_token };
+        localStorage.setItem('taskflow-user', JSON.stringify(userData));
         btn.classList.remove('loading');
-        showToast('Account created! Welcome to TaskFlow!');
+        showToast(`Account created! Welcome ${data.user.full_name || data.user.name || 'User'}!`);
         setTimeout(() => goToApp(), 1000);
     } catch (error) {
         btn.classList.remove('loading');

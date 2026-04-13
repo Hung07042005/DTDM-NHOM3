@@ -340,6 +340,8 @@ def task_comment_to_dict(task_comment: TaskComment, user_name: str):
 
 
 def hash_password(password: str):
+    if password is None:
+        password = ""
     return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
 
@@ -638,7 +640,7 @@ def create_task_comment(task_id: int, payload: TaskCommentCreate):
 
 
 @app.get("/api/users", response_model=UsersResponse)
-def get_users():
+def get_users(current_user: User = Depends(require_admin)):
     db: Session = SessionLocal()
     try:
         db_users = db.query(User).order_by(User.id.asc()).all()
@@ -700,7 +702,12 @@ def register(auth: AuthRegisterRequest):
         db.add(inbox)
         db.commit()
 
-        return {"message": "Register successful", "user": user_to_dict(new_user)}
+        token = create_access_token({
+            "user_id": new_user.id,
+            "role": new_user.role
+        })
+
+        return {"message": "Register successful", "user": user_to_dict(new_user), "access_token": token}
     finally:
         db.close()
 
@@ -757,7 +764,7 @@ def login(auth: AuthLoginRequest):
     response_model=UserResponse,
     responses={400: {"model": ErrorResponse}},
 )
-def create_user(user: UserCreate):
+def create_user(user: UserCreate, current_user: User = Depends(require_admin)):
     if user.name is None or not user.name.strip():
         raise HTTPException(
             status_code=400,
@@ -803,7 +810,7 @@ def create_user(user: UserCreate):
     response_model=UserResponse,
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def update_user(user_id: int, user: UserUpdate):
+def update_user(user_id: int, user: UserUpdate, current_user: User = Depends(require_admin)):
     db: Session = SessionLocal()
     try:
         db_user = db.query(User).filter(User.id == user_id).first()
@@ -859,7 +866,7 @@ def update_user(user_id: int, user: UserUpdate):
     "/api/users/{user_id}",
     responses={400: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-def delete_user(user_id: int):
+def delete_user(user_id: int, current_user: User = Depends(require_admin)):
     db: Session = SessionLocal()
     try:
         db_user = db.query(User).filter(User.id == user_id).first()

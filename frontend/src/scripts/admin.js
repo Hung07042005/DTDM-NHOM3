@@ -5,8 +5,15 @@ let editingId = null;
 let deletingId = null;
 
 async function apiRequest(path, options = {}) {
+    const rawUser = localStorage.getItem('taskflow-user');
+    const user = rawUser ? JSON.parse(rawUser) : null;
+    const token = typeof user === 'object' && user ? user.access_token : null;
+
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
     const response = await fetch(`${API_BASE}${path}`, {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...headers, ...(options.headers || {}) },
         ...options,
     });
 
@@ -32,7 +39,7 @@ function renderTable() {
     tbody.innerHTML = users.map(u => `
     <tr>
       <td>${u.id}</td>
-      <td class="name">${u.name}</td>
+      <td class="name">${u.full_name || u.name || 'Unknown'}</td>
       <td class="email">${u.email}</td>
       <td><span class="role-badge ${u.role === 'Admin' ? 'role-admin' : 'role-user'}">${u.role}</span></td>
       <td><span class="status-dot">${u.status}</span></td>
@@ -61,10 +68,11 @@ function openEdit(id) {
     editingId = id;
     const u = users.find(u => u.id === id);
     document.getElementById('user-modal-title').textContent = 'Edit User';
-    document.getElementById('um-name').value = u.name;
+    document.getElementById('um-name').value = u.full_name || u.name || '';
     document.getElementById('um-email').value = u.email;
     document.getElementById('um-role').value = u.role;
     document.getElementById('um-status').value = u.status;
+    document.getElementById('um-pass-row').style.display = 'none';
     document.getElementById('um-save-btn').textContent = 'Save Changes';
     openModal('add-user');
 }
@@ -76,6 +84,8 @@ function openAddUser() {
     document.getElementById('um-email').value = '';
     document.getElementById('um-role').value = 'User';
     document.getElementById('um-status').value = 'Active';
+    document.getElementById('um-password').value = '';
+    document.getElementById('um-pass-row').style.display = 'block';
     document.getElementById('um-save-btn').textContent = 'Save User';
     openModal('add-user');
 }
@@ -85,10 +95,17 @@ async function saveUser() {
     const email = document.getElementById('um-email').value.trim();
     const role = document.getElementById('um-role').value;
     const status = document.getElementById('um-status').value;
+    const password = document.getElementById('um-password').value;
+    
     if (!name || !email) { showToast('Please fill all required fields'); return; }
+    if (!editingId && (!password || password.length < 6)) {
+        showToast('Password must be at least 6 characters');
+        return;
+    }
 
     try {
         const payload = { name, email, role, status };
+        if (!editingId) payload.password = password;
         if (editingId) {
             await apiRequest(`/users/${editingId}`, {
                 method: 'PUT',
@@ -112,7 +129,7 @@ async function saveUser() {
 function openDelete(id) {
     deletingId = id;
     const u = users.find(u => u.id === id);
-    document.getElementById('del-name').textContent = u.name;
+    document.getElementById('del-name').textContent = u.full_name || u.name || 'this user';
     openModal('delete-user');
 }
 async function confirmDelete() {
@@ -191,5 +208,26 @@ new Chart(document.getElementById('activityChart'), {
 
 document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
+    updateAdminUI();
     await loadUsers();
 });
+
+function updateAdminUI() {
+    const raw = localStorage.getItem('taskflow-user');
+    if (!raw) return;
+    const user = JSON.parse(raw);
+    const name = user.full_name || user.name || 'Admin';
+    const initial = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+
+    // Update Sidebar
+    const utAv = document.querySelector('.ut-av');
+    const utName = document.querySelector('.ut-name');
+    const utRole = document.querySelector('.ut-role');
+    if (utAv) utAv.textContent = initial;
+    if (utName) utName.textContent = name;
+    if (utRole) utRole.textContent = user.role || 'Admin';
+
+    // Update Top Nav
+    const navAv = document.querySelector('.nav-avatar');
+    if (navAv) navAv.textContent = initial;
+}
