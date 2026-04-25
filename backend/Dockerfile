@@ -2,10 +2,12 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Copy requirements from the backend directory
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy all files from the backend directory to /app
+COPY backend/ .
 
 EXPOSE 8000
 
