@@ -35,7 +35,7 @@ jobs:
       if: failure()
       uses: atlassian/gajira-login@v3
       env:
-        atlassian_host: 'https://ktpm-uth.atlassian.net'
+        JIRA_BASE_URL: 'https://ktpm-uth.atlassian.net'
         user_email: ${{ secrets.JIRA_USER }}
         api_token: ${{ secrets.JIRA_TOKEN }}
 
