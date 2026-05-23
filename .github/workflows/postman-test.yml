@@ -26,24 +26,18 @@ jobs:
       run: |
         postman collection run ${{ secrets.POSTMAN_COLLECTION_ID }}
 
-    # 5. ĐĂNG NHẬP JIRA CẤU HÌNH THEO ĐỊNH DẠNG "WITH" (BẢN SỬA LỖI TRIỆT ĐỂ)
-    - name: Login to Jira
+    # TỰ ĐỘNG TẠO BUG JIRA BẰNG ACTION TÍCH HỢP (KHÔNG CẦN BƯỚC LOGIN RIÊNG)
+    - name: Create Jira Issue on Failure
       if: failure()
-      uses: atlassian/gajira-login@v3
+      uses: bradenwright/jira-create-issue-action@v1
       with:
-        jira_base_url: 'https://ktpm-uth.atlassian.net' # 👈 Chuyển sang dùng "with:" và viết thường parameters
-        jira_user: ${{ secrets.JIRA_USER }}
-        jira_token: ${{ secrets.JIRA_TOKEN }}
-
-    - name: Create Jira Bug on Failure
-      if: failure()
-      uses: atlassian/gajira-create@v3
-      with:
+        domain: 'ktpm-uth.atlassian.net'
+        user-email: ${{ secrets.JIRA_USER }}
+        api-token: ${{ secrets.JIRA_TOKEN }}
         project: 'KAN'
-        issuetype: 'Bug'
+        issue-type: 'Bug'
         summary: '🔴 [Automation Test] Phát hiện lỗi API khi chạy Automation Test Pipeline'
         description: |
           Hệ thống kiểm thử tự động phát hiện có API bị lỗi.
           Vui lòng kiểm tra lại log chi tiết trên GitHub Actions.
           Luồng kiểm thử: Postman CLI.
-        fields: '{"assignee": {"id": "712020:0bd697e4-f5b4-4767-b9f5-fae031ed3398"}}'
