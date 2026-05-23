@@ -30,12 +30,12 @@ jobs:
       run: |
         postman collection run ${{ secrets.POSTMAN_COLLECTION_ID }}
 
-    # 5. Đăng nhập vào Jira (Sửa lại chuẩn biến để sinh file config.yml)
+    # 5. Đăng nhập vào Jira phát hành file cấu hình (Chỉ chạy khi Postman lỗi)
     - name: Login to Jira
       if: failure()
       uses: atlassian/gajira-login@v3
       env:
-        JIRA_BASE_URL: 'https://ktpm-uth.atlassian.net'
+        JIRA_BASE_URL: 'https://ktpm-uth.atlassian.net' 
         user_email: ${{ secrets.JIRA_USER }}
         api_token: ${{ secrets.JIRA_TOKEN }}
 
