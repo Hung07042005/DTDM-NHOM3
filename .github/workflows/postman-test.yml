@@ -30,11 +30,7 @@ jobs:
       run: |
         postman collection run ${{ secrets.POSTMAN_COLLECTION_ID }}
 
-    # =========================================================================
-    # ĐOẠN SỬA LỖI NẰM Ở ĐÂY: CHIA THÀNH 2 BƯỚC ĐĂNG NHẬP VÀ TẠO BUG RIÊNG BIỆT
-    # =========================================================================
-    
-    # 5. Đăng nhập vào Jira phát hành file cấu hình (Chỉ chạy khi Postman lỗi)
+    # 5. Đăng nhập vào Jira (Sửa lại chuẩn biến để sinh file config.yml)
     - name: Login to Jira
       if: failure()
       uses: atlassian/gajira-login@v3
