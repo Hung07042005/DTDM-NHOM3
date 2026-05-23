@@ -1,0 +1,31 @@
+name: Automation Testing with Postman CLI
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ] # Tự động chạy khi bạn push code lên các nhánh này
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  run-postman-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Kéo code từ GitHub về máy ảo
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2. Cài đặt Postman CLI trên máy ảo GitHub
+    - name: Install Postman CLI
+      run: |
+        curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+    # 3. Đăng nhập vào Postman CLI bằng API Key lấy từ Secrets
+    - name: Login to Postman CLI
+      run: |
+        postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+
+    # 4. Tiến hành chạy test tự động bằng Collection ID lấy từ Secrets
+    - name: Run Postman Collection
+      run: |
+        postman collection run ${{ secrets.POSTMAN_COLLECTION_ID }}
