@@ -11,35 +11,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Kéo code từ GitHub về máy ảo
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. Cài đặt Postman CLI trên máy ảo GitHub
     - name: Install Postman CLI
       run: |
         curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
 
-    # 3. Đăng nhập vào Postman CLI bằng API Key lấy từ Secrets
     - name: Login to Postman CLI
       run: |
         postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
-    # 4. Tiến hành chạy test tự động bằng Collection ID lấy từ Secrets
     - name: Run Postman Collection
       run: |
         postman collection run ${{ secrets.POSTMAN_COLLECTION_ID }}
 
-    # 5. Đăng nhập vào Jira phát hành file cấu hình (Chỉ chạy khi Postman lỗi)
     - name: Login to Jira
       if: failure()
       uses: atlassian/gajira-login@v3
       env:
-        JIRA_BASE_URL: 'https://ktpm-uth.atlassian.net' 
+        JIRA_BASE_URL: 'https://ktpm-uth.atlassian.net'
         user_email: ${{ secrets.JIRA_USER }}
         api_token: ${{ secrets.JIRA_TOKEN }}
 
-    # 6. Tạo Bug và Assign lên Jira sau khi đã login thành công
     - name: Create Jira Bug on Failure
       if: failure()
       uses: atlassian/gajira-create@v3
