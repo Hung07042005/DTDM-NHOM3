@@ -32,18 +32,19 @@ jobs:
 
     # 5. TỰ ĐỘNG LOG BUG LÊN JIRA NẾU BƯỚC 4 BỊ THẤT BẠI (FAIL)
     - name: Create Jira Bug on Failure
-      if: failure() # Chỉ chạy khi bước 4 chạy Postman bị lỗi đỏ
+      if: failure() # Bước này chỉ chạy nếu bước 4 chạy Postman bị lỗi đỏ
       uses: atlassian/gajira-create@v3
       with:
-        project: 'KAN' # 👈 Đã điền sẵn Key bảng Jira của bạn
+        project: 'KAN'
         issuetype: 'Bug'
         summary: '🔴 [Automation Test] Phát hiện lỗi API khi chạy Automation Test Pipeline'
         description: |
           Hệ thống kiểm thử tự động phát hiện có API bị lỗi.
           Vui lòng kiểm tra lại log chi tiết trên GitHub Actions.
           Luồng kiểm thử: Postman CLI.
+        # Tự động gán task cho bạn bằng Account ID đã lấy
         fields: '{"assignee": {"id": "712020:0bd697e4-f5b4-4767-b9f5-fae031ed3398"}}'
       env:
-        Atlassian_URL: 'https://ktpm-uth.atlassian.net' # 👈 Đã điền sẵn URL Jira của bạn
+        Atlassian_URL: 'https://ktpm-uth.atlassian.net'
         JIRA_USER: ${{ secrets.JIRA_USER }}
-        JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}~
+        JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
