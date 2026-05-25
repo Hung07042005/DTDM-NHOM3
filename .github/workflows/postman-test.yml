@@ -26,20 +26,19 @@ jobs:
       run: |
         postman collection run ${{ secrets.POSTMAN_COLLECTION_ID }}
 
-    # 5. TỰ ĐỘNG LOG BUG LÊN JIRA NẾU BƯỚC CHẠY POSTMAN BỊ THẤT BẠI (FAIL)
+    # 5. TỰ ĐỘNG TẠO BUG JIRA BẰNG ACTION ĐỘC LẬP (KHÔNG CẦN FILE CONFIG.YML)
     - name: Create Jira Bug on Failure
       if: failure()
-      uses: atlassian/gajira-create@v3
+      uses: custom-action/jira-create-issue@v1
       with:
+        host: 'https://ktpm-uth.atlassian.net'
+        user_email: ${{ secrets.JIRA_USER }}
+        api_token: ${{ secrets.JIRA_TOKEN }}
         project: 'KAN'
-        issuetype: 'Bug'
+        issue_type: 'Bug'
         summary: '🔴 [Automation Test] Phát hiện lỗi API khi chạy Automation Test Pipeline'
         description: |
           Hệ thống kiểm thử tự động phát hiện có API bị lỗi.
           Vui lòng kiểm tra lại log chi tiết trên GitHub Actions.
           Luồng kiểm thử: Postman CLI.
-        fields: '{"assignee": {"id": "712020:0bd697e4-f5b4-4767-b9f5-fae031ed3398"}}'
-      env:
-        atlassian_host: 'https://ktpm-uth.atlassian.net'
-        user_email: ${{ secrets.JIRA_USER }}
-        api_token: ${{ secrets.JIRA_TOKEN }}
+        assignee_id: '712020:0bd697e4-f5b4-4767-b9f5-fae031ed3398'
